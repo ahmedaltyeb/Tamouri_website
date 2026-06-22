@@ -29,7 +29,8 @@ export default function HeroSlider() {
           desktop → 16:5 (padding-top ~31.25%)
         The image fills the container at every breakpoint.
       */}
-      <div className="relative w-full pt-[75%] sm:pt-[44%] lg:pt-[32%]">
+      {/* 768/1376 = 55.81% — exact aspect ratio of the source images */}
+      <div className="relative w-full pt-[55.81%]">
 
         {slides.map((s, i) => (
           <div
@@ -42,7 +43,7 @@ export default function HeroSlider() {
               src={s.image}
               alt={s.alt}
               fill
-              className="object-cover object-center"
+              className="object-contain object-center"
               priority={i === 0}
               sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
             />
