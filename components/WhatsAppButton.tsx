@@ -1,8 +1,11 @@
 "use client";
+import { usePathname } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function WhatsAppButton() {
+  const pathname = usePathname();
   const { lang } = useLanguage();
+  if (pathname.startsWith("/admin")) return null;
   const label = lang === "ar" ? "واتساب" : "WhatsApp";
 
   return (
