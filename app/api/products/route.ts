@@ -1,8 +1,9 @@
-import { products } from "@/lib/products";
+import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export const dynamic = "force-static";
-
-export function GET() {
+export async function GET() {
+  const products = await prisma.product.findMany({
+    orderBy: { createdAt: "asc" },
+  });
   return NextResponse.json(products);
 }
