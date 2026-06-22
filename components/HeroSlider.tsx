@@ -3,21 +3,10 @@ import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 
 const slides = [
-  {
-    id: 1,
-    image: "https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?w=1400&q=85",
-    alt: "تمور فاخرة",
-  },
-  {
-    id: 2,
-    image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=1400&q=85",
-    alt: "قهوة عربية",
-  },
-  {
-    id: 3,
-    image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=1400&q=85",
-    alt: "هدايا الضيافة",
-  },
+  { id: 1, image: "/assets/slider/slide-1.png",  alt: "slide 1" },
+  { id: 2, image: "/assets/slider/slide-1.webp", alt: "slide 2" },
+  { id: 3, image: "/assets/slider/slide-2.png",  alt: "slide 3" },
+  { id: 4, image: "/assets/slider/slide-2.webp", alt: "slide 4" },
 ];
 
 export default function HeroSlider() {
