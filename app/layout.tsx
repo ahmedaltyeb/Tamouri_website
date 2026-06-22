@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import CartHydration from "@/components/CartHydration";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 export const metadata: Metadata = {
-  title: "تموري | متجر القهوة والشاي والتمور في الإمارات",
-  description: "متجر إماراتي يوفر منتجات ضيافة مختارة للاستخدام اليومي والمناسبات — قهوة، شاي، تمور وزعفران",
-  keywords: "تمور، قهوة عربية، شاي، زعفران، ضيافة، الإمارات، تموري",
+  title: "تموري | Tamouri — UAE Hospitality Store",
+  description: "Premium dates, Arabic coffee, tea & saffron. متجر إماراتي يوفر منتجات ضيافة مختارة.",
+  keywords: "تمور، قهوة عربية، شاي، زعفران، ضيافة، الإمارات، tamouri, dates, UAE",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar" dir="rtl">
       <head>
@@ -24,8 +21,10 @@ export default function RootLayout({
         />
       </head>
       <body className="font-cairo bg-cream text-ink antialiased">
-        <CartHydration />
-        {children}
+        <LanguageProvider>
+          <CartHydration />
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );
