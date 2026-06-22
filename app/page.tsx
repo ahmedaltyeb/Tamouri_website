@@ -1,8 +1,9 @@
 import TopBar from "@/components/TopBar";
 import Header from "@/components/Header";
-import HeroSlider from "@/components/HeroSlider";
+import Hero from "@/components/Hero";
 import CategoryCards from "@/components/CategoryCards";
 import FeaturedProducts from "@/components/FeaturedProducts";
+import HeroSlider from "@/components/HeroSlider";
 import WhyTamouri from "@/components/WhyTamouri";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
@@ -12,9 +13,10 @@ export default function HomePage() {
     <main className="min-h-screen">
       <TopBar />
       <Header />
-      <HeroSlider />
+      <Hero />
       <CategoryCards />
       <FeaturedProducts />
+      <HeroSlider />
       <WhyTamouri />
       <Testimonials />
       <Footer />
