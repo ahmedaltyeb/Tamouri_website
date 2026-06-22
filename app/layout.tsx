@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import CartHydration from "@/components/CartHydration";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <LanguageProvider>
           <CartHydration />
           {children}
+          <WhatsAppButton />
         </LanguageProvider>
       </body>
     </html>
