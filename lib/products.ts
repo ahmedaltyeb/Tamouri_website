@@ -92,18 +92,6 @@ export const products: Product[] = [
     inStock: true,
   },
   {
-    id: "6",
-    name: "تمر خلاص ممتاز",
-    description: "تمر خلاص من أجود أنواع التمور الخليجية، يتميز بطعمه الحلو المميز ولونه الذهبي الجذاب.",
-    price: 65,
-    category: "التمر",
-    categorySlug: "dates",
-    image: "https://images.unsplash.com/photo-1571680322279-a226e6a4cc2a?w=600&q=80",
-    rating: 4.7,
-    reviews: 145,
-    inStock: true,
-  },
-  {
     id: "7",
     name: "بوكس هدايا الضيافة الفاخر",
     description: "صندوق هدايا متكامل يحتوي على تمر مجدول، قهوة عربية، زعفران وشاي. تغليف فاخر مناسب لجميع المناسبات.",
