@@ -1,5 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+
+function unauthorized() {
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+}
+
+async function requireAdmin() {
+  const session = await auth();
+  return session?.user?.role === "ADMIN" ? session : null;
+}
 
 type ProductBody = {
   name: string;
@@ -40,6 +50,8 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  if (!(await requireAdmin())) return unauthorized();
+
   const { id } = await params;
   const existing = await prisma.product.findUnique({ where: { id } });
   if (!existing) return NextResponse.json({ error: "Product not found" }, { status: 404 });
@@ -71,6 +83,8 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  if (!(await requireAdmin())) return unauthorized();
+
   const { id } = await params;
   const existing = await prisma.product.findUnique({ where: { id } });
   if (!existing) return NextResponse.json({ error: "Product not found" }, { status: 404 });

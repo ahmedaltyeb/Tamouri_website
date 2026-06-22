@@ -1,8 +1,11 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
-export default function AdminSidebar() {
+type Props = { userName: string; userEmail: string };
+
+export default function AdminSidebar({ userName, userEmail }: Props) {
   const pathname = usePathname();
 
   return (
@@ -25,8 +28,15 @@ export default function AdminSidebar() {
         />
       </nav>
 
-      {/* Footer */}
-      <div className="px-3 py-4 border-t border-stone-100">
+      {/* User + actions */}
+      <div className="px-3 py-4 border-t border-stone-100 space-y-1">
+        {/* Signed-in user */}
+        <div className="px-3 py-2.5 rounded-lg bg-stone-50 mb-2">
+          <p className="text-xs font-semibold text-stone-700 truncate">{userName}</p>
+          <p className="text-xs text-stone-400 truncate">{userEmail}</p>
+        </div>
+
+        {/* Back to store */}
         <Link
           href="/"
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-stone-500 hover:text-stone-800 hover:bg-stone-100 transition-colors duration-150 cursor-pointer"
@@ -34,6 +44,15 @@ export default function AdminSidebar() {
           <ArrowLeftIcon />
           Back to Store
         </Link>
+
+        {/* Sign out */}
+        <button
+          onClick={() => signOut({ callbackUrl: "/admin/login" })}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-stone-500 hover:text-red-600 hover:bg-red-50 transition-colors duration-150 cursor-pointer text-left"
+        >
+          <SignOutIcon />
+          Sign Out
+        </button>
       </div>
     </aside>
   );
@@ -93,6 +112,24 @@ function ArrowLeftIcon() {
       strokeWidth={2}
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+    </svg>
+  );
+}
+
+function SignOutIcon() {
+  return (
+    <svg
+      className="w-4 h-4 flex-shrink-0"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
+      />
     </svg>
   );
 }

@@ -1,5 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+
+function unauthorized() {
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+}
+
+async function requireAdmin() {
+  const session = await auth();
+  return session?.user?.role === "ADMIN" ? session : null;
+}
 
 type ProductBody = {
   name: string;
@@ -37,11 +47,13 @@ function validate(b: Partial<ProductBody>): string[] {
 }
 
 export async function GET() {
+  if (!(await requireAdmin())) return unauthorized();
   const products = await prisma.product.findMany({ orderBy: { createdAt: "desc" } });
   return NextResponse.json(products);
 }
 
 export async function POST(request: Request) {
+  if (!(await requireAdmin())) return unauthorized();
   const body = (await request.json()) as Partial<ProductBody>;
   const errors = validate(body);
   if (errors.length) return NextResponse.json({ errors }, { status: 422 });

@@ -147,6 +147,24 @@ async function main() {
   }
 
   console.log(`✓ Seeded ${products.length} products`);
+
+  // Default admin user — change password immediately in production.
+  const ADMIN_EMAIL = "admin@tamouri.com";
+  const existing = await prisma.adminUser.findUnique({ where: { email: ADMIN_EMAIL } });
+  if (!existing) {
+    await prisma.adminUser.create({
+      data: {
+        email: ADMIN_EMAIL,
+        name: "Tamouri Admin",
+        // Password: Admin@Tamouri2026  (bcrypt 12 rounds)
+        passwordHash: "$2b$12$ge54RAbius14C/IsQ.sLgOon.hMKEGQy3GhropiLqPRUF/BWbl2Ha",
+        role: "ADMIN",
+      },
+    });
+    console.log("✓ Created default admin  →  admin@tamouri.com / Admin@Tamouri2026");
+  } else {
+    console.log("✓ Admin user already exists, skipping");
+  }
 }
 
 main()
