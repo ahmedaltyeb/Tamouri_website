@@ -1,12 +1,26 @@
 "use client";
 import Link from "next/link";
-import { getFeaturedProducts } from "@/lib/products";
 import ProductCard from "./ProductCard";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useProducts } from "@/hooks/useProducts";
+
+function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-2xl border border-stone-100 overflow-hidden animate-pulse">
+      <div className="aspect-square bg-stone-100" />
+      <div className="p-3 space-y-2">
+        <div className="h-3 bg-stone-100 rounded w-2/3" />
+        <div className="h-4 bg-stone-100 rounded w-full" />
+        <div className="h-4 bg-stone-100 rounded w-1/2" />
+      </div>
+    </div>
+  );
+}
 
 export default function FeaturedProducts() {
-  const products = getFeaturedProducts();
   const { tr } = useLanguage();
+  const { products, loading } = useProducts();
+  const featured = products.slice(0, 8);
 
   return (
     <section className="py-14 max-w-7xl mx-auto px-4 sm:px-6">
@@ -25,9 +39,10 @@ export default function FeaturedProducts() {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+        {loading
+          ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
+          : featured.map((product) => <ProductCard key={product.id} product={product} />)
+        }
       </div>
 
       <div className="mt-8 text-center md:hidden">

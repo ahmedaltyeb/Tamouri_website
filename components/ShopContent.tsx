@@ -2,12 +2,27 @@
 import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
-import { products, categories } from "@/lib/products";
+import { categories } from "@/lib/products";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useProducts } from "@/hooks/useProducts";
+
+function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-2xl border border-stone-100 overflow-hidden animate-pulse">
+      <div className="aspect-square bg-stone-100" />
+      <div className="p-3 space-y-2">
+        <div className="h-3 bg-stone-100 rounded w-2/3" />
+        <div className="h-4 bg-stone-100 rounded w-full" />
+        <div className="h-4 bg-stone-100 rounded w-1/2" />
+      </div>
+    </div>
+  );
+}
 
 export default function ShopContent() {
   const { tr, dir } = useLanguage();
   const searchParams = useSearchParams();
+  const { products, loading } = useProducts();
 
   const [activeCategory, setActiveCategory] = useState(
     searchParams.get("category") ?? "all"
@@ -37,7 +52,7 @@ export default function ShopContent() {
     else if (sortBy === "rating") result.sort((a, b) => b.rating - a.rating);
 
     return result;
-  }, [activeCategory, sortBy, search]);
+  }, [products, activeCategory, sortBy, search]);
 
   return (
     <div dir={dir}>
@@ -106,20 +121,22 @@ export default function ShopContent() {
           })}
         </div>
 
-        {/* Results count */}
-        <p className="text-sm text-stone-500 mb-5">
-          {filtered.length > 0 ? (
-            <>{tr("showing")} <span className="font-bold text-ink">{filtered.length}</span> {tr("product")}</>
-          ) : null}
-        </p>
-
-        {/* Grid */}
-        {filtered.length > 0 ? (
+        {/* Results */}
+        {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
-            {filtered.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
+        ) : filtered.length > 0 ? (
+          <>
+            <p className="text-sm text-stone-500 mb-5">
+              {tr("showing")} <span className="font-bold text-ink">{filtered.length}</span> {tr("product")}
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
+              {filtered.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </>
         ) : (
           <div className="text-center py-20 text-stone-400">
             <svg className="w-16 h-16 mx-auto mb-4 text-stone-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">

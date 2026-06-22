@@ -5,18 +5,44 @@ import TopBar from "@/components/TopBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { getProductById, products } from "@/lib/products";
 import { useCartStore } from "@/store/cartStore";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useProduct, useProducts } from "@/hooks/useProducts";
+
+function PageSkeleton() {
+  return (
+    <main className="min-h-screen">
+      <TopBar />
+      <Header />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 animate-pulse">
+        <div className="h-4 bg-stone-100 rounded w-48 mb-8" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
+          <div className="aspect-square bg-stone-100 rounded-2xl" />
+          <div className="space-y-4">
+            <div className="h-4 bg-stone-100 rounded w-24" />
+            <div className="h-8 bg-stone-100 rounded w-3/4" />
+            <div className="h-4 bg-stone-100 rounded w-32" />
+            <div className="h-10 bg-stone-100 rounded w-28" />
+            <div className="h-20 bg-stone-100 rounded" />
+          </div>
+        </div>
+      </div>
+      <Footer />
+    </main>
+  );
+}
 
 export default function ProductPageClient({ id }: { id: string }) {
-  const product = getProductById(id);
+  const { product, loading } = useProduct(id);
+  const { products } = useProducts();
   const addToCart = useCartStore((s) => s.addToCart);
   const toggleWishlist = useCartStore((s) => s.toggleWishlist);
   const wishlist = useCartStore((s) => s.wishlist);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const { tr } = useLanguage();
+
+  if (loading) return <PageSkeleton />;
 
   if (!product) {
     return (
