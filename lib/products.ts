@@ -1,0 +1,197 @@
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  originalPrice?: number;
+  category: string;
+  categorySlug: string;
+  image: string;
+  badge?: string;
+  rating: number;
+  reviews: number;
+  inStock: boolean;
+}
+
+export const categories = [
+  { id: "dates", name: "التمر", slug: "dates", icon: "🌴" },
+  { id: "arabic-coffee", name: "القهوة العربية", slug: "arabic-coffee", icon: "☕" },
+  { id: "tea", name: "الشاي", slug: "tea", icon: "🍵" },
+  { id: "saffron", name: "الزعفران", slug: "saffron", icon: "🌸" },
+  { id: "hospitality", name: "مستلزمات الضيافة", slug: "hospitality", icon: "🫖" },
+  { id: "tools", name: "أدوات القهوة والشاي", slug: "tools", icon: "⚗️" },
+  { id: "gift-boxes", name: "بوكس هدايا", slug: "gift-boxes", icon: "🎁" },
+  { id: "deals", name: "خصومات أسبوعية", slug: "deals", icon: "🏷️" },
+];
+
+export const products: Product[] = [
+  {
+    id: "1",
+    name: "تمر مجدول فاخر",
+    description: "تمر مجدول طازج من أجود المزارع الإماراتية، حجم كبير ونكهة غنية بالحلاوة الطبيعية. مثالي للضيافة والهدايا.",
+    price: 85,
+    originalPrice: 110,
+    category: "التمر",
+    categorySlug: "dates",
+    image: "https://images.unsplash.com/photo-1559628233-100c798642d6?w=600&q=80",
+    badge: "الأكثر مبيعاً",
+    rating: 4.9,
+    reviews: 234,
+    inStock: true,
+  },
+  {
+    id: "2",
+    name: "قهوة عربية بالهيل",
+    description: "خلطة قهوة عربية أصيلة محمصة بعناية مع الهيل الطازج. تمنحك تجربة ضيافة خليجية أصيلة في كل فنجان.",
+    price: 55,
+    category: "القهوة العربية",
+    categorySlug: "arabic-coffee",
+    image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&q=80",
+    rating: 4.8,
+    reviews: 187,
+    inStock: true,
+  },
+  {
+    id: "3",
+    name: "زعفران إيراني أصيل",
+    description: "زعفران إيراني من أعلى الدرجات، ذهبي اللون وغني بالرائحة. يضيف لمسة فاخرة لمشروباتك وطبخاتك.",
+    price: 220,
+    originalPrice: 250,
+    category: "الزعفران",
+    categorySlug: "saffron",
+    image: "https://images.unsplash.com/photo-1615485500834-bc10199bc727?w=600&q=80",
+    badge: "فاخر",
+    rating: 4.9,
+    reviews: 98,
+    inStock: true,
+  },
+  {
+    id: "4",
+    name: "شاي كرك إماراتي",
+    description: "خلطة شاي كرك إماراتية بالهيل والزعفران والقرفة. مزيج رائع يجمع بين النكهات الخليجية الأصيلة.",
+    price: 35,
+    category: "الشاي",
+    categorySlug: "tea",
+    image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80",
+    rating: 4.7,
+    reviews: 312,
+    inStock: true,
+  },
+  {
+    id: "5",
+    name: "طقم دلة وفناجين ذهبي",
+    description: "طقم ضيافة فاخر يتضمن دلة عربية تقليدية مع 6 فناجين مزخرفة بتصميم ذهبي. هدية مثالية للمناسبات.",
+    price: 195,
+    originalPrice: 240,
+    category: "مستلزمات الضيافة",
+    categorySlug: "hospitality",
+    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&q=80",
+    badge: "عرض خاص",
+    rating: 4.8,
+    reviews: 76,
+    inStock: true,
+  },
+  {
+    id: "6",
+    name: "تمر خلاص ممتاز",
+    description: "تمر خلاص من أجود أنواع التمور الخليجية، يتميز بطعمه الحلو المميز ولونه الذهبي الجذاب.",
+    price: 65,
+    category: "التمر",
+    categorySlug: "dates",
+    image: "https://images.unsplash.com/photo-1571680322279-a226e6a4cc2a?w=600&q=80",
+    rating: 4.7,
+    reviews: 145,
+    inStock: true,
+  },
+  {
+    id: "7",
+    name: "بوكس هدايا الضيافة الفاخر",
+    description: "صندوق هدايا متكامل يحتوي على تمر مجدول، قهوة عربية، زعفران وشاي. تغليف فاخر مناسب لجميع المناسبات.",
+    price: 250,
+    category: "بوكس هدايا",
+    categorySlug: "gift-boxes",
+    image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=600&q=80",
+    badge: "هدية مثالية",
+    rating: 5.0,
+    reviews: 203,
+    inStock: true,
+  },
+  {
+    id: "8",
+    name: "مطحنة قهوة يدوية فاخرة",
+    description: "مطحنة قهوة يدوية من الفولاذ المقاوم للصدأ، تمنحك تحكماً كاملاً في درجة الطحن للحصول على قهوتك المثالية.",
+    price: 120,
+    originalPrice: 150,
+    category: "أدوات القهوة والشاي",
+    categorySlug: "tools",
+    image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&q=80",
+    badge: "خصم 20%",
+    rating: 4.6,
+    reviews: 89,
+    inStock: true,
+  },
+  {
+    id: "9",
+    name: "شاي الأعشاب الإماراتي",
+    description: "خلطة أعشاب طبيعية منتقاة تشمل البابونج والنعناع والزنجبيل. مشروب صحي مثالي لكل وقت.",
+    price: 28,
+    category: "الشاي",
+    categorySlug: "tea",
+    image: "https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2?w=600&q=80",
+    rating: 4.5,
+    reviews: 167,
+    inStock: true,
+  },
+  {
+    id: "10",
+    name: "طقم أكواب شاي تركي",
+    description: "طقم أكواب شاي تركية زجاجية بتصميم أنيق، مع حوامل معدنية مذهبة. يضيف أناقة لطاولة الضيافة.",
+    price: 75,
+    category: "أدوات القهوة والشاي",
+    categorySlug: "tools",
+    image: "https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=600&q=80",
+    rating: 4.7,
+    reviews: 54,
+    inStock: true,
+  },
+  {
+    id: "11",
+    name: "بوكس هدايا العيد",
+    description: "صندوق هدايا عيد مميز يحتوي على تشكيلة من أجود التمور والحلويات الإماراتية بتغليف احتفالي فاخر.",
+    price: 180,
+    originalPrice: 210,
+    category: "بوكس هدايا",
+    categorySlug: "gift-boxes",
+    image: "https://images.unsplash.com/photo-1607344645866-009c320b63e0?w=600&q=80",
+    badge: "عرض العيد",
+    rating: 4.9,
+    reviews: 321,
+    inStock: true,
+  },
+  {
+    id: "12",
+    name: "قهوة سوداء محمصة دارك",
+    description: "قهوة محمصة تحميصاً غامقاً للعشاق المتذوقين. نكهة قوية وغنية مع رائحة بن أصيلة لا تُقاوم.",
+    price: 45,
+    originalPrice: 60,
+    category: "القهوة العربية",
+    categorySlug: "arabic-coffee",
+    image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=600&q=80",
+    badge: "خصم الأسبوع",
+    rating: 4.8,
+    reviews: 143,
+    inStock: true,
+  },
+];
+
+export function getProductById(id: string): Product | undefined {
+  return products.find((p) => p.id === id);
+}
+
+export function getProductsByCategory(slug: string): Product[] {
+  return products.filter((p) => p.categorySlug === slug);
+}
+
+export function getFeaturedProducts(): Product[] {
+  return products.slice(0, 8);
+}
