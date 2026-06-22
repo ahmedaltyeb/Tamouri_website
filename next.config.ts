@@ -1,11 +1,17 @@
 import type { NextConfig } from "next";
 
+const isProd = process.env.NODE_ENV === "production";
+
 const nextConfig: NextConfig = {
-  output: "export", // 👈 required for static site export
+  output: "export",
+  trailingSlash: true,
+
+  // Required for GitHub Pages sub-path hosting
+  basePath: isProd ? "/Tamouri_website" : "",
+  assetPrefix: isProd ? "/Tamouri_website/" : "",
 
   images: {
-    unoptimized: true, // 👈 required (Next Image optimization won't work on static hosting)
-
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",
