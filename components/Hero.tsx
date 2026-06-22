@@ -10,10 +10,10 @@ export default function Hero() {
     <section className="relative min-h-[560px] md:min-h-[640px] flex items-center overflow-hidden">
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?w=1600&q=85"
+          src="/assets/hero/hero-1.png"
           alt="UAE hospitality products"
           fill
-          className="object-cover"
+          className="object-cover object-center"
           priority
         />
         <div className="absolute inset-0 bg-ink/60" />
