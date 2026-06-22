@@ -1,7 +1,5 @@
 import type { Product } from "@/lib/products";
 
-// In static export mode, Next.js does not auto-prepend basePath to fetch().
-// We must prefix manually so GitHub Pages resolves the correct path.
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 export async function fetchProducts(): Promise<Product[]> {
