@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
+import BASE_PATH from "@/lib/basePath";
 
 export default function Hero() {
   const { tr } = useLanguage();
@@ -9,12 +9,11 @@ export default function Hero() {
   return (
     <section className="relative min-h-[560px] md:min-h-[640px] flex items-center overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <Image
-          src="/assets/hero/hero-1.png"
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={`${BASE_PATH}/assets/hero/hero-1.png`}
           alt="UAE hospitality products"
-          fill
-          className="object-cover object-center"
-          priority
+          className="w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-ink/60" />
       </div>
