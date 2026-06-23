@@ -215,8 +215,9 @@ export default function ShopContent() {
           </div>
         ) : filtered.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-            {filtered.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {/* BUG FIX #5: first 4 cards are above-the-fold — set priority for LCP */}
+            {filtered.map((product, i) => (
+              <ProductCard key={product.id} product={product} priority={i < 4} />
             ))}
           </div>
         ) : (

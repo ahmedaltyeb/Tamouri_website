@@ -39,16 +39,24 @@ export default function ProductDetail({ product, related }: Props) {
   const [added, setAdded] = useState(false);
   const { tr } = useLanguage();
 
-  // Effective image list: prefer images[], fall back to [image], fall back to [placeholder]
-  const allImages =
-    product.images?.length
-      ? product.images
-      : product.image
-      ? [product.image]
-      : [PLACEHOLDER];
+  // BUG FIX #1: use || so empty strings fall through to PLACEHOLDER
+  const rawImages = product.images?.length
+    ? product.images
+    : product.image
+    ? [product.image]
+    : [PLACEHOLDER];
+  // Filter out empty strings that would produce a broken <Image> src
+  const allImages = rawImages.map((url) => url || PLACEHOLDER);
 
   const [activeIdx, setActiveIdx] = useState(0);
-  const activeImage = allImages[activeIdx] ?? PLACEHOLDER;
+  // BUG FIX #2: state-backed active image so onError can fall back without DOM mutation
+  const [activeImage, setActiveImage] = useState(allImages[0] ?? PLACEHOLDER);
+
+  // Keep activeImage in sync when user clicks a thumbnail
+  function selectImage(idx: number) {
+    setActiveIdx(idx);
+    setActiveImage(allImages[idx] ?? PLACEHOLDER);
+  }
 
   const isWishlisted = wishlist.includes(product.id);
   const outOfStock = !product.inStock || product.stock === 0;
@@ -83,18 +91,17 @@ export default function ProductDetail({ product, related }: Props) {
 
         {/* ── Image gallery ── */}
         <div className="flex flex-col gap-3">
-          {/* Main image */}
-          <div className="relative aspect-square rounded-2xl overflow-hidden bg-stone-100">
+          {/* Main image — BUG FIX #3: object-contain for consistency with product card */}
+          <div className="relative aspect-square rounded-2xl overflow-hidden bg-white border border-stone-100">
             <Image
               src={activeImage}
               alt={product.name}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover transition-opacity duration-200"
+              className="object-contain p-4 transition-opacity duration-200"
               priority
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = PLACEHOLDER;
-              }}
+              // BUG FIX #2: use state setter to avoid direct DOM mutation
+              onError={() => setActiveImage(PLACEHOLDER)}
             />
             {/* Badges */}
             <div className="absolute top-4 end-4 flex flex-col gap-2">
@@ -124,7 +131,7 @@ export default function ProductDetail({ product, related }: Props) {
                 <button
                   key={idx}
                   type="button"
-                  onClick={() => setActiveIdx(idx)}
+                  onClick={() => selectImage(idx)}
                   className={`flex-none w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden border-2 transition-colors cursor-pointer focus:outline-none ${
                     idx === activeIdx
                       ? "border-brown ring-2 ring-brown/20"
@@ -136,7 +143,8 @@ export default function ProductDetail({ product, related }: Props) {
                   <img
                     src={url}
                     alt={`${product.name} ${idx + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain p-1 bg-white"
+                    loading="lazy"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src = PLACEHOLDER;
                     }}

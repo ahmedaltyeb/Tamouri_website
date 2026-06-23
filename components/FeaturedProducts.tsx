@@ -41,7 +41,7 @@ export default function FeaturedProducts() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
         {loading
           ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
-          : featured.map((product) => <ProductCard key={product.id} product={product} />)
+          : featured.map((product, i) => <ProductCard key={product.id} product={product} priority={i < 4} />)
         }
       </div>
 

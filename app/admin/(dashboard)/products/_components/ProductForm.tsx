@@ -268,7 +268,8 @@ export default function ProductForm({ mode, product }: Props) {
                       <img
                         src={url}
                         alt={`Product image ${idx + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain p-1"
+                        loading="lazy"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = PLACEHOLDER;
                         }}
@@ -359,10 +360,12 @@ export default function ProductForm({ mode, product }: Props) {
                           }`}
                         >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
+                          {/* BUG FIX #8: add lazy loading for gallery picker thumbnails */}
                           <img
                             src={src}
                             alt={src}
                             className="w-full h-full object-contain p-1 bg-white"
+                            loading="lazy"
                           />
                           {alreadyAdded ? (
                             <div className="absolute inset-0 bg-amber-400/20 flex items-center justify-center">

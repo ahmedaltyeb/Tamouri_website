@@ -38,13 +38,16 @@ export async function generateMetadata({
         description,
         url: `${BASE}/product/${id}`,
         type: "website",
-        images: [{ url: product.image, width: 800, height: 800, alt: product.name }],
+        // BUG FIX #6: guard against empty image string — fall back to store OG image
+        images: product.image
+          ? [{ url: product.image, width: 800, height: 800, alt: product.name }]
+          : [{ url: `${BASE}/og-image.png`, width: 1200, height: 630, alt: "Marbea Al Gharbeya" }],
       },
       twitter: {
         card: "summary_large_image",
         title: `${product.name} — ${product.price} AED`,
         description,
-        images: [product.image],
+        images: product.image ? [product.image] : [`${BASE}/og-image.png`],
       },
     };
   } catch {

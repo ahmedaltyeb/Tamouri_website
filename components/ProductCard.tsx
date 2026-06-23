@@ -12,17 +12,25 @@ const PLACEHOLDER = "/placeholder.svg";
 interface DBProduct extends Product {
   images?: string[];
 }
-interface Props { product: DBProduct }
+interface Props {
+  product: DBProduct;
+  priority?: boolean; // pass true for above-the-fold cards to improve LCP
+}
 
-export default function ProductCard({ product }: Props) {
+export default function ProductCard({ product, priority = false }: Props) {
   const addToCart = useCartStore((s) => s.addToCart);
   const toggleWishlist = useCartStore((s) => s.toggleWishlist);
   const wishlist = useCartStore((s) => s.wishlist);
   const [added, setAdded] = useState(false);
   const { tr } = useLanguage();
 
+  // BUG FIX #1: use || (not ??) so empty strings fall through to PLACEHOLDER
+  const rawImage = product.images?.[0] || product.image || PLACEHOLDER;
+
+  // BUG FIX #2: state-backed src so onError can swap to PLACEHOLDER
+  const [imgSrc, setImgSrc] = useState(rawImage);
+
   const isWishlisted = wishlist.includes(product.id);
-  const primaryImage = product.images?.[0] ?? product.image ?? PLACEHOLDER;
 
   const discount = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -47,11 +55,14 @@ export default function ProductCard({ product }: Props) {
         {/* ── Image area ── */}
         <div className="relative bg-white aspect-square overflow-hidden">
           <Image
-            src={primaryImage}
+            src={imgSrc}
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-contain p-3 group-hover:scale-105 transition-transform duration-500"
+            priority={priority}
+            // BUG FIX #2: fall back to placeholder on load error
+            onError={() => setImgSrc(PLACEHOLDER)}
           />
 
           {/* Badges */}
@@ -77,7 +88,7 @@ export default function ProductCard({ product }: Props) {
             </div>
           )}
 
-          {/* Wishlist button */}
+          {/* Wishlist button — visible on hover */}
           <button
             onClick={handleWishlist}
             className="absolute top-2 start-2 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 cursor-pointer"
@@ -134,7 +145,7 @@ export default function ProductCard({ product }: Props) {
             )}
           </div>
 
-          {/* Add to cart button — full width at bottom */}
+          {/* Add to cart — full width */}
           <button
             onClick={handleAddToCart}
             disabled={!product.inStock}
