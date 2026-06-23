@@ -20,7 +20,7 @@ function SkeletonCard() {
 }
 
 export default function ShopContent() {
-  const { tr, dir } = useLanguage();
+  const { tr } = useLanguage();
   const searchParams = useSearchParams();
   const { products, loading } = useProducts();
 
@@ -55,7 +55,7 @@ export default function ShopContent() {
   }, [products, activeCategory, sortBy, search]);
 
   return (
-    <div dir={dir}>
+    <div>
       {/* Hero strip */}
       <div className="bg-gradient-to-l from-brown to-brown-dark text-white py-10 px-4">
         <div className="max-w-7xl mx-auto">

@@ -15,14 +15,13 @@ export interface Product {
 }
 
 export const categories = [
-  { id: "dates", name: "التمر", slug: "dates", icon: "🌴" },
-  { id: "arabic-coffee", name: "القهوة العربية", slug: "arabic-coffee", icon: "☕" },
-  { id: "tea", name: "الشاي", slug: "tea", icon: "🍵" },
-  { id: "saffron", name: "الزعفران", slug: "saffron", icon: "🌸" },
-  { id: "hospitality", name: "مستلزمات الضيافة", slug: "hospitality", icon: "🫖" },
-  { id: "tools", name: "أدوات القهوة والشاي", slug: "tools", icon: "⚗️" },
-  { id: "gift-boxes", name: "بوكس هدايا", slug: "gift-boxes", icon: "🎁" },
-  { id: "deals", name: "خصومات أسبوعية", slug: "deals", icon: "🏷️" },
+  { id: "dates",            name: "Dates",              slug: "dates",            icon: "dates" },
+  { id: "arabic-coffee",    name: "Arabic Coffee",      slug: "arabic-coffee",    icon: "coffee" },
+  { id: "specialty-coffee", name: "Specialty Coffee",   slug: "specialty-coffee", icon: "coffee" },
+  { id: "tea",              name: "Tea",                slug: "tea",              icon: "tea" },
+  { id: "tools",            name: "Coffee & Tea Tools", slug: "tools",            icon: "tools" },
+  { id: "travel-tools",     name: "Travel & Outdoor",   slug: "travel-tools",     icon: "travel" },
+  { id: "sweets",           name: "Sweets & Cookies",   slug: "sweets",           icon: "sweets" },
 ];
 
 export const products: Product[] = [

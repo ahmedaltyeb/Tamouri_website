@@ -24,17 +24,17 @@ export async function generateMetadata({
       select: { name: true, description: true, image: true, price: true, category: true },
     });
 
-    if (!product) return { title: "مربع الغربية للتمور" };
+    if (!product) return { title: "Marbea Al Gharbeya Dates" };
 
-    const title = `${product.name} — ${product.price} درهم`;
-    const description = `${product.description.slice(0, 140)} — ${product.price} AED. توصيل لجميع الإمارات.`;
+    const title = `${product.name} — ${product.price} AED`;
+    const description = `${product.description.slice(0, 140)} — ${product.price} AED. Free delivery across UAE.`;
 
     return {
       title,
       description,
       alternates: { canonical: `${BASE}/product/${id}` },
       openGraph: {
-        title: `${product.name} | مربع الغربية للتمور`,
+        title: `${product.name} | Marbea Al Gharbeya Dates`,
         description,
         url: `${BASE}/product/${id}`,
         type: "website",
@@ -48,7 +48,7 @@ export async function generateMetadata({
       },
     };
   } catch {
-    return { title: "مربع الغربية للتمور" };
+    return { title: "Marbea Al Gharbeya Dates" };
   }
 }
 

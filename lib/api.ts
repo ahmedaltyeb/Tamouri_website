@@ -9,6 +9,8 @@ export async function fetchProducts(): Promise<Product[]> {
 }
 
 export async function fetchProduct(id: string): Promise<Product | null> {
-  const products = await fetchProducts();
-  return products.find((p) => p.id === id) ?? null;
+  const res = await fetch(`${BASE}/api/products/${id}`);
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error("Failed to load product");
+  return res.json() as Promise<Product>;
 }

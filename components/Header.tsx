@@ -12,22 +12,16 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const getTotalItems = useCartStore((s) => s.getTotalItems);
   const wishlist = useCartStore((s) => s.wishlist);
-  const { lang, setLang, tr } = useLanguage();
+  const { tr } = useLanguage();
   const router = useRouter();
   const catRef = useRef<HTMLDivElement>(null);
 
   const totalItems = getTotalItems();
 
-  const catNames: Record<string, string> = {
-    dates: tr("cat_dates"),
-    "arabic-coffee": tr("cat_arabic_coffee"),
-    tea: tr("cat_tea"),
-    saffron: tr("cat_saffron"),
-    hospitality: tr("cat_hospitality"),
-    tools: tr("cat_tools"),
-    "gift-boxes": tr("cat_gift_boxes"),
-    deals: tr("cat_deals"),
-  };
+  // Derive display names directly from the static categories list (always English)
+  const catNames: Record<string, string> = Object.fromEntries(
+    categories.map((c) => [c.slug, c.name])
+  );
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -47,7 +41,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm" dir={lang === "ar" ? "rtl" : "ltr"}>
+    <header className="sticky top-0 z-50 bg-white shadow-sm">
 
       {/* ── Row 1: utility bar ── */}
       <div className="border-b border-stone-100 bg-stone-50">
@@ -65,25 +59,9 @@ export default function Header() {
               {tr("contactUs")}
             </Link>
             <span className="text-stone-300">|</span>
-            <Link href="/shop?category=deals" className="text-gold font-semibold hover:text-gold-dark transition-colors cursor-pointer">
-              {tr("cat_deals")}
+            <Link href="/shop?category=sweets" className="text-gold font-semibold hover:text-gold-dark transition-colors cursor-pointer">
+              Sweets
             </Link>
-            <span className="text-stone-300">|</span>
-            {/* Language toggle */}
-            <div className="flex items-center divide-x divide-stone-200 border border-stone-200 rounded overflow-hidden font-semibold">
-              <button
-                onClick={() => setLang("ar")}
-                className={`px-2 py-0.5 transition-colors cursor-pointer ${lang === "ar" ? "bg-brown text-white" : "hover:bg-stone-100"}`}
-              >
-                AR
-              </button>
-              <button
-                onClick={() => setLang("en")}
-                className={`px-2 py-0.5 transition-colors cursor-pointer ${lang === "en" ? "bg-brown text-white" : "hover:bg-stone-100"}`}
-              >
-                EN
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -92,14 +70,14 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center gap-3 h-16">
 
-          {/* Logo — RIGHT in RTL */}
+          {/* Logo */}
           <Link href="/" className="flex items-center gap-2 cursor-pointer flex-none">
-            <div className="w-10 h-10 bg-gradient-to-br from-brown to-gold rounded-xl flex items-center justify-center text-white font-black text-xl shadow-sm flex-none">
-              م
+            <div className="w-10 h-10 bg-gradient-to-br from-brown to-gold rounded-xl flex items-center justify-center text-white font-black text-sm shadow-sm flex-none">
+              MG
             </div>
             <div className="flex-col leading-tight hidden sm:flex">
-              <span className="text-sm font-black text-brown leading-none">مربع الغربية</span>
-              <span className="text-[9px] text-gold font-bold tracking-wide">للتمور</span>
+              <span className="text-sm font-black text-brown leading-none">Marbea Al Gharbeya</span>
+              <span className="text-[9px] text-gold font-bold tracking-wide">Dates & Coffee</span>
             </div>
           </Link>
 
@@ -223,19 +201,14 @@ export default function Header() {
                 </Link>
               ))}
             </div>
-            <div className="mt-2 pt-2 border-t border-stone-100 flex items-center justify-between">
-              <div className="flex items-center gap-1">
+            <div className="mt-2 pt-2 border-t border-stone-100 flex items-center gap-1">
                 <Link href="/track-order" onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 text-sm text-stone-600 hover:text-brown cursor-pointer">
-                  {tr("trackOrder")}
+                  Track Order
                 </Link>
                 <Link href="/contact" onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 text-sm text-stone-600 hover:text-brown cursor-pointer">
-                  {tr("contactUs")}
+                  Contact Us
                 </Link>
-              </div>
-              <div className="flex items-center divide-x divide-stone-200 border border-stone-200 rounded overflow-hidden text-xs font-semibold mx-3">
-                <button onClick={() => setLang("ar")} className={`px-3 py-1.5 cursor-pointer transition-colors ${lang === "ar" ? "bg-brown text-white" : "text-stone-500"}`}>AR</button>
-                <button onClick={() => setLang("en")} className={`px-3 py-1.5 cursor-pointer transition-colors ${lang === "en" ? "bg-brown text-white" : "text-stone-500"}`}>EN</button>
-              </div>
+
             </div>
           </div>
         )}
