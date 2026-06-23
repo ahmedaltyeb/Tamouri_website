@@ -31,3 +31,7 @@ services:
       # Resend (optional — skip to disable order emails)
       - key: RESEND_API_KEY
         sync: false
+
+      # Public base URL — set to your Render service URL after first deploy
+      - key: NEXT_PUBLIC_BASE_URL
+        sync: false
