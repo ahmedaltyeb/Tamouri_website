@@ -16,6 +16,7 @@ type FormProduct = {
   rating: number;
   reviews: number;
   inStock: boolean;
+  stock: number;
 };
 
 type Props = {
@@ -35,6 +36,7 @@ const DEFAULTS = {
   rating: "0",
   reviews: "0",
   inStock: true,
+  stock: "0",
 };
 
 export default function ProductForm({ mode, product }: Props) {
@@ -54,6 +56,7 @@ export default function ProductForm({ mode, product }: Props) {
           rating: String(product.rating),
           reviews: String(product.reviews),
           inStock: product.inStock,
+          stock: String(product.stock),
         }
       : DEFAULTS,
   );
@@ -92,6 +95,7 @@ export default function ProductForm({ mode, product }: Props) {
       rating: parseFloat(form.rating) || 0,
       reviews: parseInt(form.reviews, 10) || 0,
       inStock: form.inStock,
+      stock: parseInt(form.stock, 10) || 0,
     };
 
     try {
@@ -283,6 +287,20 @@ export default function ProductForm({ mode, product }: Props) {
               />
             </Field>
 
+            <Field label="Stock Quantity" htmlFor="stock">
+              <input
+                id="stock"
+                name="stock"
+                type="number"
+                min="0"
+                step="1"
+                value={form.stock}
+                onChange={handleChange}
+                placeholder="0"
+                className={input}
+              />
+            </Field>
+
             <div className="flex items-center gap-2.5 pt-1">
               <input
                 id="inStock"
@@ -296,7 +314,7 @@ export default function ProductForm({ mode, product }: Props) {
                 htmlFor="inStock"
                 className="text-sm font-medium text-stone-700 cursor-pointer select-none"
               >
-                In Stock
+                Available for sale
               </label>
             </div>
           </Card>

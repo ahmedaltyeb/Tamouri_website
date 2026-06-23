@@ -92,18 +92,23 @@ export default async function AdminProductsPage() {
 
                   {/* Stock */}
                   <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center gap-1.5 text-xs font-medium ${
-                        p.inStock ? "text-emerald-700" : "text-red-600"
-                      }`}
-                    >
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                          p.inStock ? "bg-emerald-500" : "bg-red-500"
-                        }`}
-                      />
-                      {p.inStock ? "In Stock" : "Out of Stock"}
-                    </span>
+                    {!p.inStock ? (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full">
+                        Disabled
+                      </span>
+                    ) : p.stock === 0 ? (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full">
+                        Out of stock
+                      </span>
+                    ) : p.stock <= 5 ? (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                        Low — {p.stock} left
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                        {p.stock} in stock
+                      </span>
+                    )}
                   </td>
 
                   {/* Badge */}

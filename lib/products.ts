@@ -11,6 +11,7 @@ export interface Product {
   rating: number;
   reviews: number;
   inStock: boolean;
+  stock: number;
 }
 
 export const categories = [
@@ -38,6 +39,7 @@ export const products: Product[] = [
     rating: 4.9,
     reviews: 234,
     inStock: true,
+    stock: 0,
   },
   {
     id: "2",
@@ -50,6 +52,7 @@ export const products: Product[] = [
     rating: 4.8,
     reviews: 187,
     inStock: true,
+    stock: 0,
   },
   {
     id: "3",
@@ -64,6 +67,7 @@ export const products: Product[] = [
     rating: 4.9,
     reviews: 98,
     inStock: true,
+    stock: 0,
   },
   {
     id: "4",
@@ -76,6 +80,7 @@ export const products: Product[] = [
     rating: 4.7,
     reviews: 312,
     inStock: true,
+    stock: 0,
   },
   {
     id: "5",
@@ -90,6 +95,7 @@ export const products: Product[] = [
     rating: 4.8,
     reviews: 76,
     inStock: true,
+    stock: 0,
   },
   {
     id: "7",
@@ -103,6 +109,7 @@ export const products: Product[] = [
     rating: 5.0,
     reviews: 203,
     inStock: true,
+    stock: 0,
   },
   {
     id: "8",
@@ -117,6 +124,7 @@ export const products: Product[] = [
     rating: 4.6,
     reviews: 89,
     inStock: true,
+    stock: 0,
   },
   {
     id: "9",
@@ -129,6 +137,7 @@ export const products: Product[] = [
     rating: 4.5,
     reviews: 167,
     inStock: true,
+    stock: 0,
   },
   {
     id: "10",
@@ -141,6 +150,7 @@ export const products: Product[] = [
     rating: 4.7,
     reviews: 54,
     inStock: true,
+    stock: 0,
   },
   {
     id: "11",
@@ -155,6 +165,7 @@ export const products: Product[] = [
     rating: 4.9,
     reviews: 321,
     inStock: true,
+    stock: 0,
   },
   {
     id: "12",
@@ -169,6 +180,7 @@ export const products: Product[] = [
     rating: 4.8,
     reviews: 143,
     inStock: true,
+    stock: 0,
   },
 ];
 

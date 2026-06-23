@@ -52,7 +52,7 @@ const t = {
     aed: "درهم",
 
     // Why Tamouri
-    whyBadge: "لماذا تموري؟",
+    whyBadge: "لماذا مربع الغربية؟",
     whyTitle: "نقدم أكثر من مجرد منتجات",
     whySub: "نحن نؤمن بأن الضيافة الإماراتية الأصيلة تستحق أفضل المكونات وأجود المنتجات",
     why1Title: "توصيل سريع داخل الإمارات",
@@ -87,7 +87,7 @@ const t = {
     location: "دبي، الإمارات العربية المتحدة",
     workingHours: "السبت – الخميس: 9 ص – 10 م",
     paymentAccepted: "وسائل الدفع المقبولة",
-    copyright: "© 2025 تموري. جميع الحقوق محفوظة",
+    copyright: "© 2025 مربع الغربية للتمور. جميع الحقوق محفوظة",
     privacy: "سياسة الخصوصية",
     terms: "الشروط والأحكام",
 
@@ -129,6 +129,8 @@ const t = {
     quantity: "الكمية:",
     addToCartBtn: "أضف للسلة",
     addedToCart: "تمت الإضافة!",
+    outOfStock: "نفذ من المخزون",
+    itemsLeft: "قطعة متبقية",
     fastDelivery: "توصيل مجاني داخل الإمارات",
     returns: "إرجاع خلال 7 أيام",
     securePay: "دفع آمن ومضمون",
@@ -216,7 +218,7 @@ const t = {
     aed: "AED",
 
     // Why Tamouri
-    whyBadge: "Why Tamouri?",
+    whyBadge: "Why Marbea Al Gharbeya?",
     whyTitle: "We Offer More Than Just Products",
     whySub: "We believe authentic Emirati hospitality deserves the finest ingredients and highest quality products",
     why1Title: "Fast UAE Delivery",
@@ -251,7 +253,7 @@ const t = {
     location: "Dubai, United Arab Emirates",
     workingHours: "Sat – Thu: 9 AM – 10 PM",
     paymentAccepted: "Accepted Payment Methods",
-    copyright: "© 2025 Tamouri. All rights reserved.",
+    copyright: "© 2025 Marbea Al Gharbeya Dates. All rights reserved.",
     privacy: "Privacy Policy",
     terms: "Terms & Conditions",
 
@@ -293,6 +295,8 @@ const t = {
     quantity: "Quantity:",
     addToCartBtn: "Add to Cart",
     addedToCart: "Added!",
+    outOfStock: "Out of stock",
+    itemsLeft: "items left",
     fastDelivery: "Free delivery across UAE",
     returns: "7-day returns",
     securePay: "Safe & guaranteed payment",

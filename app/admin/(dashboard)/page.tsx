@@ -35,6 +35,7 @@ export default async function AdminDashboardPage() {
     statusGroups,
     recentOrders,
     topProductsRaw,
+    lowStockProducts,
   ] = await Promise.all([
     prisma.order.aggregate({
       _sum: { total: true },
@@ -68,6 +69,12 @@ export default async function AdminDashboardPage() {
       ORDER BY revenue DESC
       LIMIT 5
     `,
+    prisma.product.findMany({
+      where: { inStock: true, stock: { lte: 5 } },
+      select: { id: true, name: true, stock: true },
+      orderBy: { stock: "asc" },
+      take: 5,
+    }),
   ]);
 
   const statusMap = Object.fromEntries(
@@ -235,6 +242,36 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Low stock alert */}
+      {lowStockProducts.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center flex-none">
+              <svg className="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-bold text-amber-800">Low Stock Warning</p>
+              <p className="text-xs text-amber-600">{lowStockProducts.length} product{lowStockProducts.length !== 1 ? "s" : ""} need restocking</p>
+            </div>
+            <Link href="/admin/products" className="ms-auto text-xs font-semibold text-amber-700 hover:text-amber-900 transition-colors">
+              Manage →
+            </Link>
+          </div>
+          <div className="space-y-2">
+            {lowStockProducts.map((p) => (
+              <div key={p.id} className="flex items-center justify-between bg-white border border-amber-100 rounded-xl px-4 py-2.5">
+                <p className="text-sm font-medium text-stone-800 truncate">{p.name}</p>
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-full flex-none ms-3 ${p.stock === 0 ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>
+                  {p.stock === 0 ? "Out of stock" : `${p.stock} left`}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Top products */}
       {topProductsRaw.length > 0 && (

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
+import { sendOrderConfirmation } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing orderId in metadata" }, { status: 400 });
     }
 
-    const order = await prisma.order.findUnique({ where: { id: orderId } });
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: {
+        user: { select: { email: true, name: true } },
+        items: {
+          include: { product: { select: { name: true } } },
+        },
+      },
+    });
 
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
@@ -43,6 +52,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ received: true });
     }
 
+    // Update status + history + decrement stock in one transaction
     await prisma.$transaction([
       prisma.order.update({
         where: { id: orderId },
@@ -55,7 +65,27 @@ export async function POST(request: Request) {
           note: `Payment completed via Stripe (session: ${session.id})`,
         },
       }),
+      ...order.items.map((item) =>
+        prisma.product.update({
+          where: { id: item.productId },
+          data: { stock: { decrement: item.quantity } },
+        })
+      ),
     ]);
+
+    // Fire-and-forget confirmation email — never blocks webhook response
+    void sendOrderConfirmation({
+      to: order.user.email,
+      customerName: order.user.name,
+      orderId: order.id,
+      items: order.items.map((i) => ({
+        name: i.product.name,
+        quantity: i.quantity,
+        price: i.price,
+      })),
+      total: order.total,
+      shippingAddress: order.shippingAddress,
+    });
   }
 
   if (event.type === "payment_intent.payment_failed") {

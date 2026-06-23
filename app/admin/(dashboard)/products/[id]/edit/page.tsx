@@ -42,6 +42,7 @@ export default async function EditProductPage({
           rating: product.rating,
           reviews: product.reviews,
           inStock: product.inStock,
+          stock: product.stock,
         }}
       />
     </div>

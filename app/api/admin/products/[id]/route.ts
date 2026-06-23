@@ -23,6 +23,7 @@ type ProductBody = {
   rating?: number;
   reviews?: number;
   inStock?: boolean;
+  stock?: number;
 };
 
 function validate(b: Partial<ProductBody>): string[] {
@@ -74,6 +75,7 @@ export async function PUT(
       rating: body.rating ?? existing.rating,
       reviews: body.reviews ?? existing.reviews,
       inStock: body.inStock ?? existing.inStock,
+      stock: body.stock ?? existing.stock,
     },
   });
   return NextResponse.json(product);

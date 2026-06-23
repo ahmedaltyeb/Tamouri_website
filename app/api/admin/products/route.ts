@@ -23,6 +23,7 @@ type ProductBody = {
   rating?: number;
   reviews?: number;
   inStock?: boolean;
+  stock?: number;
 };
 
 function validate(b: Partial<ProductBody>): string[] {
@@ -71,6 +72,7 @@ export async function POST(request: Request) {
       rating: body.rating ?? 0,
       reviews: body.reviews ?? 0,
       inStock: body.inStock ?? true,
+      stock: body.stock ?? 0,
     },
   });
   return NextResponse.json(product, { status: 201 });

@@ -68,7 +68,10 @@ export default function ProductPageClient({ id }: { id: string }) {
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
+  const outOfStock = !product.inStock || product.stock === 0;
+
   const handleAddToCart = () => {
+    if (outOfStock) return;
     for (let i = 0; i < qty; i++) addToCart(product);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
@@ -128,6 +131,19 @@ export default function ProductPageClient({ id }: { id: string }) {
               <span className="text-stone-500 text-sm">{product.rating} ({product.reviews} {tr("reviews")})</span>
             </div>
 
+            {/* Stock badge */}
+            {outOfStock ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 bg-red-50 border border-red-200 px-3 py-1 rounded-full mb-4">
+                <span className="w-1.5 h-1.5 bg-red-500 rounded-full" />
+                {tr("outOfStock")}
+              </span>
+            ) : product.stock > 0 && product.stock <= 5 ? (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full mb-4">
+                <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
+                {product.stock} {tr("itemsLeft")}
+              </span>
+            ) : null}
+
             <div className="flex items-baseline gap-3 mb-5">
               <span className="text-3xl font-black text-brown">{product.price}</span>
               <span className="text-base font-semibold text-brown">{tr("aed")}</span>
@@ -156,7 +172,8 @@ export default function ProductPageClient({ id }: { id: string }) {
             <div className="flex gap-3">
               <button
                 onClick={handleAddToCart}
-                className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-95 cursor-pointer ${added ? "bg-green-500 text-white" : "bg-brown hover:bg-brown-dark text-white"}`}
+                disabled={outOfStock}
+                className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${added ? "bg-green-500 text-white" : outOfStock ? "bg-stone-200 text-stone-400" : "bg-brown hover:bg-brown-dark text-white"}`}
               >
                 {added ? (
                   <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>{tr("addedToCart")}</>
@@ -177,12 +194,33 @@ export default function ProductPageClient({ id }: { id: string }) {
 
             <div className="mt-6 flex flex-wrap gap-3">
               {[
-                { icon: "🚚", text: tr("fastDelivery") },
-                { icon: "↩", text: tr("returns") },
-                { icon: "🔒", text: tr("securePay") },
+                {
+                  text: tr("fastDelivery"),
+                  icon: (
+                    <svg className="w-3.5 h-3.5 flex-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                    </svg>
+                  ),
+                },
+                {
+                  text: tr("returns"),
+                  icon: (
+                    <svg className="w-3.5 h-3.5 flex-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                    </svg>
+                  ),
+                },
+                {
+                  text: tr("securePay"),
+                  icon: (
+                    <svg className="w-3.5 h-3.5 flex-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  ),
+                },
               ].map((badge) => (
                 <div key={badge.text} className="flex items-center gap-1.5 text-xs text-stone-500 bg-stone-50 px-3 py-1.5 rounded-lg">
-                  <span>{badge.icon}</span>
+                  {badge.icon}
                   <span>{badge.text}</span>
                 </div>
               ))}
