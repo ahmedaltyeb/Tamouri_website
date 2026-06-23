@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: tamouri
+    runtime: node
+    plan: free
+    region: oregon
+
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+
+    envVars:
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: NODE_ENV
+        value: production
+
+      # Set these manually in the Render dashboard — never commit real values
+      - key: DATABASE_URL
+        sync: false
+      - key: AUTH_SECRET
+        sync: false
+
+      # Stripe
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+        sync: false
+
+      # Resend (optional — skip to disable order emails)
+      - key: RESEND_API_KEY
+        sync: false
