@@ -1,6 +1,15 @@
 "use client";
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from "react";
 import t, { type Lang, type TranslationKey } from "@/lib/translations";
+
+const STORAGE_KEY = "tamouri_lang";
 
 interface LanguageContextValue {
   lang: Lang;
@@ -10,22 +19,31 @@ interface LanguageContextValue {
 }
 
 const LanguageContext = createContext<LanguageContextValue>({
-  lang: "en",
-  dir: "ltr",
+  lang: "ar",
+  dir: "rtl",
   setLang: () => {},
-  tr: (key) => t.en[key],
+  tr: (key) => t.ar[key],
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("en");
+  const [lang, setLangState] = useState<Lang>("ar");
+
+  // Hydrate from localStorage after mount (avoids SSR mismatch)
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY) as Lang | null;
+    const initial: Lang = stored === "en" || stored === "ar" ? stored : "ar";
+    if (initial !== "ar") {
+      setLangState(initial);
+    }
+    document.documentElement.lang = initial;
+    document.documentElement.dir = initial === "ar" ? "rtl" : "ltr";
+  }, []);
 
   const setLang = useCallback((l: Lang) => {
     setLangState(l);
-    // Update html dir + lang attributes immediately
-    if (typeof document !== "undefined") {
-      document.documentElement.lang = l;
-      document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
-    }
+    localStorage.setItem(STORAGE_KEY, l);
+    document.documentElement.lang = l;
+    document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
   }, []);
 
   const tr = useCallback(
@@ -33,10 +51,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     [lang]
   );
 
+  const dir: "rtl" | "ltr" = lang === "ar" ? "rtl" : "ltr";
+
   return (
-    <LanguageContext.Provider
-      value={{ lang, dir: lang === "ar" ? "rtl" : "ltr", setLang, tr }}
-    >
+    <LanguageContext.Provider value={{ lang, dir, setLang, tr }}>
       {children}
     </LanguageContext.Provider>
   );

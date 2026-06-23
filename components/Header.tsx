@@ -12,21 +12,18 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const getTotalItems = useCartStore((s) => s.getTotalItems);
   const wishlist = useCartStore((s) => s.wishlist);
-  const { tr } = useLanguage();
+  const { lang, dir, setLang, tr } = useLanguage();
   const router = useRouter();
   const catRef = useRef<HTMLDivElement>(null);
 
   const totalItems = getTotalItems();
 
-  // Derive display names directly from the static categories list (always English)
-  const catNames: Record<string, string> = Object.fromEntries(
-    categories.map((c) => [c.slug, c.name])
-  );
-
-  // Close dropdown on outside click
+  // Close category dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (catRef.current && !catRef.current.contains(e.target as Node)) setCatOpen(false);
+      if (catRef.current && !catRef.current.contains(e.target as Node)) {
+        setCatOpen(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -41,16 +38,17 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm">
+    <header className="sticky top-0 z-50 bg-white shadow-sm" dir={dir}>
 
       {/* ── Row 1: utility bar ── */}
       <div className="border-b border-stone-100 bg-stone-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-9 text-xs text-stone-500">
-          {/* Right side: logo tagline */}
+
+          {/* Logo tagline */}
           <span className="hidden sm:block">{tr("logoTagline")}</span>
 
-          {/* Left side: links + language */}
-          <div className="flex items-center gap-4 mr-auto sm:mr-0">
+          {/* Links + language toggle */}
+          <div className="flex items-center gap-3 ms-auto">
             <Link href="/track-order" className="hover:text-brown transition-colors cursor-pointer">
               {tr("trackOrder")}
             </Link>
@@ -59,9 +57,28 @@ export default function Header() {
               {tr("contactUs")}
             </Link>
             <span className="text-stone-300">|</span>
-            <Link href="/shop?category=sweets" className="text-gold font-semibold hover:text-gold-dark transition-colors cursor-pointer">
-              Sweets
-            </Link>
+
+            {/* AR / EN toggle */}
+            <div className="flex items-center divide-x divide-stone-200 border border-stone-200 rounded overflow-hidden font-semibold">
+              <button
+                onClick={() => setLang("ar")}
+                aria-label="العربية"
+                className={`px-2.5 py-0.5 transition-colors cursor-pointer text-[11px] ${
+                  lang === "ar" ? "bg-brown text-white" : "hover:bg-stone-100"
+                }`}
+              >
+                AR
+              </button>
+              <button
+                onClick={() => setLang("en")}
+                aria-label="English"
+                className={`px-2.5 py-0.5 transition-colors cursor-pointer text-[11px] ${
+                  lang === "en" ? "bg-brown text-white" : "hover:bg-stone-100"
+                }`}
+              >
+                EN
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -73,11 +90,15 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 cursor-pointer flex-none">
             <div className="w-10 h-10 bg-gradient-to-br from-brown to-gold rounded-xl flex items-center justify-center text-white font-black text-sm shadow-sm flex-none">
-              MG
+              {lang === "ar" ? "م" : "MG"}
             </div>
             <div className="flex-col leading-tight hidden sm:flex">
-              <span className="text-sm font-black text-brown leading-none">Marbea Al Gharbeya</span>
-              <span className="text-[9px] text-gold font-bold tracking-wide">Dates & Coffee</span>
+              <span className="text-sm font-black text-brown leading-none">
+                {lang === "ar" ? "مربع الغربية" : "Marbea Al Gharbeya"}
+              </span>
+              <span className="text-[9px] text-gold font-bold tracking-wide">
+                {lang === "ar" ? "للتمور والقهوة" : "Dates & Coffee"}
+              </span>
             </div>
           </Link>
 
@@ -95,6 +116,7 @@ export default function Header() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
+
             {catOpen && (
               <div className="absolute top-full mt-2 start-0 bg-white rounded-2xl shadow-xl border border-stone-100 py-2 min-w-[200px] z-50 animate-slide-up">
                 {categories.map((cat) => (
@@ -104,38 +126,38 @@ export default function Header() {
                     onClick={() => setCatOpen(false)}
                     className="flex items-center gap-3 px-4 py-2.5 text-sm text-stone-700 hover:text-brown hover:bg-stone-50 transition-colors cursor-pointer"
                   >
-                    {catNames[cat.slug] ?? cat.name}
+                    {tr(cat.nameKey)}
                   </Link>
                 ))}
               </div>
             )}
           </div>
 
-          {/* Search bar — takes remaining space */}
+          {/* Search bar */}
           <form onSubmit={handleSearch} className="flex-1 relative hidden sm:block">
             <input
               type="text"
               placeholder={tr("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 pr-10 text-sm outline-none focus:ring-2 focus:ring-brown/20 focus:border-brown/30 transition-all"
+              className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 pe-10 text-sm outline-none focus:ring-2 focus:ring-brown/20 focus:border-brown/30 transition-all"
             />
-            <button type="submit" className="absolute start-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-brown transition-colors cursor-pointer">
+            <button type="submit" className="absolute end-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-brown transition-colors cursor-pointer">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
           </form>
 
-          {/* RIGHT icons: wishlist + cart */}
-          <div className="flex items-center gap-1 mr-auto sm:mr-0">
+          {/* Icons: wishlist + cart + mobile menu */}
+          <div className="flex items-center gap-1 ms-auto sm:ms-0">
             {/* Wishlist */}
             <Link href="/shop" className="relative p-2 rounded-lg text-stone-600 hover:text-brown hover:bg-stone-100 transition-colors cursor-pointer">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
               {wishlist.length > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-gold text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
+                <span className="absolute -top-0.5 -end-0.5 bg-gold text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
                   {wishlist.length}
                 </span>
               )}
@@ -153,7 +175,7 @@ export default function Header() {
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="md:hidden p-2 rounded-lg text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer"
-              aria-label="menu"
+              aria-label={lang === "ar" ? "القائمة" : "Menu"}
             >
               {menuOpen ? (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,9 +198,9 @@ export default function Header() {
               placeholder={tr("searchPlaceholder")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 pr-10 text-sm outline-none focus:ring-2 focus:ring-brown/20"
+              className="w-full bg-stone-50 border border-stone-200 rounded-xl px-4 py-2.5 pe-10 text-sm outline-none focus:ring-2 focus:ring-brown/20"
             />
-            <button type="submit" className="absolute start-3 top-1/2 -translate-y-1/2 text-stone-400 cursor-pointer">
+            <button type="submit" className="absolute end-3 top-1/2 -translate-y-1/2 text-stone-400 cursor-pointer">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -197,18 +219,37 @@ export default function Header() {
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-2 px-3 py-2.5 text-sm text-stone-700 hover:text-brown hover:bg-stone-50 rounded-lg transition-colors cursor-pointer"
                 >
-                  {catNames[cat.slug] ?? cat.name}
+                  {tr(cat.nameKey)}
                 </Link>
               ))}
             </div>
-            <div className="mt-2 pt-2 border-t border-stone-100 flex items-center gap-1">
-                <Link href="/track-order" onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 text-sm text-stone-600 hover:text-brown cursor-pointer">
-                  Track Order
-                </Link>
-                <Link href="/contact" onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 text-sm text-stone-600 hover:text-brown cursor-pointer">
-                  Contact Us
-                </Link>
 
+            {/* Mobile footer links + language toggle */}
+            <div className="mt-2 pt-2 border-t border-stone-100 flex items-center justify-between">
+              <div className="flex items-center gap-1">
+                <Link href="/track-order" onClick={() => setMenuOpen(false)} className="px-3 py-2.5 text-sm text-stone-600 hover:text-brown cursor-pointer">
+                  {tr("trackOrder")}
+                </Link>
+                <Link href="/contact" onClick={() => setMenuOpen(false)} className="px-3 py-2.5 text-sm text-stone-600 hover:text-brown cursor-pointer">
+                  {tr("contactUs")}
+                </Link>
+              </div>
+
+              {/* Language toggle (mobile) */}
+              <div className="flex items-center divide-x divide-stone-200 border border-stone-200 rounded overflow-hidden text-xs font-semibold mx-3">
+                <button
+                  onClick={() => setLang("ar")}
+                  className={`px-3 py-1.5 cursor-pointer transition-colors ${lang === "ar" ? "bg-brown text-white" : "text-stone-500 hover:bg-stone-50"}`}
+                >
+                  AR
+                </button>
+                <button
+                  onClick={() => setLang("en")}
+                  className={`px-3 py-1.5 cursor-pointer transition-colors ${lang === "en" ? "bg-brown text-white" : "text-stone-500 hover:bg-stone-50"}`}
+                >
+                  EN
+                </button>
+              </div>
             </div>
           </div>
         )}

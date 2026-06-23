@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { categories } from "@/lib/products";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const categoryImages: Record<string, string> = {
   "dates":            "https://images.unsplash.com/photo-1559628233-100c798642d6?w=300&q=80",
@@ -13,13 +14,15 @@ const categoryImages: Record<string, string> = {
 };
 
 export default function CategoryCards() {
+  const { tr } = useLanguage();
+
   return (
     <section className="py-10 bg-white border-y border-stone-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="section-title text-xl md:text-2xl">Shop by Category</h2>
+          <h2 className="section-title text-xl md:text-2xl">{tr("shopByCategory")}</h2>
           <Link href="/shop" className="text-sm text-gold font-semibold hover:text-gold-dark transition-colors cursor-pointer">
-            View All
+            {tr("viewAll")}
           </Link>
         </div>
 
@@ -36,7 +39,7 @@ export default function CategoryCards() {
                   />
                 </div>
                 <span className="text-xs md:text-sm font-semibold text-center text-stone-700 group-hover:text-brown transition-colors leading-tight">
-                  {cat.name}
+                  {tr(cat.nameKey)}
                 </span>
               </div>
             </Link>

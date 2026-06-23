@@ -115,7 +115,7 @@ export default function ShopContent() {
                     : "bg-white border border-stone-200 text-stone-600 hover:border-brown hover:text-brown"
                 }`}
               >
-                {cat.name} ({count})
+                {tr(cat.nameKey)} ({count})
               </button>
             );
           })}

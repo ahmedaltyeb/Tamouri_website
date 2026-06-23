@@ -14,14 +14,24 @@ export interface Product {
   stock: number;
 }
 
-export const categories = [
-  { id: "dates",            name: "Dates",              slug: "dates",            icon: "dates" },
-  { id: "arabic-coffee",    name: "Arabic Coffee",      slug: "arabic-coffee",    icon: "coffee" },
-  { id: "specialty-coffee", name: "Specialty Coffee",   slug: "specialty-coffee", icon: "coffee" },
-  { id: "tea",              name: "Tea",                slug: "tea",              icon: "tea" },
-  { id: "tools",            name: "Coffee & Tea Tools", slug: "tools",            icon: "tools" },
-  { id: "travel-tools",     name: "Travel & Outdoor",   slug: "travel-tools",     icon: "travel" },
-  { id: "sweets",           name: "Sweets & Cookies",   slug: "sweets",           icon: "sweets" },
+import type { TranslationKey } from "@/lib/translations";
+
+export interface Category {
+  id: string;
+  name: string;  // English fallback (used in alt text, non-translated contexts)
+  slug: string;
+  icon: string;
+  nameKey: TranslationKey;  // key into translation system for AR/EN
+}
+
+export const categories: Category[] = [
+  { id: "dates",            name: "Dates",              slug: "dates",            icon: "dates",   nameKey: "cat_dates" },
+  { id: "arabic-coffee",    name: "Arabic Coffee",      slug: "arabic-coffee",    icon: "coffee",  nameKey: "cat_arabic_coffee" },
+  { id: "specialty-coffee", name: "Specialty Coffee",   slug: "specialty-coffee", icon: "coffee",  nameKey: "cat_specialty_coffee" },
+  { id: "tea",              name: "Tea",                slug: "tea",              icon: "tea",     nameKey: "cat_tea" },
+  { id: "tools",            name: "Coffee & Tea Tools", slug: "tools",            icon: "tools",   nameKey: "cat_tools" },
+  { id: "travel-tools",     name: "Travel & Outdoor",   slug: "travel-tools",     icon: "travel",  nameKey: "cat_travel_tools" },
+  { id: "sweets",           name: "Sweets & Cookies",   slug: "sweets",           icon: "sweets",  nameKey: "cat_sweets" },
 ];
 
 export const products: Product[] = [
