@@ -84,19 +84,30 @@ export const useCartStore = create<CartStore>()((set, get) => ({
 
 const STORAGE_KEY = "tamouri-cart";
 
-function saveToStorage(data: { items: CartItem[]; wishlist: string[] }) {
-  if (typeof window === "undefined") return;
+// Node.js 22 exposes an experimental `localStorage` global even on the server.
+// Guard against it by verifying `window` AND that the storage methods are real functions.
+function getStorage(): Storage | null {
   try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    if (typeof window === "undefined") return null;
+    const ls = window.localStorage;
+    if (typeof ls?.getItem !== "function") return null;
+    return ls;
   } catch {
-    // storage unavailable — no-op
+    return null;
+  }
+}
+
+function saveToStorage(data: { items: CartItem[]; wishlist: string[] }) {
+  try {
+    getStorage()?.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch {
+    // storage full or unavailable — no-op
   }
 }
 
 export function loadFromStorage(): { items: CartItem[]; wishlist: string[] } | null {
-  if (typeof window === "undefined") return null;
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    const raw = getStorage()?.getItem(STORAGE_KEY);
     return raw ? (JSON.parse(raw) as { items: CartItem[]; wishlist: string[] }) : null;
   } catch {
     return null;

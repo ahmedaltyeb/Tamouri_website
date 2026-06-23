@@ -19,7 +19,6 @@ export default function CartPage() {
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [couponMsg, setCouponMsg] = useState<{ text: string; ok: boolean } | null>(null);
-  const [checkoutDone, setCheckoutDone] = useState(false);
 
   const subtotal = getTotalPrice();
   const discountAmount = Math.round(subtotal * (discount / 100));
@@ -37,41 +36,6 @@ export default function CartPage() {
     }
     setTimeout(() => setCouponMsg(null), 3000);
   };
-
-  const handleCheckout = () => {
-    setCheckoutDone(true);
-    clearCart();
-    setDiscount(0);
-    setCouponCode("");
-  };
-
-  if (checkoutDone) {
-    return (
-      <main className="min-h-screen">
-        <TopBar />
-        <Header />
-        <div className="max-w-lg mx-auto px-4 py-24 text-center">
-          <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          <h1 className="text-2xl font-black text-ink mb-2">
-            {lang === "en" ? "Order Placed!" : "تم تأكيد طلبك!"}
-          </h1>
-          <p className="text-stone-500 text-sm mb-8">
-            {lang === "en"
-              ? "Thank you for shopping at Tamouri. We'll contact you shortly."
-              : "شكراً لتسوقك من تموري. سنتواصل معك قريباً لتأكيد التوصيل."}
-          </p>
-          <Link href="/shop" className="inline-flex items-center gap-2 bg-brown text-white px-8 py-3.5 rounded-xl font-bold hover:bg-brown-dark transition-colors cursor-pointer">
-            {tr("continueShopping")}
-          </Link>
-        </div>
-        <Footer />
-      </main>
-    );
-  }
 
   if (items.length === 0) {
     return (
@@ -225,13 +189,13 @@ export default function CartPage() {
                 {lang === "en" ? "Try: TAMOURI10, WELCOME5, UAE15" : "جرّب: TAMOURI10, WELCOME5, UAE15"}
               </p>
 
-              {/* Checkout — now functional */}
-              <button
-                onClick={handleCheckout}
-                className="w-full bg-gold hover:bg-gold-dark text-white py-4 rounded-xl font-bold text-base transition-all duration-200 active:scale-95 cursor-pointer shadow-md shadow-gold/20"
+              {/* Checkout */}
+              <Link
+                href="/checkout"
+                className="block w-full bg-gold hover:bg-gold-dark text-white py-4 rounded-xl font-bold text-base transition-all duration-200 cursor-pointer shadow-md shadow-gold/20 text-center"
               >
                 {tr("checkout")}
-              </button>
+              </Link>
 
               <div className="mt-4 flex items-center justify-center gap-1.5 text-xs text-stone-400">
                 <svg className="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

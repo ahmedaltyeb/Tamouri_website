@@ -43,10 +43,11 @@ function LoginForm() {
       <div className="w-full max-w-sm">
         {/* Brand */}
         <div className="text-center mb-8">
-          <p className="text-4xl font-bold" style={{ color: "#C49A3C" }}>
-            تموري
-          </p>
-          <p className="text-sm font-semibold tracking-widest uppercase text-stone-400 mt-1">
+          <div className="w-16 h-16 bg-gradient-to-br from-brown to-gold rounded-2xl flex items-center justify-center text-white font-black text-3xl shadow-md mx-auto mb-3">
+            م
+          </div>
+          <p className="text-lg font-black text-brown leading-tight">مربع الغربية للتمور</p>
+          <p className="text-xs font-semibold tracking-widest uppercase text-stone-400 mt-1">
             Admin Panel
           </p>
         </div>
