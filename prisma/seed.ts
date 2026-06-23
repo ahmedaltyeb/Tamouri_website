@@ -15,6 +15,7 @@ const products = [
     rating: 4.9,
     reviews: 234,
     inStock: true,
+    stock: 50,
   },
   {
     name: "قهوة عربية بالهيل",
@@ -26,6 +27,7 @@ const products = [
     rating: 4.8,
     reviews: 187,
     inStock: true,
+    stock: 50,
   },
   {
     name: "زعفران إيراني أصيل",
@@ -39,6 +41,7 @@ const products = [
     rating: 4.9,
     reviews: 98,
     inStock: true,
+    stock: 50,
   },
   {
     name: "شاي كرك إماراتي",
@@ -50,6 +53,7 @@ const products = [
     rating: 4.7,
     reviews: 312,
     inStock: true,
+    stock: 50,
   },
   {
     name: "طقم دلة وفناجين ذهبي",
@@ -63,6 +67,7 @@ const products = [
     rating: 4.8,
     reviews: 76,
     inStock: true,
+    stock: 50,
   },
   {
     name: "بوكس هدايا الضيافة الفاخر",
@@ -75,6 +80,7 @@ const products = [
     rating: 5.0,
     reviews: 203,
     inStock: true,
+    stock: 50,
   },
   {
     name: "مطحنة قهوة يدوية فاخرة",
@@ -88,6 +94,7 @@ const products = [
     rating: 4.6,
     reviews: 89,
     inStock: true,
+    stock: 50,
   },
   {
     name: "شاي الأعشاب الإماراتي",
@@ -99,6 +106,7 @@ const products = [
     rating: 4.5,
     reviews: 167,
     inStock: true,
+    stock: 50,
   },
   {
     name: "طقم أكواب شاي تركي",
@@ -110,6 +118,7 @@ const products = [
     rating: 4.7,
     reviews: 54,
     inStock: true,
+    stock: 50,
   },
   {
     name: "بوكس هدايا العيد",
@@ -123,6 +132,7 @@ const products = [
     rating: 4.9,
     reviews: 321,
     inStock: true,
+    stock: 50,
   },
   {
     name: "قهوة سوداء محمصة دارك",
@@ -136,6 +146,7 @@ const products = [
     rating: 4.8,
     reviews: 143,
     inStock: true,
+    stock: 50,
   },
 ];
 
