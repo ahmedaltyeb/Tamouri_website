@@ -57,6 +57,10 @@ export default function Header() {
 
           {/* Left side: links + language */}
           <div className="flex items-center gap-4 mr-auto sm:mr-0">
+            <Link href="/track-order" className="hover:text-brown transition-colors cursor-pointer">
+              {tr("trackOrder")}
+            </Link>
+            <span className="text-stone-300">|</span>
             <Link href="/contact" className="hover:text-brown transition-colors cursor-pointer">
               {tr("contactUs")}
             </Link>
@@ -90,12 +94,12 @@ export default function Header() {
 
           {/* Logo — RIGHT in RTL */}
           <Link href="/" className="flex items-center gap-2 cursor-pointer flex-none">
-            <div className="w-10 h-10 bg-gradient-to-br from-brown to-gold rounded-xl flex items-center justify-center text-white font-black text-xl shadow-sm">
-              ت
+            <div className="w-10 h-10 bg-gradient-to-br from-brown to-gold rounded-xl flex items-center justify-center text-white font-black text-xl shadow-sm flex-none">
+              م
             </div>
-            <div className="flex flex-col leading-none">
-              <span className="text-xl font-black text-brown tracking-wide">تموري</span>
-              <span className="text-[9px] text-gold font-medium hidden sm:block">Tamouri</span>
+            <div className="flex-col leading-tight hidden sm:flex">
+              <span className="text-sm font-black text-brown leading-none">مربع الغربية</span>
+              <span className="text-[9px] text-gold font-bold tracking-wide">للتمور</span>
             </div>
           </Link>
 
@@ -220,9 +224,14 @@ export default function Header() {
               ))}
             </div>
             <div className="mt-2 pt-2 border-t border-stone-100 flex items-center justify-between">
-              <Link href="/contact" onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 text-sm text-stone-600 hover:text-brown cursor-pointer">
-                {tr("contactUs")}
-              </Link>
+              <div className="flex items-center gap-1">
+                <Link href="/track-order" onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 text-sm text-stone-600 hover:text-brown cursor-pointer">
+                  {tr("trackOrder")}
+                </Link>
+                <Link href="/contact" onClick={() => setMenuOpen(false)} className="block px-3 py-2.5 text-sm text-stone-600 hover:text-brown cursor-pointer">
+                  {tr("contactUs")}
+                </Link>
+              </div>
               <div className="flex items-center divide-x divide-stone-200 border border-stone-200 rounded overflow-hidden text-xs font-semibold mx-3">
                 <button onClick={() => setLang("ar")} className={`px-3 py-1.5 cursor-pointer transition-colors ${lang === "ar" ? "bg-brown text-white" : "text-stone-500"}`}>AR</button>
                 <button onClick={() => setLang("en")} className={`px-3 py-1.5 cursor-pointer transition-colors ${lang === "en" ? "bg-brown text-white" : "text-stone-500"}`}>EN</button>

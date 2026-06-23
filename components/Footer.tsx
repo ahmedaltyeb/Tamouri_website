@@ -19,7 +19,7 @@ export default function Footer() {
     { labelKey: "returnPolicy", href: "#" },
     { labelKey: "shippingInfo", href: "#" },
     { labelKey: "faq",          href: "#" },
-    { labelKey: "trackOrder",   href: "#" },
+    { labelKey: "trackOrder",   href: "/track-order" },
   ] as const;
 
   const socials = [
@@ -48,13 +48,13 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-10 h-10 bg-gradient-to-br from-brown to-gold rounded-xl flex items-center justify-center text-white font-black text-xl flex-none">
-                ت
+                م
               </div>
               <div>
-                <div className="text-xl font-black text-white">
-                  {lang === "ar" ? "تموري" : "Tamouri"}
+                <div className="text-sm font-black text-white leading-tight">
+                  {lang === "ar" ? "مربع الغربية للتمور" : "Marbea Al Gharbeya Dates"}
                 </div>
-                <div className="text-gold text-xs font-medium">{tr("logoTagline")}</div>
+                <div className="text-gold text-xs font-medium mt-0.5">{tr("logoTagline")}</div>
               </div>
             </div>
             <p className="text-white/60 text-sm leading-relaxed mb-5">{tr("footerDesc")}</p>
