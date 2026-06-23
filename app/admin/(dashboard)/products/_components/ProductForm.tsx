@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { categories } from "@/lib/products";
@@ -80,6 +80,17 @@ export default function ProductForm({ mode, product }: Props) {
   const [uploadError, setUploadError] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // Local gallery
+  const [localImages, setLocalImages] = useState<string[]>([]);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/admin/local-images")
+      .then((r) => r.json())
+      .then((d: { images: string[] }) => setLocalImages(d.images))
+      .catch(() => {});
+  }, []);
 
   // ── Handlers ────────────────────────────────────────────────────────────────
 
@@ -307,6 +318,70 @@ export default function ProductForm({ mode, product }: Props) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                 </svg>
                 <p className="text-sm text-stone-400">No images yet — upload or paste a URL below</p>
+              </div>
+            )}
+
+            {/* ── Local Gallery Picker ── */}
+            {localImages.length > 0 && (
+              <div className="mb-4">
+                <button
+                  type="button"
+                  onClick={() => setGalleryOpen(!galleryOpen)}
+                  className="w-full flex items-center justify-between px-4 py-2.5 bg-blue-50 border border-blue-200 rounded-xl text-sm font-semibold text-blue-700 hover:bg-blue-100 transition-colors cursor-pointer mb-2"
+                >
+                  <span className="flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    Pick from Local Gallery ({localImages.length} images)
+                  </span>
+                  <svg className={`w-4 h-4 transition-transform ${galleryOpen ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </button>
+
+                {galleryOpen && (
+                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 p-3 bg-stone-50 border border-stone-200 rounded-xl">
+                    {localImages.map((src) => {
+                      const alreadyAdded = images.includes(src);
+                      return (
+                        <button
+                          key={src}
+                          type="button"
+                          onClick={() => {
+                            if (!alreadyAdded) setImages((prev) => [...prev, src]);
+                          }}
+                          title={alreadyAdded ? "Already added" : "Click to add"}
+                          className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all cursor-pointer group ${
+                            alreadyAdded
+                              ? "border-amber-400 ring-2 ring-amber-200 opacity-60 cursor-not-allowed"
+                              : "border-stone-200 hover:border-blue-400 hover:shadow-md"
+                          }`}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={src}
+                            alt={src}
+                            className="w-full h-full object-contain p-1 bg-white"
+                          />
+                          {alreadyAdded ? (
+                            <div className="absolute inset-0 bg-amber-400/20 flex items-center justify-center">
+                              <svg className="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 00-1.414 0L8 12.586 4.707 9.293a1 1 0 00-1.414 1.414l4 4a1 1 0 001.414 0l8-8a1 1 0 000-1.414z" clipRule="evenodd"/>
+                              </svg>
+                            </div>
+                          ) : (
+                            <div className="absolute inset-0 bg-blue-500/0 group-hover:bg-blue-500/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4"/>
+                              </svg>
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
 
