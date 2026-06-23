@@ -16,6 +16,7 @@ export interface ProductDetailProduct {
   category: string;
   categorySlug: string;
   image: string;
+  images?: string[];
   badge: string | null;
   rating: number;
   reviews: number;
@@ -28,6 +29,8 @@ interface Props {
   related: ProductDetailProduct[];
 }
 
+const PLACEHOLDER = "/placeholder.svg";
+
 export default function ProductDetail({ product, related }: Props) {
   const addToCart = useCartStore((s) => s.addToCart);
   const toggleWishlist = useCartStore((s) => s.toggleWishlist);
@@ -35,6 +38,17 @@ export default function ProductDetail({ product, related }: Props) {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const { tr } = useLanguage();
+
+  // Effective image list: prefer images[], fall back to [image], fall back to [placeholder]
+  const allImages =
+    product.images?.length
+      ? product.images
+      : product.image
+      ? [product.image]
+      : [PLACEHOLDER];
+
+  const [activeIdx, setActiveIdx] = useState(0);
+  const activeImage = allImages[activeIdx] ?? PLACEHOLDER;
 
   const isWishlisted = wishlist.includes(product.id);
   const outOfStock = !product.inStock || product.stock === 0;
@@ -66,33 +80,74 @@ export default function ProductDetail({ product, related }: Props) {
 
       {/* Product detail */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
-        {/* Image */}
-        <div className="relative">
+
+        {/* ── Image gallery ── */}
+        <div className="flex flex-col gap-3">
+          {/* Main image */}
           <div className="relative aspect-square rounded-2xl overflow-hidden bg-stone-100">
             <Image
-              src={product.image}
+              src={activeImage}
               alt={product.name}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover"
+              className="object-cover transition-opacity duration-200"
               priority
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = PLACEHOLDER;
+              }}
             />
-          </div>
-          <div className="absolute top-4 right-4 flex flex-col gap-2">
-            {product.badge && (
-              <span className="bg-brown text-white text-xs font-bold px-3 py-1 rounded-lg shadow">
-                {product.badge}
+            {/* Badges */}
+            <div className="absolute top-4 end-4 flex flex-col gap-2">
+              {product.badge && (
+                <span className="bg-brown text-white text-xs font-bold px-3 py-1 rounded-lg shadow">
+                  {product.badge}
+                </span>
+              )}
+              {discount > 0 && (
+                <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-lg shadow">
+                  -{discount}%
+                </span>
+              )}
+            </div>
+            {/* Image counter */}
+            {allImages.length > 1 && (
+              <span className="absolute bottom-3 end-3 text-[11px] font-semibold bg-black/50 text-white px-2 py-0.5 rounded-full">
+                {activeIdx + 1} / {allImages.length}
               </span>
             )}
-            {discount > 0 && (
-              <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-lg shadow">
-                -{discount}%
-              </span>
-            )}
           </div>
+
+          {/* Thumbnail strip — only rendered when there are multiple images */}
+          {allImages.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {allImages.map((url, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveIdx(idx)}
+                  className={`flex-none w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden border-2 transition-colors cursor-pointer focus:outline-none ${
+                    idx === activeIdx
+                      ? "border-brown ring-2 ring-brown/20"
+                      : "border-stone-200 hover:border-stone-400"
+                  }`}
+                  aria-label={`View image ${idx + 1}`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={url}
+                    alt={`${product.name} ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = PLACEHOLDER;
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Info */}
+        {/* ── Product info ── */}
         <div className="flex flex-col">
           <span className="inline-flex w-fit items-center gap-1.5 bg-gold/10 text-gold text-xs font-bold px-3 py-1 rounded-full mb-3">
             {product.category}
@@ -208,12 +263,7 @@ export default function ProductDetail({ product, related }: Props) {
               }`}
               aria-label={isWishlisted ? "remove from wishlist" : "add to wishlist"}
             >
-              <svg
-                className="w-5 h-5"
-                fill={isWishlisted ? "currentColor" : "none"}
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-5 h-5" fill={isWishlisted ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </button>

@@ -1,7 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { categories } from "@/lib/products";
+
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_BYTES = 5 * 1024 * 1024;
+const PLACEHOLDER = "/placeholder.svg";
 
 type FormProduct = {
   id: string;
@@ -12,6 +17,7 @@ type FormProduct = {
   category: string;
   categorySlug: string;
   image: string;
+  images?: string[];
   badge?: string;
   rating: number;
   reviews: number;
@@ -30,8 +36,7 @@ const DEFAULTS = {
   price: "",
   originalPrice: "",
   categorySlug: "dates",
-  category: "التمر",
-  image: "",
+  category: "Dates",
   badge: "",
   rating: "0",
   reviews: "0",
@@ -41,6 +46,7 @@ const DEFAULTS = {
 
 export default function ProductForm({ mode, product }: Props) {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState(
     product
@@ -51,7 +57,6 @@ export default function ProductForm({ mode, product }: Props) {
           originalPrice: product.originalPrice ? String(product.originalPrice) : "",
           categorySlug: product.categorySlug,
           category: product.category,
-          image: product.image,
           badge: product.badge ?? "",
           rating: String(product.rating),
           reviews: String(product.reviews),
@@ -61,8 +66,22 @@ export default function ProductForm({ mode, product }: Props) {
       : DEFAULTS,
   );
 
+  // Image list — existing products use images[] if available, else fall back to [image]
+  const initialImages =
+    product?.images?.length
+      ? product.images
+      : product?.image
+      ? [product.image]
+      : [];
+
+  const [images, setImages] = useState<string[]>(initialImages);
+  const [urlInput, setUrlInput] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+
+  // ── Handlers ────────────────────────────────────────────────────────────────
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -78,9 +97,70 @@ export default function ProductForm({ mode, product }: Props) {
     }
   }
 
+  async function handleFiles(files: FileList | null) {
+    if (!files?.length) return;
+    setUploading(true);
+    setUploadError("");
+
+    for (const file of Array.from(files)) {
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        setUploadError("Only JPG, PNG, and WebP images are allowed.");
+        continue;
+      }
+      if (file.size > MAX_BYTES) {
+        setUploadError("Each image must be under 5 MB.");
+        continue;
+      }
+
+      const fd = new FormData();
+      fd.append("file", file);
+
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      const data = (await res.json()) as { url?: string; error?: string };
+
+      if (res.ok && data.url) {
+        setImages((prev) => [...prev, data.url!]);
+      } else {
+        setUploadError(data.error ?? "Upload failed.");
+      }
+    }
+    setUploading(false);
+    // reset file input so the same file can be re-selected if needed
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  function addUrl() {
+    const url = urlInput.trim();
+    if (!url) return;
+    setImages((prev) => [...prev, url]);
+    setUrlInput("");
+    setUploadError("");
+  }
+
+  function removeImage(idx: number) {
+    setImages((prev) => prev.filter((_, i) => i !== idx));
+  }
+
+  function makePrimary(idx: number) {
+    if (idx === 0) return;
+    setImages((prev) => {
+      const next = [...prev];
+      const [item] = next.splice(idx, 1);
+      return [item, ...next];
+    });
+  }
+
+  // ── Submit ───────────────────────────────────────────────────────────────────
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrors([]);
+
+    if (images.length === 0) {
+      setErrors(["At least one product image is required."]);
+      return;
+    }
+
     setLoading(true);
 
     const body = {
@@ -90,7 +170,8 @@ export default function ProductForm({ mode, product }: Props) {
       originalPrice: form.originalPrice ? parseFloat(form.originalPrice) : null,
       category: form.category,
       categorySlug: form.categorySlug,
-      image: form.image.trim(),
+      image: images[0],
+      images,
       badge: form.badge.trim() || null,
       rating: parseFloat(form.rating) || 0,
       reviews: parseInt(form.reviews, 10) || 0,
@@ -101,10 +182,8 @@ export default function ProductForm({ mode, product }: Props) {
     try {
       const url =
         mode === "create" ? "/api/admin/products" : `/api/admin/products/${product!.id}`;
-      const method = mode === "create" ? "POST" : "PUT";
-
       const res = await fetch(url, {
-        method,
+        method: mode === "create" ? "POST" : "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
@@ -124,6 +203,8 @@ export default function ProductForm({ mode, product }: Props) {
     }
   }
 
+  // ── Render ───────────────────────────────────────────────────────────────────
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {errors.length > 0 && (
@@ -131,100 +212,186 @@ export default function ProductForm({ mode, product }: Props) {
           <p className="text-sm font-semibold text-red-700 mb-2">Please fix these errors:</p>
           <ul className="list-disc list-inside space-y-1">
             {errors.map((err, i) => (
-              <li key={i} className="text-sm text-red-600">
-                {err}
-              </li>
+              <li key={i} className="text-sm text-red-600">{err}</li>
             ))}
           </ul>
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left — main info */}
+
+        {/* ── LEFT: main info + images ── */}
         <div className="lg:col-span-2 space-y-5">
+
           <Card title="Product Information">
             <Field label="Product Name *" htmlFor="name">
               <input
-                id="name"
-                name="name"
-                type="text"
-                value={form.name}
-                onChange={handleChange}
+                id="name" name="name" type="text"
+                value={form.name} onChange={handleChange}
                 placeholder="e.g. تمر مجدول فاخر"
-                className={input}
-                required
+                className={input} required
               />
             </Field>
-
             <Field label="Description *" htmlFor="description">
               <textarea
-                id="description"
-                name="description"
-                value={form.description}
-                onChange={handleChange}
-                rows={4}
-                placeholder="Product description in Arabic or English…"
-                className={`${input} resize-none`}
-                required
+                id="description" name="description"
+                value={form.description} onChange={handleChange}
+                rows={4} placeholder="Product description…"
+                className={`${input} resize-none`} required
               />
             </Field>
+          </Card>
 
-            <Field label="Image URL *" htmlFor="image">
+          {/* ── Image Management ── */}
+          <Card title="Product Images">
+
+            {/* Current images grid */}
+            {images.length > 0 && (
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-4">
+                {images.map((url, idx) => (
+                  <div key={idx} className="relative group">
+                    <div className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-colors ${
+                      idx === 0 ? "border-amber-400 ring-2 ring-amber-200" : "border-stone-200"
+                    }`}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={url}
+                        alt={`Product image ${idx + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = PLACEHOLDER;
+                        }}
+                      />
+                    </div>
+
+                    {/* Primary badge */}
+                    {idx === 0 && (
+                      <span className="absolute top-1 start-1 text-[9px] font-bold bg-amber-500 text-white px-1.5 py-0.5 rounded-md leading-none">
+                        PRIMARY
+                      </span>
+                    )}
+
+                    {/* Hover overlay */}
+                    <div className="absolute inset-0 rounded-xl bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                      {idx !== 0 && (
+                        <button
+                          type="button"
+                          onClick={() => makePrimary(idx)}
+                          title="Set as primary"
+                          className="w-7 h-7 bg-white rounded-full flex items-center justify-center hover:bg-amber-50 transition-colors cursor-pointer"
+                        >
+                          <svg className="w-3.5 h-3.5 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                          </svg>
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => removeImage(idx)}
+                        title="Remove image"
+                        className="w-7 h-7 bg-white rounded-full flex items-center justify-center hover:bg-red-50 transition-colors cursor-pointer"
+                      >
+                        <svg className="w-3.5 h-3.5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {images.length === 0 && (
+              <div className="border-2 border-dashed border-stone-200 rounded-xl p-8 text-center mb-4">
+                <svg className="w-10 h-10 text-stone-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <p className="text-sm text-stone-400">No images yet — upload or paste a URL below</p>
+              </div>
+            )}
+
+            {/* Upload from file */}
+            <div className="space-y-3">
               <input
-                id="image"
-                name="image"
-                type="url"
-                value={form.image}
-                onChange={handleChange}
-                placeholder="https://images.unsplash.com/…"
-                className={input}
-                required
+                ref={fileInputRef}
+                type="file"
+                accept=".jpg,.jpeg,.png,.webp"
+                multiple
+                className="hidden"
+                onChange={(e) => handleFiles(e.target.files)}
               />
-              {form.image && (
-                <div className="mt-3 flex items-center gap-3">
-                  <img
-                    src={form.image}
-                    alt="Preview"
-                    className="w-20 h-20 rounded-lg object-cover border border-stone-200 bg-stone-100"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = "none";
-                    }}
-                  />
-                  <p className="text-xs text-stone-400">Image preview</p>
-                </div>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed border-amber-300 rounded-xl text-sm font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {uploading ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/>
+                    </svg>
+                    Uploading…
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                    </svg>
+                    Upload Images (JPG / PNG / WebP, max 5 MB each)
+                  </>
+                )}
+              </button>
+
+              {/* Paste URL */}
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  value={urlInput}
+                  onChange={(e) => setUrlInput(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addUrl(); } }}
+                  placeholder="Or paste an image URL and press Add →"
+                  className={`${input} flex-1`}
+                />
+                <button
+                  type="button"
+                  onClick={addUrl}
+                  className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-sm font-semibold rounded-lg transition-colors cursor-pointer whitespace-nowrap"
+                >
+                  Add
+                </button>
+              </div>
+
+              {uploadError && (
+                <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                  {uploadError}
+                </p>
               )}
-            </Field>
+
+              <p className="text-xs text-stone-400">
+                First image = primary (shown in listings). Hover an image to reorder or remove.
+              </p>
+            </div>
           </Card>
         </div>
 
-        {/* Right — pricing + meta */}
+        {/* ── RIGHT: pricing + meta ── */}
         <div className="space-y-5">
           <Card title="Pricing">
             <Field label="Price (AED) *" htmlFor="price">
               <input
-                id="price"
-                name="price"
-                type="number"
-                min="0.01"
-                step="0.01"
-                value={form.price}
-                onChange={handleChange}
-                placeholder="0.00"
-                className={input}
-                required
+                id="price" name="price" type="number"
+                min="0.01" step="0.01" value={form.price}
+                onChange={handleChange} placeholder="0.00"
+                className={input} required
               />
             </Field>
-
             <Field label="Original Price (AED)" htmlFor="originalPrice">
               <input
-                id="originalPrice"
-                name="originalPrice"
-                type="number"
-                min="0.01"
-                step="0.01"
-                value={form.originalPrice}
-                onChange={handleChange}
-                placeholder="Leave blank if no discount"
+                id="originalPrice" name="originalPrice" type="number"
+                min="0.01" step="0.01" value={form.originalPrice}
+                onChange={handleChange} placeholder="Leave blank if no discount"
                 className={input}
               />
             </Field>
@@ -233,28 +400,20 @@ export default function ProductForm({ mode, product }: Props) {
           <Card title="Category & Details">
             <Field label="Category *" htmlFor="categorySlug">
               <select
-                id="categorySlug"
-                name="categorySlug"
-                value={form.categorySlug}
-                onChange={handleChange}
-                className={input}
-                required
+                id="categorySlug" name="categorySlug"
+                value={form.categorySlug} onChange={handleChange}
+                className={input} required
               >
                 {categories.map((c) => (
-                  <option key={c.slug} value={c.slug}>
-                    {c.name}
-                  </option>
+                  <option key={c.slug} value={c.slug}>{c.name}</option>
                 ))}
               </select>
             </Field>
 
             <Field label="Badge" htmlFor="badge">
               <input
-                id="badge"
-                name="badge"
-                type="text"
-                value={form.badge}
-                onChange={handleChange}
+                id="badge" name="badge" type="text"
+                value={form.badge} onChange={handleChange}
                 placeholder="e.g. الأكثر مبيعاً"
                 className={input}
               />
@@ -262,58 +421,36 @@ export default function ProductForm({ mode, product }: Props) {
 
             <Field label="Rating (0–5)" htmlFor="rating">
               <input
-                id="rating"
-                name="rating"
-                type="number"
-                min="0"
-                max="5"
-                step="0.1"
-                value={form.rating}
-                onChange={handleChange}
-                className={input}
+                id="rating" name="rating" type="number"
+                min="0" max="5" step="0.1" value={form.rating}
+                onChange={handleChange} className={input}
               />
             </Field>
 
             <Field label="Review Count" htmlFor="reviews">
               <input
-                id="reviews"
-                name="reviews"
-                type="number"
-                min="0"
-                step="1"
-                value={form.reviews}
-                onChange={handleChange}
-                className={input}
+                id="reviews" name="reviews" type="number"
+                min="0" step="1" value={form.reviews}
+                onChange={handleChange} className={input}
               />
             </Field>
 
             <Field label="Stock Quantity" htmlFor="stock">
               <input
-                id="stock"
-                name="stock"
-                type="number"
-                min="0"
-                step="1"
-                value={form.stock}
-                onChange={handleChange}
-                placeholder="0"
+                id="stock" name="stock" type="number"
+                min="0" step="1" value={form.stock}
+                onChange={handleChange} placeholder="0"
                 className={input}
               />
             </Field>
 
             <div className="flex items-center gap-2.5 pt-1">
               <input
-                id="inStock"
-                name="inStock"
-                type="checkbox"
-                checked={form.inStock}
-                onChange={handleChange}
+                id="inStock" name="inStock" type="checkbox"
+                checked={form.inStock} onChange={handleChange}
                 className="w-4 h-4 rounded border-stone-300 accent-amber-600 cursor-pointer"
               />
-              <label
-                htmlFor="inStock"
-                className="text-sm font-medium text-stone-700 cursor-pointer select-none"
-              >
+              <label htmlFor="inStock" className="text-sm font-medium text-stone-700 cursor-pointer select-none">
                 Available for sale
               </label>
             </div>
@@ -325,7 +462,7 @@ export default function ProductForm({ mode, product }: Props) {
       <div className="flex items-center gap-3 pt-2">
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || uploading}
           className="px-6 py-2.5 bg-amber-600 text-white text-sm font-semibold rounded-lg hover:bg-amber-700 transition-colors duration-150 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {loading ? "Saving…" : mode === "create" ? "Create Product" : "Save Changes"}
@@ -337,10 +474,17 @@ export default function ProductForm({ mode, product }: Props) {
         >
           Cancel
         </button>
+        {images.length > 0 && (
+          <span className="text-xs text-stone-400 ms-2">
+            {images.length} image{images.length !== 1 ? "s" : ""}
+          </span>
+        )}
       </div>
     </form>
   );
 }
+
+// ── Sub-components ─────────────────────────────────────────────────────────────
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -351,15 +495,7 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
   );
 }
 
-function Field({
-  label,
-  htmlFor,
-  children,
-}: {
-  label: string;
-  htmlFor: string;
-  children: React.ReactNode;
-}) {
+function Field({ label, htmlFor, children }: { label: string; htmlFor: string; children: React.ReactNode }) {
   return (
     <div>
       <label htmlFor={htmlFor} className="block text-sm font-medium text-stone-700 mb-1.5">

@@ -1,13 +1,22 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import type { Product } from "@/lib/products";
+
+const PLACEHOLDER = "/placeholder.svg";
 import { useCartStore } from "@/store/cartStore";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
 
-interface Props { product: Product }
+// Product from DB may have an `images` array not present in the static Product type
+interface DBProduct extends Product {
+  images?: string[];
+}
+interface Props { product: DBProduct }
 
 export default function ProductCard({ product }: Props) {
+  // Use first element of images[] if available, otherwise legacy image field, otherwise placeholder
+  const primaryImage = product.images?.[0] ?? product.image ?? PLACEHOLDER;
   const addToCart = useCartStore((s) => s.addToCart);
   const toggleWishlist = useCartStore((s) => s.toggleWishlist);
   const wishlist = useCartStore((s) => s.wishlist);
@@ -36,11 +45,12 @@ export default function ProductCard({ product }: Props) {
     <Link href={`/product/${product.id}`} className="group block">
       <div className="card overflow-hidden cursor-pointer">
         <div className="relative overflow-hidden bg-stone-50 aspect-square">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={product.image}
+          <Image
+            src={primaryImage}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute top-2 right-2 flex flex-col gap-1">
             {product.badge && (

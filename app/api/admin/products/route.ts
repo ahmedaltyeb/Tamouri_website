@@ -19,6 +19,7 @@ type ProductBody = {
   category: string;
   categorySlug: string;
   image: string;
+  images?: string[];
   badge?: string | null;
   rating?: number;
   reviews?: number;
@@ -33,7 +34,9 @@ function validate(b: Partial<ProductBody>): string[] {
   if (typeof b.price !== "number" || b.price <= 0) errors.push("Price must be a positive number");
   if (!b.categorySlug?.trim()) errors.push("Category is required");
   if (!b.category?.trim()) errors.push("Category name is required");
-  if (!b.image?.trim()) errors.push("Image URL is required");
+  // At least one image required — either in images[] or legacy image field
+  const hasImage = (b.images && b.images.length > 0) || b.image?.trim();
+  if (!hasImage) errors.push("At least one product image is required");
   if (
     b.originalPrice !== undefined &&
     b.originalPrice !== null &&
@@ -59,6 +62,10 @@ export async function POST(request: Request) {
   const errors = validate(body);
   if (errors.length) return NextResponse.json({ errors }, { status: 422 });
 
+  // images[] is the source of truth; image is the primary (images[0]) for legacy compat
+  const images = body.images?.length ? body.images : body.image?.trim() ? [body.image.trim()] : [];
+  const primaryImage = images[0] ?? "";
+
   const product = await prisma.product.create({
     data: {
       name: body.name!.trim(),
@@ -67,7 +74,8 @@ export async function POST(request: Request) {
       originalPrice: body.originalPrice ?? null,
       category: body.category!.trim(),
       categorySlug: body.categorySlug!.trim(),
-      image: body.image!.trim(),
+      image: primaryImage,
+      images,
       badge: body.badge?.trim() || null,
       rating: body.rating ?? 0,
       reviews: body.reviews ?? 0,

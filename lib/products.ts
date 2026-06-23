@@ -7,6 +7,7 @@ export interface Product {
   category: string;
   categorySlug: string;
   image: string;
+  images?: string[];   // all product images; image = images[0] when set
   badge?: string;
   rating: number;
   reviews: number;
