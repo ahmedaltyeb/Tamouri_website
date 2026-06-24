@@ -4,7 +4,7 @@ import { categories } from "@/lib/products";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const categoryImages: Record<string, string> = {
-  "dates":            "https://images.unsplash.com/photo-1559628233-100c798642d6?w=300&q=80",
+  "dates":            "https://i.ibb.co/WvwTpK27/dates.jpg",
   "arabic-coffee":    "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=300&q=80",
   "specialty-coffee": "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=300&q=80",
   "tea":              "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300&q=80",

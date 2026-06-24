@@ -5,6 +5,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { categories } from "@/lib/products";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useCustomerAuth } from "@/contexts/CustomerAuthContext";
+import { useSiteSettings } from "@/contexts/SiteSettingsContext";
+
+/** Strip Arabic unicode from a field that should contain Latin text. */
+function latinOnly(text: string): string {
+  return text.replace(/[؀-ۿݐ-ݿࢠ-ࣿ]+/g, "").replace(/\s+/g, " ").trim();
+}
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -13,6 +20,8 @@ export default function Header() {
   const getTotalItems = useCartStore((s) => s.getTotalItems);
   const wishlist = useCartStore((s) => s.wishlist);
   const { lang, dir, setLang, tr } = useLanguage();
+  const { user } = useCustomerAuth();
+  const { settings } = useSiteSettings();
   const router = useRouter();
   const pathname = usePathname();
   const catRef = useRef<HTMLDivElement>(null);
@@ -118,16 +127,27 @@ export default function Header() {
         <div className="flex items-center gap-3 h-16">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 cursor-pointer flex-none">
-            <div className="w-10 h-10 bg-gradient-to-br from-brown to-gold rounded-xl flex items-center justify-center text-white font-black text-sm shadow-sm flex-none">
-              {lang === "ar" ? "م" : "MG"}
-            </div>
+          <Link href="/" className="flex items-center gap-2.5 cursor-pointer flex-none">
+            {settings.logo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={settings.logo}
+                alt={settings.nameEn}
+                className="w-11 h-11 rounded-xl object-contain p-0.5 bg-white shadow-sm border border-stone-100 flex-none"
+              />
+            ) : (
+              <div className="w-11 h-11 bg-gradient-to-br from-brown to-gold rounded-xl flex items-center justify-center text-white font-black text-sm shadow-sm flex-none">
+                {lang === "ar"
+                  ? (settings.nameAr?.charAt(0) || "م")
+                  : (settings.nameEn?.match(/[A-Za-z]+/)?.[0]?.substring(0, 2).toUpperCase() || "MG")}
+              </div>
+            )}
             <div className="flex-col leading-tight hidden sm:flex">
               <span className="text-sm font-black text-brown leading-none">
-                {lang === "ar" ? "مربع الغربية" : "Marbea Al Gharbeya"}
+                {lang === "ar" ? settings.nameAr : latinOnly(settings.nameEn)}
               </span>
               <span className="text-[9px] text-gold font-bold tracking-wide">
-                {lang === "ar" ? "للتمور والقهوة" : "Dates & Coffee"}
+                {lang === "ar" ? settings.taglineAr : latinOnly(settings.taglineEn)}
               </span>
             </div>
           </Link>
@@ -179,9 +199,9 @@ export default function Header() {
             </button>
           </form>
 
-          {/* Icons: wishlist + cart + mobile menu */}
+          {/* Icons: wishlist + account + cart + mobile menu */}
           <div className="flex items-center gap-1 ms-auto sm:ms-0">
-            <Link href="/shop" className="relative p-2 rounded-lg text-stone-600 hover:text-brown hover:bg-stone-100 transition-colors cursor-pointer">
+            <Link href="/account/wishlist" className="relative p-2 rounded-lg text-stone-600 hover:text-brown hover:bg-stone-100 transition-colors cursor-pointer">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
               </svg>
@@ -190,6 +210,25 @@ export default function Header() {
                   {wishlist.length}
                 </span>
               )}
+            </Link>
+
+            <Link
+              href={user ? "/account/profile" : "/account/login"}
+              className={`flex items-center gap-1.5 px-2.5 py-2 rounded-xl transition-colors cursor-pointer ${isActive("/account") ? "text-brown bg-brown/5" : "text-stone-600 hover:text-brown hover:bg-stone-100"}`}
+              aria-label={tr("myAccount")}
+            >
+              {user ? (
+                <div className="w-6 h-6 bg-brown text-white rounded-full flex items-center justify-center text-xs font-black flex-none">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+              ) : (
+                <svg className="w-5 h-5 flex-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+              )}
+              <span className="hidden md:inline text-xs font-medium">
+                {user ? user.name.split(" ")[0] : tr("signIn")}
+              </span>
             </Link>
 
             <Link href="/cart" className="relative flex items-center gap-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 px-3 py-2 rounded-xl transition-colors cursor-pointer">

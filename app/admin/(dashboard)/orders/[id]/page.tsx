@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import type { OrderStatus } from "@prisma/client";
 import StatusBadge from "../_components/StatusBadge";
 import StatusUpdateForm from "./_components/StatusUpdateForm";
+import { parseMLText } from "@/lib/products";
 
 export const dynamic = "force-dynamic";
 
@@ -170,12 +171,12 @@ export default async function AdminOrderDetailPage({ params }: PageProps) {
                 <div key={item.id} className="flex items-center gap-4 px-5 py-4">
                   <img
                     src={item.product.image}
-                    alt={item.product.name}
+                    alt={parseMLText(item.product.name).en}
                     className="w-12 h-12 rounded-lg object-cover bg-stone-100 flex-shrink-0"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-stone-900 leading-snug truncate">
-                      {item.product.name}
+                      {parseMLText(item.product.name).en}
                     </p>
                     <p className="text-xs text-stone-400 mt-0.5">
                       {item.price.toFixed(2)} AED × {item.quantity}

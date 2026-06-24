@@ -60,7 +60,7 @@ export default function WhyTamouri() {
         </div>
 
         {/* Fixed: now uses Next.js Link instead of <a> */}
-        <div className="mt-10 bg-gradient-to-l from-brown to-brown-dark rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-4 text-white">
+        <div className="mt-10 bg-gradient-to-l rtl:bg-gradient-to-r from-brown to-brown-dark rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-4 text-white">
           <div>
             <h3 className="text-xl font-bold mb-1">{tr("whyCTATitle")}</h3>
             <p className="text-white/70 text-sm">{tr("whyCTASub")}</p>

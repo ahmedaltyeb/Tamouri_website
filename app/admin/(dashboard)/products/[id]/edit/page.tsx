@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import { parseMLText } from "@/lib/products";
 import ProductForm from "../../_components/ProductForm";
 
 export default async function EditProductPage({
@@ -12,6 +13,9 @@ export default async function EditProductPage({
   const product = await prisma.product.findUnique({ where: { id } });
   if (!product) notFound();
 
+  const name = parseMLText(product.name);
+  const description = parseMLText(product.description);
+
   return (
     <div className="p-8">
       {/* Breadcrumb */}
@@ -20,7 +24,7 @@ export default async function EditProductPage({
           Products
         </Link>
         <span className="text-stone-300">/</span>
-        <span className="text-stone-700 font-medium truncate max-w-[200px]">{product.name}</span>
+        <span className="text-stone-700 font-medium truncate max-w-[200px]">{name.en}</span>
         <span className="text-stone-300">/</span>
         <span className="text-stone-700 font-medium">Edit</span>
       </nav>
@@ -31,8 +35,8 @@ export default async function EditProductPage({
         mode="edit"
         product={{
           id: product.id,
-          name: product.name,
-          description: product.description,
+          name,
+          description,
           price: product.price,
           originalPrice: product.originalPrice ?? undefined,
           category: product.category,

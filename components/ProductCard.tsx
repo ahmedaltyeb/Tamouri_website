@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Product } from "@/lib/products";
+import { parseMLText } from "@/lib/products";
 import { useCartStore } from "@/store/cartStore";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useState } from "react";
@@ -22,7 +23,9 @@ export default function ProductCard({ product, priority = false }: Props) {
   const toggleWishlist = useCartStore((s) => s.toggleWishlist);
   const wishlist = useCartStore((s) => s.wishlist);
   const [added, setAdded] = useState(false);
-  const { tr } = useLanguage();
+  const { tr, lang } = useLanguage();
+
+  const name = parseMLText(product.name)[lang];
 
   // BUG FIX #1: use || (not ??) so empty strings fall through to PLACEHOLDER
   const rawImage = product.images?.[0] || product.image || PLACEHOLDER;
@@ -56,7 +59,7 @@ export default function ProductCard({ product, priority = false }: Props) {
         <div className="relative bg-white aspect-square overflow-hidden">
           <Image
             src={imgSrc}
-            alt={product.name}
+            alt={name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-contain p-3 group-hover:scale-105 transition-transform duration-500"
@@ -117,7 +120,7 @@ export default function ProductCard({ product, priority = false }: Props) {
 
           {/* Product name */}
           <h3 className="font-bold text-sm text-ink leading-snug line-clamp-2 group-hover:text-brown transition-colors min-h-[2.5rem]">
-            {product.name}
+            {name}
           </h3>
 
           {/* Star rating */}

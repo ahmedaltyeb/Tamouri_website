@@ -89,7 +89,7 @@ export default function Testimonials() {
                   <div className="font-bold text-sm text-ink">{lang === "ar" ? t.name : t.nameEn}</div>
                   <div className="text-stone-400 text-xs">{lang === "ar" ? t.location : t.locationEn}</div>
                 </div>
-                <div className="mr-auto">
+                <div className="me-auto">
                   <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>

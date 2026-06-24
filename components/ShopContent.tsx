@@ -4,13 +4,13 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import ProductCard from "@/components/ProductCard";
-import { categories } from "@/lib/products";
+import { categories, parseMLText } from "@/lib/products";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useProducts } from "@/hooks/useProducts";
 
 // Category thumbnail images (Unsplash)
 const CAT_IMAGES: Record<string, string> = {
-  "dates":            "https://images.unsplash.com/photo-1559628233-100c798642d6?w=400&q=80",
+  "dates":            "https://i.ibb.co/WvwTpK27/dates.jpg",
   "arabic-coffee":    "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&q=80",
   "specialty-coffee": "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&q=80",
   "tea":              "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&q=80",
@@ -50,12 +50,17 @@ export default function ShopContent() {
     }
     if (search.trim()) {
       const q = search.trim().toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q) ||
+      result = result.filter((p) => {
+        const name = parseMLText(p.name);
+        const desc = parseMLText(p.description);
+        return (
+          name.en.toLowerCase().includes(q) ||
+          name.ar.toLowerCase().includes(q) ||
+          desc.en.toLowerCase().includes(q) ||
+          desc.ar.toLowerCase().includes(q) ||
           p.category.toLowerCase().includes(q)
-      );
+        );
+      });
     }
     if (sortBy === "price-asc") result.sort((a, b) => a.price - b.price);
     else if (sortBy === "price-desc") result.sort((a, b) => b.price - a.price);

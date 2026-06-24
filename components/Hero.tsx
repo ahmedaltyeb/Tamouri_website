@@ -4,7 +4,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import BASE_PATH from "@/lib/basePath";
 
 export default function Hero() {
-  const { tr } = useLanguage();
+  const { tr, lang } = useLanguage();
 
   return (
     <section className="relative min-h-[560px] md:min-h-[640px] flex items-center overflow-hidden">
@@ -40,7 +40,7 @@ export default function Hero() {
             className="inline-flex items-center gap-2 bg-gold hover:bg-gold-dark text-white px-8 py-3.5 rounded-xl font-bold text-base transition-all duration-200 shadow-lg shadow-gold/30 active:scale-95 cursor-pointer"
           >
             <span>{tr("heroShopNow")}</span>
-            <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className={`w-4 h-4 ${lang === "ar" ? "" : "rotate-180"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>

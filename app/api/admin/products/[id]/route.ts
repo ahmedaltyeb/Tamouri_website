@@ -11,9 +11,11 @@ async function requireAdmin() {
   return session?.user?.role === "ADMIN" ? session : null;
 }
 
+type MLText = { en: string; ar: string };
+
 type ProductBody = {
-  name: string;
-  description: string;
+  name: MLText;
+  description: MLText;
   price: number;
   originalPrice?: number | null;
   category: string;
@@ -27,10 +29,22 @@ type ProductBody = {
   stock?: number;
 };
 
-function validate(b: Partial<ProductBody>): string[] {
+function validateMLText(v: unknown, field: string): string[] {
+  if (!v || typeof v !== "object" || Array.isArray(v)) {
+    return [`${field} must be an object with en and ar keys`];
+  }
+  const o = v as Record<string, unknown>;
   const errors: string[] = [];
-  if (!b.name?.trim()) errors.push("Name is required");
-  if (!b.description?.trim()) errors.push("Description is required");
+  if (!o.en || !String(o.en).trim()) errors.push(`${field}.en (English) is required`);
+  if (!o.ar || !String(o.ar).trim()) errors.push(`${field}.ar (Arabic) is required`);
+  return errors;
+}
+
+function validate(b: Partial<ProductBody>): string[] {
+  const errors: string[] = [
+    ...validateMLText(b.name, "name"),
+    ...validateMLText(b.description, "description"),
+  ];
   if (typeof b.price !== "number" || b.price <= 0) errors.push("Price must be a positive number");
   if (!b.categorySlug?.trim()) errors.push("Category is required");
   if (!b.category?.trim()) errors.push("Category name is required");
@@ -63,14 +77,16 @@ export async function PUT(
   const errors = validate(body);
   if (errors.length) return NextResponse.json({ errors }, { status: 422 });
 
+  const name = body.name!;
+  const description = body.description!;
   const images = body.images?.length ? body.images : body.image?.trim() ? [body.image.trim()] : [];
   const primaryImage = images[0] ?? existing.image;
 
   const product = await prisma.product.update({
     where: { id },
     data: {
-      name: body.name!.trim(),
-      description: body.description!.trim(),
+      name: JSON.stringify({ en: name.en.trim(), ar: name.ar.trim() }),
+      description: JSON.stringify({ en: description.en.trim(), ar: description.ar.trim() }),
       price: body.price!,
       originalPrice: body.originalPrice ?? null,
       category: body.category!.trim(),

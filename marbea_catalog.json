@@ -1,0 +1,965 @@
+{
+  "store_info": {
+    "name": "مربعة الغربية للتمور Marbea Al Gharbeya Dates",
+    "url": "https://jarehsaeaduh.ae/en/",
+    "description": "Emirati store for coffee, tea, dates, saffron and hospitality supplies",
+    "location": "Abu Dhabi, UAE",
+    "phone": "+971529307250",
+    "whatsapp": [
+      "+971529307250"
+    ],
+    "email": "eltyebelnour@gmail.com",
+    "working_hours": "8:00 AM – 11:00 PM",
+    "currency": "AED"
+  },
+  "categories": [
+    {
+      "name": "Dates",
+      "url": "https://jarehsaeaduh.ae/en/collections/dates/",
+      "total_products": 75,
+      "products": [
+        {
+          "name": "First-grade Ajwa dates from Madinah",
+          "price_from": 50.0,
+          "price_to": 150.0,
+          "on_sale": false,
+          "variants": "1kg / 3kg carton",
+          "url": "https://jarehsaeaduh.ae/en/products/tmr-ajwa-almdynh/"
+        },
+        {
+          "name": "Dates with cardamom and saffron – small tin box, 1 kg",
+          "price_from": 80.0,
+          "price_to": 80.0,
+          "on_sale": false,
+          "variants": "Khalas dates 1kg / Galaxy Sukkari 1kg",
+          "url": "https://jarehsaeaduh.ae/en/products/tmr-balhyl-walzafran-alba-hdyd-sghyr-alba-fakhra-lhdya-mmyza/"
+        },
+        {
+          "name": "Dates with cardamom and saffron – large 2 kg tin",
+          "price_from": 140.0,
+          "price_to": 140.0,
+          "on_sale": false,
+          "variants": "2kg Khalas / Galaxy Sukkari 2kg",
+          "url": "https://jarehsaeaduh.ae/en/products/dates-with-cardamom-saffron-large-metal-box/"
+        },
+        {
+          "name": "Dates of happiness",
+          "price_from": 110.0,
+          "price_to": 110.0,
+          "on_sale": false,
+          "variants": "Khalas / Sukkari / Galaxy Sugar",
+          "url": "https://jarehsaeaduh.ae/en/products/tmr-tmrya-alsaada/"
+        },
+        {
+          "name": "Dates of happiness with nuts, saffron and tahini – golden box",
+          "price_from": 75.0,
+          "price_to": 95.0,
+          "on_sale": false,
+          "variants": "Khalas / Sukkari",
+          "url": "https://jarehsaeaduh.ae/en/products/tmr-tmrya-alsaada-skry-alqsym-rtb-balmksrat-walzafran-walthyna-alba-dhhbya/"
+        },
+        {
+          "name": "Dates of Happiness Mix – dates combining authenticity and unique taste",
+          "price_from": 160.0,
+          "price_to": 160.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/tmr-jraa-saada-myks-tmrya-tjma-byn-alasala-walmdhaq-alfryd/"
+        },
+        {
+          "name": "Al-Kharj Khalas dates – luxurious royal treat",
+          "price_from": 15.0,
+          "price_to": 120.0,
+          "on_sale": false,
+          "variants": "1kg / 8kg carton",
+          "url": "https://jarehsaeaduh.ae/en/products/tmr-khlas-alkhrj-mlky-fakhr-jraa-saada/"
+        },
+        {
+          "name": "Qassim Gold VIP Dates",
+          "price_from": 25.0,
+          "price_to": 160.0,
+          "on_sale": false,
+          "variants": "1kg / 8kg carton",
+          "url": "https://jarehsaeaduh.ae/en/products/qasem-khlas-golden-vip-1/"
+        },
+        {
+          "name": "Individually wrapped Al-Qassim Khalas dates – premium for hospitality",
+          "price_from": 25.0,
+          "price_to": 50.0,
+          "on_sale": false,
+          "variants": "1kg / half kilo",
+          "url": "https://jarehsaeaduh.ae/en/products/al-qassim-khalas-dates-individually-wrapped-premium-quality-dates/"
+        },
+        {
+          "name": "Qassim dates – loose",
+          "price_from": 40.0,
+          "price_to": 120.0,
+          "on_sale": false,
+          "variants": "1kg / 2kg / 3kg carton",
+          "url": "https://jarehsaeaduh.ae/en/products/tmr-khlas-alqsym-nthry/"
+        },
+        {
+          "name": "Golden Khalas dates VIP – a dose of happiness",
+          "price_from": 20.0,
+          "price_to": 160.0,
+          "on_sale": false,
+          "variants": "1kg / 8kg carton",
+          "url": "https://jarehsaeaduh.ae/en/products/khlass-golden-vip-joy-dose/"
+        },
+        {
+          "name": "Sukkari dates (twisted)",
+          "price_from": 30.0,
+          "price_to": 80.0,
+          "on_sale": false,
+          "variants": "1kg / 3kg carton",
+          "url": "https://jarehsaeaduh.ae/en/products/tmr-skry-mftl/"
+        },
+        {
+          "name": "Premium Ajwa dates from Madinah – elegant 2kg gift box",
+          "price_from": 155.0,
+          "price_to": 155.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/tmr-ajwa-almdyna-almnwra-alfakhr-fy-alb-2/"
+        },
+        {
+          "name": "Premium Date Box – variety of selections for gifts and hospitality",
+          "price_from": 155.0,
+          "price_to": 155.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/a-luxurious-box-of-dates-assorted-assortments-perfect-for-gifts/"
+        },
+        {
+          "name": "3 kg carton of Al-Faisaliah Saqai dates",
+          "price_from": 170.0,
+          "price_to": 170.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/3-kg-carton-of-al-faisaliah-saqai/"
+        },
+        {
+          "name": "Khalas Ashiqar Jumbo – 8 kg",
+          "price_from": 220.0,
+          "price_to": 220.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/khalas-ashiqar-jumbo-nahyani-weight-8-kg/"
+        },
+        {
+          "name": "VIP Al Faisaliah Sagai Dates in a Luxury Gift Box",
+          "price_from": 140.0,
+          "price_to": 140.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/al-faisaliah-vip-saqai-dates-in-a-luxury-gift-box/"
+        },
+        {
+          "name": "Premium Sukkari dates in an elegant gift box",
+          "price_from": 80.0,
+          "price_to": 80.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/tmr-skry-mftl-fakhr-fy-alba-hdya-anyqa-1/"
+        },
+        {
+          "name": "A luxurious date presented in a distinctive gift box",
+          "price_from": 80.0,
+          "price_to": 80.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/a-luxurious-date-presented-in-a-distinctive-gift-box/"
+        },
+        {
+          "name": "Ajwa dates from Madinah – Jumbo",
+          "price_from": 60.0,
+          "price_to": 180.0,
+          "on_sale": false,
+          "variants": "1kg / 3kg carton",
+          "url": "https://jarehsaeaduh.ae/en/products/ajwa-dates-from-madinah-3-kg-afraa-al-suwaidi/"
+        },
+        {
+          "name": "Date paste",
+          "price_from": 15.0,
+          "price_to": 15.0,
+          "on_sale": false,
+          "variants": "1kg",
+          "url": "https://jarehsaeaduh.ae/en/products/majwn-altmr/"
+        }
+      ]
+    },
+    {
+      "name": "Arabic Coffee",
+      "url": "https://jarehsaeaduh.ae/en/collections/arabic-coffee/",
+      "total_products": 63,
+      "products": [
+        {
+          "name": "Qassim Mix with Cardamom 125g",
+          "price_from": 15.0,
+          "price_to": 15.0,
+          "on_sale": false,
+          "variants": "125g",
+          "url": "https://jarehsaeaduh.ae/en/products/qassim-spice-mix-with-cardamom/"
+        },
+        {
+          "name": "Al-Qassim Coffee Blend 125g",
+          "price_from": 10.0,
+          "price_to": 10.0,
+          "on_sale": false,
+          "variants": "125g",
+          "url": "https://jarehsaeaduh.ae/en/products/coffee-125g/"
+        },
+        {
+          "name": "Original Ghamdi coffee blend with cardamom and saffron",
+          "price_from": 20.0,
+          "price_to": 20.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/khlta-alqhwa-balhyl-walzafran-alghamdy-alaslya-nkha-arbya-asyla-wghnya/"
+        },
+        {
+          "name": "VIP Emirati coffee with cardamom and saffron",
+          "price_from": 55.0,
+          "price_to": 110.0,
+          "on_sale": false,
+          "variants": "1kg / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/coffee-mixed-with-saffron-and-cardamom-uae/"
+        },
+        {
+          "name": "Emirati red Ceylon coffee",
+          "price_from": 45.0,
+          "price_to": 85.0,
+          "on_sale": false,
+          "variants": "1kg / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-amaratya-hmra-sylany-nkha-arbya-asyla-wghnya/"
+        },
+        {
+          "name": "Special Emirati coffee – the secret to the luxurious flavor",
+          "price_from": 60.0,
+          "price_to": 120.0,
+          "on_sale": false,
+          "variants": "1kg / half kilo",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-imaratya-khasa-sr-alnkha-alfakhra-fy-kl-fnjan/"
+        },
+        {
+          "name": "Emirati Sheikh coffee with cardamom only",
+          "price_from": 55.0,
+          "price_to": 110.0,
+          "on_sale": false,
+          "variants": "1kg / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-amaratya-shywkhya-balhyl-fqt/"
+        },
+        {
+          "name": "Dark Emirati coffee with cardamom and saffron",
+          "price_from": 50.0,
+          "price_to": 100.0,
+          "on_sale": false,
+          "variants": "1kg / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-amaratya-ghamja-balhyl-walzafran-nkha-arbya-asyla-wghnya/"
+        },
+        {
+          "name": "Dark Emirati Ceylon Coffee",
+          "price_from": 45.0,
+          "price_to": 85.0,
+          "on_sale": false,
+          "variants": "1kg / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-amaratya-ghamja-sylany-nkha-arbya-asyla-wghnya/"
+        },
+        {
+          "name": "Nescafé Extra Fort Original Coffee 100% Cafe 200g",
+          "price_from": 30.0,
+          "price_to": 30.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/nescafe-extra-forte-original-coffee-100-cafe-160g/"
+        },
+        {
+          "name": "Al Buraimi Coffee",
+          "price_from": 40.0,
+          "price_to": 80.0,
+          "on_sale": false,
+          "variants": "1kg / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-albrymy-nkha-arbya-asyla-wghnya/"
+        },
+        {
+          "name": "Khawlani coffee",
+          "price_from": 50.0,
+          "price_to": 100.0,
+          "on_sale": false,
+          "variants": "1kg / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-alkhwlanya-nkha-arbya-asyla-wghnya/"
+        },
+        {
+          "name": "Royal Emirati Coffee",
+          "price_from": 55.0,
+          "price_to": 110.0,
+          "on_sale": false,
+          "variants": "1kg / half kilo",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-imaratya-mlkya-nkha-arbya-asyla-wghnya/"
+        },
+        {
+          "name": "Qassim Saffron Mix 125g",
+          "price_from": 15.0,
+          "price_to": 15.0,
+          "on_sale": false,
+          "variants": "125g",
+          "url": "https://jarehsaeaduh.ae/en/products/qassim-spice-mix-with-saffron/"
+        },
+        {
+          "name": "Home coffee",
+          "price_from": 45.0,
+          "price_to": 90.0,
+          "on_sale": false,
+          "variants": "1kg / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-aldar/"
+        },
+        {
+          "name": "Mexican Arabic coffee",
+          "price_from": 35.0,
+          "price_to": 70.0,
+          "on_sale": false,
+          "variants": "1kg / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-arbya-mksykya-nkha-arbya-asyla-wghnya/"
+        },
+        {
+          "name": "Coffee for my bite (Luqmaty)",
+          "price_from": 35.0,
+          "price_to": 70.0,
+          "on_sale": false,
+          "variants": "1kg / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-lqmty-nkha-arbya-asyla-wghnya/"
+        },
+        {
+          "name": "Zakher Ceylon Coffee",
+          "price_from": 60.0,
+          "price_to": 120.0,
+          "on_sale": false,
+          "variants": "1kg / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-zakhr-sylanya/"
+        },
+        {
+          "name": "Riyadh Coffee – Blonde Saudi coffee with cardamom and saffron",
+          "price_from": 45.0,
+          "price_to": 90.0,
+          "on_sale": false,
+          "variants": "1kg / half kilo",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-alryad-qhwa-sawdya-shqra-balhyl-walzafran-walkhlta-alkhasa-bjraa-saada/"
+        },
+        {
+          "name": "Eye coffee (Al Ain)",
+          "price_from": 45.0,
+          "price_to": 90.0,
+          "on_sale": false,
+          "variants": "1kg / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-alayn/"
+        },
+        {
+          "name": "Saudi Arabian coffee – blue sachet, 400 grams",
+          "price_from": 35.0,
+          "price_to": 35.0,
+          "on_sale": false,
+          "variants": "400g",
+          "url": "https://jarehsaeaduh.ae/en/products/coffee-400g/"
+        }
+      ]
+    },
+    {
+      "name": "Specialty Coffee",
+      "url": "https://jarehsaeaduh.ae/en/collections/specialty-coffee/",
+      "total_products": null,
+      "products": [
+        {
+          "name": "Specialty coffee Dabaye Guji Hambela",
+          "price_from": 30.0,
+          "price_to": 120.0,
+          "on_sale": false,
+          "variants": "1kg / quarter kilo / half kilo",
+          "url": "https://jarehsaeaduh.ae/en/products/dabaye-guji-hambela/"
+        },
+        {
+          "name": "Specialty coffee from Ethiopia – Yergachef Adado",
+          "price_from": 30.0,
+          "price_to": 120.0,
+          "on_sale": false,
+          "variants": "1K / 250g / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-mkhtsa-mn-ithywbya-yrghshf-adadw/"
+        },
+        {
+          "name": "Bourbon coffee from El Salvador",
+          "price_from": 30.0,
+          "price_to": 120.0,
+          "on_sale": false,
+          "variants": "quarter kilo / kilo / half kilo",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-brbwn-mn-alslfadwr/"
+        },
+        {
+          "name": "Specialty coffee from Brazil",
+          "price_from": 30.0,
+          "price_to": 120.0,
+          "on_sale": false,
+          "variants": "1K / 250g / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-mtkhssa-mn-brazyl/"
+        },
+        {
+          "name": "Specialty coffee from Colombia",
+          "price_from": 35.0,
+          "price_to": 140.0,
+          "on_sale": false,
+          "variants": "1K / 250g / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-mkhtsa-mn-kwlwmbya/"
+        },
+        {
+          "name": "Hezem V60 Specialty Coffee – Melon Flavor, 125g",
+          "price_from": 80.0,
+          "price_to": 80.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/hezem-v60-specialty-coffee-melon-flavor-125g/"
+        },
+        {
+          "name": "Exclusive offer – specialty coffee 3 bags get 4th free",
+          "price_from": 90.0,
+          "price_to": 90.0,
+          "on_sale": true,
+          "original_price": 120.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/specialty-coffee-buy-3-get-1-free/"
+        },
+        {
+          "name": "Dripo Drip Coffee Sachets # Mocha (10 envelopes)",
+          "price_from": 30.0,
+          "price_to": 30.0,
+          "on_sale": false,
+          "variants": "10 envelopes",
+          "url": "https://jarehsaeaduh.ae/en/products/drybw-alqhwa-almqtra-azrf-byrw-nkha-arbya-asyla-wghnya/"
+        },
+        {
+          "name": "Specialty Coffee – 4x250g sachets (buy 3 get 4th free)",
+          "price_from": 90.0,
+          "price_to": 90.0,
+          "on_sale": true,
+          "original_price": 120.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/specialty-coffee-4-sachets-x-250g-buy-3/"
+        },
+        {
+          "name": "Single-origin kaffa coffee from Kaffa East Ethiopia",
+          "price_from": 30.0,
+          "price_to": 120.0,
+          "on_sale": false,
+          "variants": "1K / 250g / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-kafa-ahadya-almnsha-mn-kaba-ayst-athywbya/"
+        },
+        {
+          "name": "Hezem V60 Colombian Grape Soda Specialty Coffee 125g",
+          "price_from": 80.0,
+          "price_to": 80.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/hezem-v60-colombian-grape-soda-specialty-coffee-125/"
+        },
+        {
+          "name": "Specialty coffee from Ethiopia – Goji Hambela",
+          "price_from": 30.0,
+          "price_to": 120.0,
+          "on_sale": false,
+          "variants": "1K / 250g / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-mkhtsa-mn-athywbya-jwjy-hambyla/"
+        },
+        {
+          "name": "Specialty coffee from Uganda",
+          "price_from": 30.0,
+          "price_to": 120.0,
+          "on_sale": false,
+          "variants": "1K / 250g / 500g",
+          "url": "https://jarehsaeaduh.ae/en/products/qhwa-mkhtsa-mn-awghnda/"
+        },
+        {
+          "name": "EXCELSO Colombia",
+          "price_from": 30.0,
+          "price_to": 120.0,
+          "on_sale": false,
+          "variants": "multiple",
+          "url": "https://jarehsaeaduh.ae/en/products/excelso-colombia/"
+        }
+      ]
+    },
+    {
+      "name": "Tea",
+      "url": "https://jarehsaeaduh.ae/en/collections/tea/",
+      "total_products": null,
+      "products": [
+        {
+          "name": "Al-Budair Tea – 350g Iron Can",
+          "price_from": 45.0,
+          "price_to": 45.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/tea-350g/"
+        },
+        {
+          "name": "Moringa tea for slimming",
+          "price_from": 25.0,
+          "price_to": 25.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/shay-ghsn-alban-ltnhyf-tjrba-mdhaq-astthnayya/"
+        },
+        {
+          "name": "Luxury Ceylon Black Tea – 250g",
+          "price_from": 45.0,
+          "price_to": 45.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/alfakhm-premium-ceylon-black-tea-250g/"
+        },
+        {
+          "name": "Premium Ceylon Black Leaf Thick Tea – Large Leaf",
+          "price_from": 30.0,
+          "price_to": 30.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/shay-khathr-wrq-aswd-sylany-fakhr-wrq-kbyr/"
+        },
+        {
+          "name": "BOP Hajim Tea – Pure Ceylon Tea, 250g Box",
+          "price_from": 50.0,
+          "price_to": 50.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/hajim-bop-pure-ceylon-tea-250g-box/"
+        },
+        {
+          "name": "Qurnas Tea",
+          "price_from": 55.0,
+          "price_to": 55.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/shay-qrnas-tjrba-mdhaq-astthnayya/"
+        },
+        {
+          "name": "Charcoal tea – 100 bags",
+          "price_from": 25.0,
+          "price_to": 25.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/aljamr-tea-100-bags/"
+        },
+        {
+          "name": "Al Ghazaleen Tea – red carton, 100 tea bags",
+          "price_from": 25.0,
+          "price_to": 25.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/alghazaleen-red-carton-tea-100-bag/"
+        },
+        {
+          "name": "Thick tea 200 grams",
+          "price_from": 30.0,
+          "price_to": 30.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/khather-tea-200g/"
+        },
+        {
+          "name": "Safari Pure Kenyan Tea 100 Bags",
+          "price_from": 25.0,
+          "price_to": 25.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/safari-pure-tea-100-bags/"
+        },
+        {
+          "name": "Sultan Green Tea 9371",
+          "price_from": 25.0,
+          "price_to": 25.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/sultan-green-tea-9371/"
+        },
+        {
+          "name": "Al Ghazaleen Tea – Black Carton, 100 Bags",
+          "price_from": 25.0,
+          "price_to": 25.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/alghazaleen-red-carton-tea-100-bags/"
+        },
+        {
+          "name": "100% Quality Natural Green Tea",
+          "price_from": 25.0,
+          "price_to": 25.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/quality-tea-100g/"
+        },
+        {
+          "name": "505 Tea 500 grams",
+          "price_from": 30.0,
+          "price_to": 30.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/505-500/"
+        },
+        {
+          "name": "Azerbaijani Black Tea 250 grams",
+          "price_from": 45.0,
+          "price_to": 45.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/black-tea-azergay-250-grams-250/"
+        },
+        {
+          "name": "Good Day Cappuccino – rich blend with luxurious creamy foam",
+          "price_from": 30.0,
+          "price_to": 30.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/good-day-cappuccino/"
+        }
+      ]
+    },
+    {
+      "name": "Coffee And Tea Tools",
+      "url": "https://jarehsaeaduh.ae/en/collections/coffee-and-tea-tools-2/",
+      "total_products": null,
+      "products": [
+        {
+          "name": "6-piece tea cup set",
+          "price_from": 30.0,
+          "price_to": 30.0,
+          "on_sale": false,
+          "variants": "red / blue / transparent",
+          "url": "https://jarehsaeaduh.ae/en/products/tea-cup-set-6-pieces/"
+        },
+        {
+          "name": "Royalx Picardy French Glass Set – 12 Pieces",
+          "price_from": 35.0,
+          "price_to": 35.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/royalx-french-glass-tea-cup-set-picardy-12pcs/"
+        },
+        {
+          "name": "Decorative coffee cup set – 6 pieces with a luxury box",
+          "price_from": 25.0,
+          "price_to": 25.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/decorative-coffee-cup-set-6-pieces-with-a-fancy-box/"
+        },
+        {
+          "name": "Omega 5 gas canister 500g",
+          "price_from": 15.0,
+          "price_to": 15.0,
+          "on_sale": false,
+          "variants": "230g",
+          "url": "https://jarehsaeaduh.ae/en/products/omega-5-gas-canister-500g/"
+        },
+        {
+          "name": "Tea scoops – wooden coffee measuring scoop",
+          "price_from": 20.0,
+          "price_to": 20.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/mjarf-shay-mghrfa-qhwa-khshbya-llqyas/"
+        },
+        {
+          "name": "Luxurious glass container for storing and serving dates",
+          "price_from": 15.0,
+          "price_to": 15.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/a-luxurious-glass-container-for-storing-and-serving-dates/"
+        },
+        {
+          "name": "(Afco) Electric Coffee and Tea Pot",
+          "price_from": 405.0,
+          "price_to": 405.0,
+          "on_sale": true,
+          "original_price": 450.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/abu-raseen-turkish-tea-pot-1ltr/"
+        },
+        {
+          "name": "Turkish coffee kettle",
+          "price_from": 25.0,
+          "price_to": 25.0,
+          "on_sale": false,
+          "variants": "Turkish coffee kettle",
+          "url": "https://jarehsaeaduh.ae/en/products/ghlaya-llqhwa-altrkya/"
+        },
+        {
+          "name": "Large tea hospitality set",
+          "price_from": 45.0,
+          "price_to": 45.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/tqm-dyafa-shay-kbyr/"
+        },
+        {
+          "name": "0.1 oz distillation funnels with wooden base – multiple colors",
+          "price_from": 60.0,
+          "price_to": 60.0,
+          "on_sale": false,
+          "variants": "yellow / orange / brown / navy blue",
+          "url": "https://jarehsaeaduh.ae/en/products/0-1/"
+        },
+        {
+          "name": "Coffee and tea cup and saucer set – green and yellow design – 12 pieces",
+          "price_from": 65.0,
+          "price_to": 65.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/coffee-and-tea-cup-set-with-saucers-green-design/"
+        },
+        {
+          "name": "Teapot for water heater on the stove",
+          "price_from": 55.0,
+          "price_to": 55.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/abryq-shay-lskhan-almyah-ala-almwqd-tjrba-mdhaq-astthnayya/"
+        },
+        {
+          "name": "Timer Black precision scale with large LCD display – for coffee",
+          "price_from": 345.0,
+          "price_to": 345.0,
+          "on_sale": true,
+          "original_price": 380.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/lcd/"
+        },
+        {
+          "name": "Japanese-style suction coffee maker",
+          "price_from": 270.0,
+          "price_to": 270.0,
+          "on_sale": true,
+          "original_price": 300.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/adaa-thdyr-alqhwa-shft-ala-altryqa-alyabanya/"
+        },
+        {
+          "name": "Espresso coffee prank (mold)",
+          "price_from": 65.0,
+          "price_to": 65.0,
+          "on_sale": true,
+          "original_price": 70.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/mqlb-qhwa-asbrsw/"
+        },
+        {
+          "name": "Coffee clump breaker",
+          "price_from": 80.0,
+          "price_to": 80.0,
+          "on_sale": true,
+          "original_price": 90.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/mfkk-tktlat-alqhwa/"
+        },
+        {
+          "name": "Time More C3 Grinder – Manual Coffee Grinder",
+          "price_from": 300.0,
+          "price_to": 300.0,
+          "on_sale": true,
+          "original_price": 330.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/c3-time-more-c3-grinder/"
+        },
+        {
+          "name": "350ml Coffee Filter Pot",
+          "price_from": 75.0,
+          "price_to": 75.0,
+          "on_sale": true,
+          "original_price": 80.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/coffee-350g/"
+        },
+        {
+          "name": "0.1 inch drip coffee filter",
+          "price_from": 25.0,
+          "price_to": 25.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/v60-coffee-filter-size-0-1/"
+        },
+        {
+          "name": "02 Suppression (V60 Size 02)",
+          "price_from": 45.0,
+          "price_to": 45.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/product-02/"
+        },
+        {
+          "name": "Complete and portable drip coffee bag",
+          "price_from": 380.0,
+          "price_to": 380.0,
+          "on_sale": true,
+          "original_price": 420.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/shnta-qhwa-mqtra-kamla-wshla-altnql/"
+        }
+      ]
+    },
+    {
+      "name": "Travel Tools",
+      "url": "https://jarehsaeaduh.ae/en/collections/travel-tools/",
+      "total_products": null,
+      "products": [
+        {
+          "name": "BRS Portable 7000W Power Outdoor Stove (BRS-75)",
+          "price_from": 255.0,
+          "price_to": 255.0,
+          "on_sale": true,
+          "original_price": 280.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/brs-portable-7000w-power-outdoor-stove-brs-75/"
+        },
+        {
+          "name": "Grill and charcoal base for picnics and gardens",
+          "price_from": 110.0,
+          "price_to": 110.0,
+          "on_sale": true,
+          "original_price": 120.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/shwaya-wqaada-llfhm-llrhlat-walhdayq/"
+        },
+        {
+          "name": "Korean double burner camping stove with barbecue grill",
+          "price_from": 280.0,
+          "price_to": 280.0,
+          "on_sale": true,
+          "original_price": 320.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/mwqd-tkhyym-kwry-mzdwj-alshala-bwtan-ma-shwaya-shwa/"
+        },
+        {
+          "name": "Electric air blower",
+          "price_from": 110.0,
+          "price_to": 110.0,
+          "on_sale": true,
+          "original_price": 120.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/mnfakh-hwa-khrbayy/"
+        },
+        {
+          "name": "With a bag – two gas-powered Shula Burger burners",
+          "price_from": 255.0,
+          "price_to": 255.0,
+          "on_sale": true,
+          "original_price": 280.0,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/bshnta-shwla-brjr-aynyn-ghaz/"
+        }
+      ]
+    },
+    {
+      "name": "Candies / Sweets",
+      "url": "https://jarehsaeaduh.ae/en/collections/sweets/",
+      "total_products": null,
+      "products": [
+        {
+          "name": "Butter cookies – a luxury treat",
+          "price_from": 25.0,
+          "price_to": 25.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/butter-cookies/"
+        },
+        {
+          "name": "Nabil Nankhatai – Saffron & Cashew – Luxury Biscuits with Oriental Flavors",
+          "price_from": 25.0,
+          "price_to": 25.0,
+          "on_sale": false,
+          "variants": "",
+          "url": "https://jarehsaeaduh.ae/en/products/nabil-nankhatai/"
+        }
+      ]
+    },
+    {
+      "name": "Gift Boxes and Offers",
+      "url": "https://jarehsaeaduh.ae/en/collections/gift-boxes-offers/",
+      "total_products": null,
+      "products": []
+    },
+    {
+      "name": "Nuts",
+      "url": "https://jarehsaeaduh.ae/en/collections/nuts/",
+      "total_products": null,
+      "products": []
+    },
+    {
+      "name": "Cardamom",
+      "url": "https://jarehsaeaduh.ae/en/collections/cardamom/",
+      "total_products": null,
+      "products": []
+    },
+    {
+      "name": "Tahini",
+      "url": "https://jarehsaeaduh.ae/en/collections/tahini/",
+      "total_products": null,
+      "products": []
+    },
+    {
+      "name": "Honey",
+      "url": "https://jarehsaeaduh.ae/en/collections/honey/",
+      "total_products": null,
+      "products": []
+    },
+    {
+      "name": "Maamoul",
+      "url": "https://jarehsaeaduh.ae/en/collections/maamoul/",
+      "total_products": null,
+      "products": []
+    },
+    {
+      "name": "Olive Oil",
+      "url": "https://jarehsaeaduh.ae/en/collections/olive-oil/",
+      "total_products": null,
+      "products": []
+    },
+    {
+      "name": "Rice",
+      "url": "https://jarehsaeaduh.ae/en/collections/rice/",
+      "total_products": null,
+      "products": []
+    },
+    {
+      "name": "Saffron",
+      "url": "https://jarehsaeaduh.ae/en/collections/saffron/",
+      "total_products": null,
+      "products": []
+    },
+    {
+      "name": "Spices",
+      "url": "https://jarehsaeaduh.ae/en/collections/spices/",
+      "total_products": null,
+      "products": []
+    },
+    {
+      "name": "Sesame Oil",
+      "url": "https://jarehsaeaduh.ae/en/collections/sesame-oil/",
+      "total_products": null,
+      "products": []
+    },
+    {
+      "name": "Coffee and Dates Wholesale",
+      "url": "https://jarehsaeaduh.ae/en/collections/wholesale-coffee-dates/",
+      "total_products": null,
+      "products": []
+    },
+    {
+      "name": "Herbal Water",
+      "url": "https://jarehsaeaduh.ae/en/collections/herbal-water/",
+      "total_products": null,
+      "products": []
+    },
+    {
+      "name": "Various Products",
+      "url": "https://jarehsaeaduh.ae/en/collections/assorted-products/",
+      "total_products": null,
+      "products": []
+    }
+  ]
+}

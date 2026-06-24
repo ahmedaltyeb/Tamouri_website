@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
+import { parseMLText } from "@/lib/products";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as { orderId?: string };
@@ -38,7 +39,7 @@ export async function POST(request: Request) {
       price_data: {
         currency: "aed",
         product_data: {
-          name: item.product.name,
+          name: parseMLText(item.product.name).en,
           ...(item.product.image.startsWith("https://")
             ? { images: [item.product.image] }
             : {}),

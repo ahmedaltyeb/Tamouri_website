@@ -8,6 +8,7 @@ import ProductCard from "@/components/ProductCard";
 import { useCartStore } from "@/store/cartStore";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useProduct, useProducts } from "@/hooks/useProducts";
+import { parseMLText } from "@/lib/products";
 
 function PageSkeleton() {
   return (
@@ -40,7 +41,7 @@ export default function ProductPageClient({ id }: { id: string }) {
   const wishlist = useCartStore((s) => s.wishlist);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
-  const { tr } = useLanguage();
+  const { tr, lang } = useLanguage();
 
   if (loading) return <PageSkeleton />;
 
@@ -59,6 +60,9 @@ export default function ProductPageClient({ id }: { id: string }) {
       </main>
     );
   }
+
+  const productName = parseMLText(product.name)[lang];
+  const productDesc = parseMLText(product.description)[lang];
 
   const isWishlisted = wishlist.includes(product.id);
   const related = products
@@ -91,7 +95,7 @@ export default function ProductPageClient({ id }: { id: string }) {
           <span>/</span>
           <Link href={`/shop?category=${product.categorySlug}`} className="hover:text-brown cursor-pointer transition-colors">{product.category}</Link>
           <span>/</span>
-          <span className="text-ink font-medium truncate">{product.name}</span>
+          <span className="text-ink font-medium truncate">{productName}</span>
         </nav>
 
         {/* Product detail */}
@@ -100,9 +104,9 @@ export default function ProductPageClient({ id }: { id: string }) {
           <div className="relative">
             <div className="aspect-square rounded-2xl overflow-hidden bg-stone-100">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+              <img src={product.image} alt={productName} className="w-full h-full object-cover" />
             </div>
-            <div className="absolute top-4 right-4 flex flex-col gap-2">
+            <div className="absolute top-4 end-4 flex flex-col gap-2">
               {product.badge && (
                 <span className="bg-brown text-white text-xs font-bold px-3 py-1 rounded-lg shadow">{product.badge}</span>
               )}
@@ -118,7 +122,7 @@ export default function ProductPageClient({ id }: { id: string }) {
               {product.category}
             </span>
 
-            <h1 className="text-2xl md:text-3xl font-black text-ink mb-3 leading-snug">{product.name}</h1>
+            <h1 className="text-2xl md:text-3xl font-black text-ink mb-3 leading-snug">{productName}</h1>
 
             <div className="flex items-center gap-2 mb-4">
               <div className="flex gap-0.5">
@@ -153,7 +157,7 @@ export default function ProductPageClient({ id }: { id: string }) {
             </div>
 
             <p className="text-stone-600 text-sm leading-relaxed mb-6 border-t border-stone-100 pt-5">
-              {product.description}
+              {productDesc}
             </p>
 
             <div className="flex items-center gap-4 mb-5">

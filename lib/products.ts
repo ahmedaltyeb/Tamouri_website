@@ -1,7 +1,47 @@
+/** Multilingual text stored as JSON in the DB: { en, ar } */
+export interface MLText {
+  en: string;
+  ar: string;
+}
+
+/**
+ * Safe parser for multilingual text fields — returns { en, ar }.
+ * Handles three formats:
+ *   1. JSON string: '{"en":"...","ar":"..."}' — new DB format
+ *   2. Plain string: "قهوة عربية" — legacy DB records (used as both languages)
+ *   3. Object: { en, ar } — static product data / already-parsed values
+ */
+export function parseMLText(v: unknown, fallback = ""): MLText {
+  if (v && typeof v === "object" && !Array.isArray(v)) {
+    const o = v as Record<string, unknown>;
+    return {
+      en: typeof o.en === "string" ? o.en : fallback,
+      ar: typeof o.ar === "string" ? o.ar : fallback,
+    };
+  }
+  if (typeof v === "string") {
+    if (v.startsWith("{")) {
+      try {
+        const parsed = JSON.parse(v) as Record<string, unknown>;
+        if (parsed && typeof parsed.en === "string") {
+          return {
+            en: parsed.en,
+            ar: typeof parsed.ar === "string" ? parsed.ar : parsed.en,
+          };
+        }
+      } catch {
+        // not valid JSON — fall through to legacy handling
+      }
+    }
+    return { en: v, ar: v };
+  }
+  return { en: fallback, ar: fallback };
+}
+
 export interface Product {
   id: string;
-  name: string;
-  description: string;
+  name: MLText;
+  description: MLText;
   price: number;
   originalPrice?: number;
   category: string;
@@ -38,13 +78,13 @@ export const categories: Category[] = [
 export const products: Product[] = [
   {
     id: "1",
-    name: "تمر مجدول فاخر",
-    description: "تمر مجدول طازج من أجود المزارع الإماراتية، حجم كبير ونكهة غنية بالحلاوة الطبيعية. مثالي للضيافة والهدايا.",
+    name: { en: "Premium Medjool Dates", ar: "تمر مجدول فاخر" },
+    description: { en: "Fresh Medjool dates from the finest UAE farms, large size with rich natural sweetness. Perfect for hospitality and gifts.", ar: "تمر مجدول طازج من أجود المزارع الإماراتية، حجم كبير ونكهة غنية بالحلاوة الطبيعية. مثالي للضيافة والهدايا." },
     price: 85,
     originalPrice: 110,
     category: "التمر",
     categorySlug: "dates",
-    image: "https://images.unsplash.com/photo-1559628233-100c798642d6?w=600&q=80",
+    image: "https://i.ibb.co/WvwTpK27/dates.jpg",
     badge: "الأكثر مبيعاً",
     rating: 4.9,
     reviews: 234,
@@ -53,8 +93,8 @@ export const products: Product[] = [
   },
   {
     id: "2",
-    name: "قهوة عربية بالهيل",
-    description: "خلطة قهوة عربية أصيلة محمصة بعناية مع الهيل الطازج. تمنحك تجربة ضيافة خليجية أصيلة في كل فنجان.",
+    name: { en: "Arabic Coffee with Cardamom", ar: "قهوة عربية بالهيل" },
+    description: { en: "Authentic Arabic coffee blend carefully roasted with fresh cardamom. Experience genuine Gulf hospitality in every cup.", ar: "خلطة قهوة عربية أصيلة محمصة بعناية مع الهيل الطازج. تمنحك تجربة ضيافة خليجية أصيلة في كل فنجان." },
     price: 55,
     category: "القهوة العربية",
     categorySlug: "arabic-coffee",
@@ -66,8 +106,8 @@ export const products: Product[] = [
   },
   {
     id: "3",
-    name: "زعفران إيراني أصيل",
-    description: "زعفران إيراني من أعلى الدرجات، ذهبي اللون وغني بالرائحة. يضيف لمسة فاخرة لمشروباتك وطبخاتك.",
+    name: { en: "Authentic Iranian Saffron", ar: "زعفران إيراني أصيل" },
+    description: { en: "Top-grade Iranian saffron, golden in colour and rich in aroma. Adds a luxurious touch to your drinks and dishes.", ar: "زعفران إيراني من أعلى الدرجات، ذهبي اللون وغني بالرائحة. يضيف لمسة فاخرة لمشروباتك وطبخاتك." },
     price: 220,
     originalPrice: 250,
     category: "الزعفران",
@@ -81,8 +121,8 @@ export const products: Product[] = [
   },
   {
     id: "4",
-    name: "شاي كرك إماراتي",
-    description: "خلطة شاي كرك إماراتية بالهيل والزعفران والقرفة. مزيج رائع يجمع بين النكهات الخليجية الأصيلة.",
+    name: { en: "Emirati Karak Tea", ar: "شاي كرك إماراتي" },
+    description: { en: "Emirati karak tea blend with cardamom, saffron and cinnamon. A wonderful fusion of authentic Gulf flavours.", ar: "خلطة شاي كرك إماراتية بالهيل والزعفران والقرفة. مزيج رائع يجمع بين النكهات الخليجية الأصيلة." },
     price: 35,
     category: "الشاي",
     categorySlug: "tea",
@@ -94,8 +134,8 @@ export const products: Product[] = [
   },
   {
     id: "5",
-    name: "طقم دلة وفناجين ذهبي",
-    description: "طقم ضيافة فاخر يتضمن دلة عربية تقليدية مع 6 فناجين مزخرفة بتصميم ذهبي. هدية مثالية للمناسبات.",
+    name: { en: "Golden Dallah & Cups Set", ar: "طقم دلة وفناجين ذهبي" },
+    description: { en: "Luxury hospitality set including a traditional Arabic dallah with 6 ornate cups in a golden design. The perfect gift for any occasion.", ar: "طقم ضيافة فاخر يتضمن دلة عربية تقليدية مع 6 فناجين مزخرفة بتصميم ذهبي. هدية مثالية للمناسبات." },
     price: 195,
     originalPrice: 240,
     category: "مستلزمات الضيافة",
@@ -109,8 +149,8 @@ export const products: Product[] = [
   },
   {
     id: "7",
-    name: "بوكس هدايا الضيافة الفاخر",
-    description: "صندوق هدايا متكامل يحتوي على تمر مجدول، قهوة عربية، زعفران وشاي. تغليف فاخر مناسب لجميع المناسبات.",
+    name: { en: "Premium Hospitality Gift Box", ar: "بوكس هدايا الضيافة الفاخر" },
+    description: { en: "A complete gift box containing Medjool dates, Arabic coffee, saffron and tea. Luxury packaging suitable for all occasions.", ar: "صندوق هدايا متكامل يحتوي على تمر مجدول، قهوة عربية، زعفران وشاي. تغليف فاخر مناسب لجميع المناسبات." },
     price: 250,
     category: "بوكس هدايا",
     categorySlug: "gift-boxes",
@@ -123,8 +163,8 @@ export const products: Product[] = [
   },
   {
     id: "8",
-    name: "مطحنة قهوة يدوية فاخرة",
-    description: "مطحنة قهوة يدوية من الفولاذ المقاوم للصدأ، تمنحك تحكماً كاملاً في درجة الطحن للحصول على قهوتك المثالية.",
+    name: { en: "Premium Manual Coffee Grinder", ar: "مطحنة قهوة يدوية فاخرة" },
+    description: { en: "Stainless steel manual coffee grinder giving you full control over grind size for the perfect cup.", ar: "مطحنة قهوة يدوية من الفولاذ المقاوم للصدأ، تمنحك تحكماً كاملاً في درجة الطحن للحصول على قهوتك المثالية." },
     price: 120,
     originalPrice: 150,
     category: "أدوات القهوة والشاي",
@@ -138,8 +178,8 @@ export const products: Product[] = [
   },
   {
     id: "9",
-    name: "شاي الأعشاب الإماراتي",
-    description: "خلطة أعشاب طبيعية منتقاة تشمل البابونج والنعناع والزنجبيل. مشروب صحي مثالي لكل وقت.",
+    name: { en: "Emirati Herbal Tea", ar: "شاي الأعشاب الإماراتي" },
+    description: { en: "A hand-picked natural herbal blend including chamomile, mint and ginger. A healthy drink perfect for any time of day.", ar: "خلطة أعشاب طبيعية منتقاة تشمل البابونج والنعناع والزنجبيل. مشروب صحي مثالي لكل وقت." },
     price: 28,
     category: "الشاي",
     categorySlug: "tea",
@@ -151,8 +191,8 @@ export const products: Product[] = [
   },
   {
     id: "10",
-    name: "طقم أكواب شاي تركي",
-    description: "طقم أكواب شاي تركية زجاجية بتصميم أنيق، مع حوامل معدنية مذهبة. يضيف أناقة لطاولة الضيافة.",
+    name: { en: "Turkish Tea Glasses Set", ar: "طقم أكواب شاي تركي" },
+    description: { en: "Elegant glass Turkish tea cups with gilded metal holders. Adds a touch of sophistication to your hospitality table.", ar: "طقم أكواب شاي تركية زجاجية بتصميم أنيق، مع حوامل معدنية مذهبة. يضيف أناقة لطاولة الضيافة." },
     price: 75,
     category: "أدوات القهوة والشاي",
     categorySlug: "tools",
@@ -164,8 +204,8 @@ export const products: Product[] = [
   },
   {
     id: "11",
-    name: "بوكس هدايا العيد",
-    description: "صندوق هدايا عيد مميز يحتوي على تشكيلة من أجود التمور والحلويات الإماراتية بتغليف احتفالي فاخر.",
+    name: { en: "Eid Gift Box", ar: "بوكس هدايا العيد" },
+    description: { en: "A distinctive Eid gift box with a selection of the finest dates and Emirati sweets in luxurious festive packaging.", ar: "صندوق هدايا عيد مميز يحتوي على تشكيلة من أجود التمور والحلويات الإماراتية بتغليف احتفالي فاخر." },
     price: 180,
     originalPrice: 210,
     category: "بوكس هدايا",
@@ -179,8 +219,8 @@ export const products: Product[] = [
   },
   {
     id: "12",
-    name: "قهوة سوداء محمصة دارك",
-    description: "قهوة محمصة تحميصاً غامقاً للعشاق المتذوقين. نكهة قوية وغنية مع رائحة بن أصيلة لا تُقاوم.",
+    name: { en: "Dark Roast Black Coffee", ar: "قهوة سوداء محمصة دارك" },
+    description: { en: "Dark roasted coffee for discerning enthusiasts. Bold and rich flavour with an irresistible authentic coffee aroma.", ar: "قهوة محمصة تحميصاً غامقاً للعشاق المتذوقين. نكهة قوية وغنية مع رائحة بن أصيلة لا تُقاوم." },
     price: 45,
     originalPrice: 60,
     category: "القهوة العربية",

@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { sendOrderConfirmation } from "@/lib/email";
+import { parseMLText } from "@/lib/products";
 
 export const dynamic = "force-dynamic";
 
@@ -79,7 +80,7 @@ export async function POST(request: Request) {
       customerName: order.user.name,
       orderId: order.id,
       items: order.items.map((i) => ({
-        name: i.product.name,
+        name: parseMLText(i.product.name).en,
         quantity: i.quantity,
         price: i.price,
       })),

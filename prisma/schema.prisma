@@ -28,23 +28,75 @@ model Category {
 model StoreSettings {
   id           String   @id @default(cuid())
   name         String
+  nameEn       String?
+  nameAr       String?
+  taglineEn    String?
+  taglineAr    String?
+  logo         String?
+  favicon      String?
   description  String?
   location     String?
+  addressEn    String?
+  addressAr    String?
   phone        String?
   whatsapp     String?
   email        String?
   workingHours String?
   currency     String   @default("AED")
   websiteUrl   String?
+  instagramUrl String?
+  twitterUrl   String?
+  whatsappUrl  String?
+  seoTitleEn   String?
+  seoTitleAr   String?
+  seoDescEn    String?
+  seoDescAr    String?
+  ogImage      String?
   updatedAt    DateTime @updatedAt
+}
+
+// ─── CMS: Hero Slides ─────────────────────────────────────────────────────────
+
+model HeroSlide {
+  id         String   @id @default(cuid())
+  order      Int      @default(0)
+  image      String
+  titleEn    String?
+  titleAr    String?
+  subtitleEn String?
+  subtitleAr String?
+  ctaLabelEn String?
+  ctaLabelAr String?
+  ctaUrl     String?
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([active, order])
+}
+
+// ─── CMS: Footer Sections ─────────────────────────────────────────────────────
+
+model FooterSection {
+  id       String   @id @default(cuid())
+  order    Int      @default(0)
+  titleEn  String
+  titleAr  String
+  links    String   // JSON array: [{labelEn, labelAr, url}]
+  active   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, order])
 }
 
 // ─── Products ────────────────────────────────────────────────────────────────
 
 model Product {
   id            String    @id @default(cuid())
-  name          String
-  description   String
+  sku           String?   @unique
+  name          String    // JSON string: { en: string; ar: string } or legacy plain string
+  description   String    // JSON string: { en: string; ar: string } or legacy plain string
   price         Float
   originalPrice Float?
   category      String
@@ -66,8 +118,10 @@ model Product {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  categoryRef Category?   @relation(fields: [categoryId], references: [id])
-  orderItems  OrderItem[]
+  categoryRef   Category?      @relation(fields: [categoryId], references: [id])
+  orderItems    OrderItem[]
+  wishlistItems WishlistItem[]
+  cartItems     CartItem[]
 
   @@index([categorySlug])
   @@index([inStock])
@@ -77,16 +131,54 @@ model Product {
 // ─── Users ───────────────────────────────────────────────────────────────────
 
 model User {
+  id               String    @id @default(cuid())
+  email            String    @unique
+  name             String
+  phone            String?
+  passwordHash     String?   // null for guest users created by order checkout
+  resetToken       String?   @unique
+  resetTokenExpiry DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  orders    Order[]
+  addresses Address[]
+  wishlist  WishlistItem[]
+  cartItems CartItem[]
+
+  @@index([email])
+}
+
+model Address {
   id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  phone     String?
+  userId    String
+  label     String   @default("Home")
+  fullName  String
+  phone     String
+  line1     String
+  line2     String?
+  city      String
+  emirate   String
+  isDefault Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  orders Order[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([email])
+  @@index([userId])
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
 }
 
 // ─── Orders ──────────────────────────────────────────────────────────────────
@@ -153,6 +245,23 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
+}
+
+// ─── Cart (persisted for logged-in users) ────────────────────────────────────
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([userId])
 }
 
 model OrderStatusHistory {

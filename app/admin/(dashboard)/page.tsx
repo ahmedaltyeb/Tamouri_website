@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import type { OrderStatus } from "@prisma/client";
 import StatusBadge from "./orders/_components/StatusBadge";
+import { parseMLText } from "@/lib/products";
 
 export const dynamic = "force-dynamic";
 
@@ -263,7 +264,7 @@ export default async function AdminDashboardPage() {
           <div className="space-y-2">
             {lowStockProducts.map((p) => (
               <div key={p.id} className="flex items-center justify-between bg-white border border-amber-100 rounded-xl px-4 py-2.5">
-                <p className="text-sm font-medium text-stone-800 truncate">{p.name}</p>
+                <p className="text-sm font-medium text-stone-800 truncate">{parseMLText(p.name).en}</p>
                 <span className={`text-xs font-bold px-2.5 py-1 rounded-full flex-none ms-3 ${p.stock === 0 ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>
                   {p.stock === 0 ? "Out of stock" : `${p.stock} left`}
                 </span>
@@ -291,12 +292,12 @@ export default async function AdminDashboardPage() {
                   </span>
                   <img
                     src={product.image}
-                    alt={product.name}
+                    alt={parseMLText(product.name).en}
                     className="w-9 h-9 rounded-lg object-cover bg-stone-100 flex-none"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-stone-800 truncate">
-                      {product.name}
+                      {parseMLText(product.name).en}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <div className="flex-1 bg-stone-100 rounded-full h-1.5">

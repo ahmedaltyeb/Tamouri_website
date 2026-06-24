@@ -3,27 +3,39 @@ import { readdir } from "fs/promises";
 import path from "path";
 import { auth } from "@/auth";
 
-// BUG FIX #7: require admin session — this endpoint lists server file paths
 async function requireAdmin() {
   const session = await auth();
   return session?.user?.role === "ADMIN" ? session : null;
 }
 
-// GET /api/admin/local-images — returns static product images from /public/products/
+const IMAGE_RE = /\.(png|jpe?g|webp|gif)$/i;
+
+// Returns all local product images from two folders:
+//   /public/products/         → curated catalog images
+//   /public/uploads/products/ → admin-uploaded images
 export async function GET() {
   if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const dir = path.join(process.cwd(), "public", "products");
-  try {
-    const files = await readdir(dir);
-    const images = files
-      .filter((f) => /\.(png|jpe?g|webp|gif)$/i.test(f))
-      .sort()
-      .map((f) => `/products/${f}`);
-    return NextResponse.json({ images });
-  } catch {
-    return NextResponse.json({ images: [] });
+  const sources = [
+    { dir: path.join(process.cwd(), "public", "products"),         prefix: "/products/" },
+    { dir: path.join(process.cwd(), "public", "uploads", "products"), prefix: "/uploads/products/" },
+  ];
+
+  const images: string[] = [];
+
+  for (const { dir, prefix } of sources) {
+    try {
+      const files = await readdir(dir);
+      files
+        .filter((f) => IMAGE_RE.test(f))
+        .sort()
+        .forEach((f) => images.push(`${prefix}${f}`));
+    } catch {
+      // Directory doesn't exist yet — safe to skip
+    }
   }
+
+  return NextResponse.json({ images });
 }

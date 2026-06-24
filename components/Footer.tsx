@@ -1,9 +1,15 @@
 "use client";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useSiteSettings } from "@/contexts/SiteSettingsContext";
+
+function latinOnly(text: string): string {
+  return text.replace(/[؀-ۿݐ-ݿࢠ-ࣿ]+/g, "").replace(/\s+/g, " ").trim();
+}
 
 export default function Footer() {
   const { tr, lang } = useLanguage();
+  const { settings, footerSections } = useSiteSettings();
 
   const quickLinks = [
     { labelKey: "home",        href: "/" },
@@ -16,9 +22,9 @@ export default function Footer() {
 
   const serviceLinks = [
     { labelKey: "contactUs",    href: "/contact" },
-    { labelKey: "returnPolicy", href: "#" },
-    { labelKey: "shippingInfo", href: "#" },
-    { labelKey: "faq",          href: "#" },
+    { labelKey: "returnPolicy", href: "/return-policy" },
+    { labelKey: "shippingInfo", href: "/shipping-delivery" },
+    { labelKey: "faq",          href: "/faqs" },
     { labelKey: "trackOrder",   href: "/track-order" },
   ] as const;
 
@@ -47,12 +53,19 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-brown to-gold rounded-xl flex items-center justify-center text-white font-black text-xl flex-none">
-                م
-              </div>
+              {settings.logo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={settings.logo} alt={settings.nameEn} className="w-12 h-12 rounded-xl object-contain p-0.5 bg-white/10 border border-white/20 flex-none" />
+              ) : (
+                <div className="w-12 h-12 bg-gradient-to-br from-brown to-gold rounded-xl flex items-center justify-center text-white font-black text-xl flex-none">
+                  {lang === "ar"
+                    ? (settings.nameAr?.charAt(0) || "م")
+                    : (settings.nameEn?.match(/[A-Za-z]+/)?.[0]?.substring(0, 2).toUpperCase() || "MG")}
+                </div>
+              )}
               <div>
                 <div className="text-sm font-black text-white leading-tight">
-                  {lang === "ar" ? "مربع الغربية للتمور" : "Marbea Al Gharbeya Dates"}
+                  {lang === "ar" ? settings.nameAr : latinOnly(settings.nameEn)}
                 </div>
                 <div className="text-gold text-xs font-medium mt-0.5">{tr("logoTagline")}</div>
               </div>
@@ -60,56 +73,90 @@ export default function Footer() {
             <p className="text-white/60 text-sm leading-relaxed mb-5">{tr("footerDesc")}</p>
 
             <div className="flex gap-3">
-              {socials.map((s) => (
-                <a
-                  key={s.label}
-                  href="#"
-                  aria-label={s.label}
-                  className="w-9 h-9 bg-white/10 hover:bg-gold transition-colors rounded-lg flex items-center justify-center cursor-pointer"
-                >
-                  <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                    <path d={s.path} />
-                  </svg>
-                </a>
-              ))}
+              {socials.map((s) => {
+                const href =
+                  s.label === "Instagram" ? (settings.instagramUrl ?? "#") :
+                  s.label === "X" ? (settings.twitterUrl ?? "#") :
+                  s.label === "WhatsApp" ? (settings.whatsappUrl ?? "#") : "#";
+                return (
+                  <a
+                    key={s.label}
+                    href={href}
+                    target={href !== "#" ? "_blank" : undefined}
+                    rel={href !== "#" ? "noopener noreferrer" : undefined}
+                    aria-label={s.label}
+                    className="w-9 h-9 bg-white/10 hover:bg-gold transition-colors rounded-lg flex items-center justify-center cursor-pointer"
+                  >
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d={s.path} />
+                    </svg>
+                  </a>
+                );
+              })}
             </div>
           </div>
 
-          {/* Quick links */}
-          <div>
-            <h4 className="font-bold text-sm mb-4 text-white/90">{tr("quickLinks")}</h4>
-            <ul className="space-y-2.5">
-              {quickLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-white/60 hover:text-gold text-sm transition-colors cursor-pointer flex items-center gap-1.5"
-                  >
-                    <span className="w-1 h-1 bg-gold rounded-full flex-none" />
-                    {tr(link.labelKey)}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Dynamic footer sections (from CMS) or static fallback */}
+          {footerSections.length > 0 ? (
+            footerSections.slice(0, 2).map((section) => (
+              <div key={section.id}>
+                <h4 className="font-bold text-sm mb-4 text-white/90">
+                  {lang === "ar" ? section.titleAr : section.titleEn}
+                </h4>
+                <ul className="space-y-2.5">
+                  {section.links.map((link, i) => (
+                    <li key={i}>
+                      <Link
+                        href={link.url || "#"}
+                        className="text-white/60 hover:text-gold text-sm transition-colors cursor-pointer flex items-center gap-1.5"
+                      >
+                        <span className="w-1 h-1 bg-gold rounded-full flex-none" />
+                        {lang === "ar" ? (link.labelAr || link.labelEn) : link.labelEn}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          ) : (
+            <>
+              {/* Quick links */}
+              <div>
+                <h4 className="font-bold text-sm mb-4 text-white/90">{tr("quickLinks")}</h4>
+                <ul className="space-y-2.5">
+                  {quickLinks.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="text-white/60 hover:text-gold text-sm transition-colors cursor-pointer flex items-center gap-1.5"
+                      >
+                        <span className="w-1 h-1 bg-gold rounded-full flex-none" />
+                        {tr(link.labelKey)}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-          {/* Customer service */}
-          <div>
-            <h4 className="font-bold text-sm mb-4 text-white/90">{tr("customerService")}</h4>
-            <ul className="space-y-2.5">
-              {serviceLinks.map((link) => (
-                <li key={link.labelKey}>
-                  <Link
-                    href={link.href}
-                    className="text-white/60 hover:text-gold text-sm transition-colors cursor-pointer flex items-center gap-1.5"
-                  >
-                    <span className="w-1 h-1 bg-gold rounded-full flex-none" />
-                    {tr(link.labelKey)}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+              {/* Customer service */}
+              <div>
+                <h4 className="font-bold text-sm mb-4 text-white/90">{tr("customerService")}</h4>
+                <ul className="space-y-2.5">
+                  {serviceLinks.map((link) => (
+                    <li key={link.labelKey}>
+                      <Link
+                        href={link.href}
+                        className="text-white/60 hover:text-gold text-sm transition-colors cursor-pointer flex items-center gap-1.5"
+                      >
+                        <span className="w-1 h-1 bg-gold rounded-full flex-none" />
+                        {tr(link.labelKey)}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </>
+          )}
 
           {/* Contact info */}
           <div>
@@ -126,13 +173,13 @@ export default function Footer() {
                 <svg className="w-4 h-4 text-gold flex-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                 </svg>
-                <span className="text-white/60 text-sm" dir="ltr">+971 50 000 0000</span>
+                <span className="text-white/60 text-sm" dir="ltr">{settings.phone}</span>
               </li>
               <li className="flex items-center gap-3">
                 <svg className="w-4 h-4 text-gold flex-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <span className="text-white/60 text-sm" dir="ltr">info@tamouri.ae</span>
+                <span className="text-white/60 text-sm" dir="ltr">{settings.email}</span>
               </li>
               <li className="flex items-center gap-3">
                 <svg className="w-4 h-4 text-gold flex-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">

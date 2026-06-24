@@ -6,6 +6,8 @@ import Footer from "@/components/Footer";
 import ProductDetail from "@/components/ProductDetail";
 import JsonLd from "@/components/JsonLd";
 import { prisma } from "@/lib/prisma";
+import { parseMLText } from "@/lib/products";
+import { getLang } from "@/lib/server-lang";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? "https://tamouri.onrender.com";
 
@@ -19,33 +21,41 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   try {
     const { id } = await params;
-    const product = await prisma.product.findUnique({
-      where: { id },
-      select: { name: true, description: true, image: true, price: true, category: true },
-    });
+    const [product, lang] = await Promise.all([
+      prisma.product.findUnique({
+        where: { id },
+        select: { name: true, description: true, image: true, price: true, category: true },
+      }),
+      getLang(),
+    ]);
 
     if (!product) return { title: "Marbea Al Gharbeya Dates" };
 
-    const title = `${product.name} — ${product.price} AED`;
-    const description = `${product.description.slice(0, 140)} — ${product.price} AED. Free delivery across UAE.`;
+    const name = parseMLText(product.name);
+    const desc = parseMLText(product.description);
+    const localName = name[lang];
+    const localDesc = desc[lang];
+
+    const title = `${localName} — ${product.price} AED`;
+    const description = `${localDesc.slice(0, 140)} — ${product.price} AED. Free delivery across UAE.`;
+    const canonicalUrl = `${BASE}/${lang}/product/${id}`;
 
     return {
       title,
       description,
-      alternates: { canonical: `${BASE}/product/${id}` },
+      alternates: { canonical: canonicalUrl },
       openGraph: {
-        title: `${product.name} | Marbea Al Gharbeya Dates`,
+        title: `${localName} | Marbea Al Gharbeya Dates`,
         description,
-        url: `${BASE}/product/${id}`,
+        url: canonicalUrl,
         type: "website",
-        // BUG FIX #6: guard against empty image string — fall back to store OG image
         images: product.image
-          ? [{ url: product.image, width: 800, height: 800, alt: product.name }]
+          ? [{ url: product.image, width: 800, height: 800, alt: localName }]
           : [{ url: `${BASE}/og-image.png`, width: 1200, height: 630, alt: "Marbea Al Gharbeya" }],
       },
       twitter: {
         card: "summary_large_image",
-        title: `${product.name} — ${product.price} AED`,
+        title: `${localName} — ${product.price} AED`,
         description,
         images: product.image ? [product.image] : [`${BASE}/og-image.png`],
       },
@@ -61,14 +71,22 @@ export default async function ProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-
-  const product = await prisma.product.findUnique({ where: { id } });
+  const [product, lang] = await Promise.all([
+    prisma.product.findUnique({ where: { id } }),
+    getLang(),
+  ]);
   if (!product) notFound();
 
   const related = await prisma.product.findMany({
     where: { categorySlug: product.categorySlug, id: { not: product.id }, inStock: true },
     take: 4,
   });
+
+  const name = parseMLText(product.name);
+  const desc = parseMLText(product.description);
+  const localName = name[lang];
+  const localDesc = desc[lang];
+  const canonicalUrl = `${BASE}/${lang}/product/${id}`;
 
   const availability =
     product.inStock && product.stock > 0
@@ -78,18 +96,18 @@ export default async function ProductPage({
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "Product",
-    "@id": `${BASE}/product/${id}/#product`,
-    name: product.name,
-    description: product.description,
+    "@id": `${canonicalUrl}/#product`,
+    name: localName,
+    description: localDesc,
     image: [product.image],
-    sku: product.id,
+    sku: product.sku ?? product.id,
     brand: {
       "@type": "Brand",
       name: "مربع الغربية للتمور",
     },
     offers: {
       "@type": "Offer",
-      url: `${BASE}/product/${id}`,
+      url: canonicalUrl,
       priceCurrency: "AED",
       price: product.price.toString(),
       availability,
@@ -122,10 +140,10 @@ export default async function ProductPage({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "الرئيسية", item: BASE },
-      { "@type": "ListItem", position: 2, name: "المتجر", item: `${BASE}/shop` },
-      { "@type": "ListItem", position: 3, name: product.category, item: `${BASE}/shop?category=${product.categorySlug}` },
-      { "@type": "ListItem", position: 4, name: product.name, item: `${BASE}/product/${id}` },
+      { "@type": "ListItem", position: 1, name: lang === "ar" ? "الرئيسية" : "Home", item: `${BASE}/${lang}` },
+      { "@type": "ListItem", position: 2, name: lang === "ar" ? "المتجر" : "Shop", item: `${BASE}/${lang}/shop` },
+      { "@type": "ListItem", position: 3, name: product.category, item: `${BASE}/${lang}/shop?category=${product.categorySlug}` },
+      { "@type": "ListItem", position: 4, name: localName, item: canonicalUrl },
     ],
   };
 
@@ -135,36 +153,36 @@ export default async function ProductPage({
     mainEntity: [
       {
         "@type": "Question",
-        name: `هل ${product.name} متوفر للشراء الآن؟`,
+        name: `هل ${name.ar} متوفر للشراء الآن؟`,
         acceptedAnswer: {
           "@type": "Answer",
           text: product.inStock && product.stock > 0
-            ? `نعم، ${product.name} متوفر بسعر ${product.price} درهم إماراتي. أضفه إلى السلة وادفع بسهولة عبر بطاقة الائتمان.`
-            : `${product.name} غير متوفر حالياً. يرجى مراجعة المتجر لاحقاً.`,
+            ? `نعم، ${name.ar} متوفر بسعر ${product.price} درهم إماراتي. أضفه إلى السلة وادفع بسهولة عبر بطاقة الائتمان.`
+            : `${name.ar} غير متوفر حالياً. يرجى مراجعة المتجر لاحقاً.`,
         },
       },
       {
         "@type": "Question",
-        name: `What is the price of ${product.name}?`,
+        name: `What is the price of ${name.en}?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `${product.name} is available for ${product.price} AED${product.originalPrice ? ` (was ${product.originalPrice} AED)` : ""}. Free delivery across UAE on orders over 200 AED.`,
+          text: `${name.en} is available for ${product.price} AED${product.originalPrice ? ` (was ${product.originalPrice} AED)` : ""}. Free delivery across UAE on orders over 200 AED.`,
         },
       },
       {
         "@type": "Question",
-        name: `هل توصلون ${product.name} لدبي وجميع إمارات الدولة؟`,
+        name: `هل توصلون ${name.ar} لدبي وجميع إمارات الدولة؟`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `نعم، نوصل ${product.name} لجميع إمارات الدولة — دبي، أبوظبي، الشارقة، عجمان، رأس الخيمة وسواها. الطلبات فوق 200 درهم توصيل مجاني.`,
+          text: `نعم، نوصل ${name.ar} لجميع إمارات الدولة — دبي، أبوظبي، الشارقة، عجمان، رأس الخيمة وسواها. الطلبات فوق 200 درهم توصيل مجاني.`,
         },
       },
       {
         "@type": "Question",
-        name: `Is ${product.name} a good gift?`,
+        name: `Is ${name.en} a good gift?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `${product.name} is a popular choice for gifts and hospitality in the UAE. ${product.description}`,
+          text: `${name.en} is a popular choice for gifts and hospitality in the UAE. ${desc.en}`,
         },
       },
     ],

@@ -6,11 +6,12 @@ import ProductCard from "@/components/ProductCard";
 import { useCartStore } from "@/store/cartStore";
 import { useLanguage } from "@/contexts/LanguageContext";
 import type { Product } from "@/lib/products";
+import { parseMLText } from "@/lib/products";
 
 export interface ProductDetailProduct {
   id: string;
-  name: string;
-  description: string;
+  name: unknown;        // MLText Json from DB — use parseMLText()
+  description: unknown; // MLText Json from DB
   price: number;
   originalPrice: number | null;
   category: string;
@@ -37,7 +38,10 @@ export default function ProductDetail({ product, related }: Props) {
   const wishlist = useCartStore((s) => s.wishlist);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
-  const { tr } = useLanguage();
+  const { tr, lang } = useLanguage();
+
+  const name = parseMLText(product.name)[lang];
+  const description = parseMLText(product.description)[lang];
 
   // BUG FIX #1: use || so empty strings fall through to PLACEHOLDER
   const rawImages = product.images?.length
@@ -83,7 +87,7 @@ export default function ProductDetail({ product, related }: Props) {
           {product.category}
         </Link>
         <span>/</span>
-        <span className="text-ink font-medium truncate">{product.name}</span>
+        <span className="text-ink font-medium truncate">{name}</span>
       </nav>
 
       {/* Product detail */}
@@ -95,7 +99,7 @@ export default function ProductDetail({ product, related }: Props) {
           <div className="relative aspect-square rounded-2xl overflow-hidden bg-white border border-stone-100">
             <Image
               src={activeImage}
-              alt={product.name}
+              alt={name}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               className="object-contain p-4 transition-opacity duration-200"
@@ -142,7 +146,7 @@ export default function ProductDetail({ product, related }: Props) {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={url}
-                    alt={`${product.name} ${idx + 1}`}
+                    alt={`${name} ${idx + 1}`}
                     className="w-full h-full object-contain p-1 bg-white"
                     loading="lazy"
                     onError={(e) => {
@@ -162,7 +166,7 @@ export default function ProductDetail({ product, related }: Props) {
           </span>
 
           <h1 className="text-2xl md:text-3xl font-black text-ink mb-3 leading-snug">
-            {product.name}
+            {name}
           </h1>
 
           <div className="flex items-center gap-2 mb-4">
@@ -206,7 +210,7 @@ export default function ProductDetail({ product, related }: Props) {
           </div>
 
           <p className="text-stone-600 text-sm leading-relaxed mb-6 border-t border-stone-100 pt-5">
-            {product.description}
+            {description}
           </p>
 
           <div className="flex items-center gap-4 mb-5">
