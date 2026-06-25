@@ -41,10 +41,10 @@ export default function WhyTamouri() {
   return (
     <section className="py-16 bg-gradient-to-b from-white to-cream">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-12">
-          <p className="text-gold font-semibold text-sm mb-2">{tr("whyBadge")}</p>
-          <h2 className="section-title">{tr("whyTitle")}</h2>
-          <p className="section-subtitle mt-2 max-w-lg mx-auto">{tr("whySub")}</p>
+        <div className="mb-12">
+          <p className="text-gold font-semibold text-sm mb-2 text-start">{tr("whyBadge")}</p>
+          <h2 className="section-title text-start">{tr("whyTitle")}</h2>
+          <p className="section-subtitle mt-2 max-w-lg text-start">{tr("whySub")}</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

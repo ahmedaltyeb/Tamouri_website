@@ -4,6 +4,25 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
 
+/*
+  Default theme CSS variables — Luxury Gold.
+  These are overridden at runtime by the <style> tag injected in app/layout.tsx
+  whenever a custom theme is saved in Admin → Store Settings → Theme.
+  Values are space-separated RGB channels to support Tailwind opacity modifiers.
+*/
+:root {
+  --theme-primary:        196 154  60;
+  --theme-primary-dark:   160 120  40;
+  --theme-primary-light:  212 174  92;
+  --theme-secondary:      139  94  60;
+  --theme-secondary-dark: 107  68  35;
+  --theme-secondary-light:168 112  80;
+  --theme-accent:         212 174  92;
+  --theme-success:         34 197  94;
+  --theme-bg:             250 248 245;
+  --theme-text:            26  26  26;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -14,8 +33,8 @@ html {
 
 body {
   font-family: 'Cairo', sans-serif;
-  background-color: #FAF8F5;
-  color: #1A1A1A;
+  background-color: rgb(var(--theme-bg));
+  color: rgb(var(--theme-text));
   direction: rtl;
 }
 
@@ -25,10 +44,10 @@ body {
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF8F5;
+  background: rgb(var(--theme-bg));
 }
 ::-webkit-scrollbar-thumb {
-  background: #C49A3C;
+  background: rgb(var(--theme-primary));
   border-radius: 3px;
 }
 

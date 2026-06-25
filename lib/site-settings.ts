@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { type ThemeColors, DEFAULT_THEME, parseThemeJson } from "@/lib/theme";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -24,6 +25,7 @@ export interface SiteSettingsData {
   seoDescEn: string;
   seoDescAr: string;
   ogImage: string | null;
+  themeColors: ThemeColors;
 }
 
 export interface FooterLinkData {
@@ -38,6 +40,14 @@ export interface FooterSectionData {
   titleEn: string;
   titleAr: string;
   links: FooterLinkData[];
+}
+
+export interface PaymentMethodData {
+  id: string;
+  name: string;
+  image: string;
+  enabled: boolean;
+  sortOrder: number;
 }
 
 export interface HeroSlideData {
@@ -77,6 +87,7 @@ export const SITE_SETTINGS_DEFAULTS: SiteSettingsData = {
   seoDescEn: "Premium UAE dates, Arabic coffee, saffron & tea — delivered across the UAE.",
   seoDescAr: "تمور إماراتية فاخرة، قهوة عربية، زعفران وشاي — توصيل سريع في الإمارات.",
   ogImage: null,
+  themeColors: DEFAULT_THEME,
 };
 
 // ── In-memory cache (resets on server restart — acceptable for CMS data) ──────
@@ -84,12 +95,14 @@ export const SITE_SETTINGS_DEFAULTS: SiteSettingsData = {
 let settingsCache: { data: SiteSettingsData; at: number } | null = null;
 let footerCache: { data: FooterSectionData[]; at: number } | null = null;
 let heroCache: { data: HeroSlideData[]; at: number } | null = null;
+let paymentCache: { data: PaymentMethodData[]; at: number } | null = null;
 const TTL = 60_000; // 60 seconds
 
 export function invalidateCmsCache() {
   settingsCache = null;
   footerCache = null;
   heroCache = null;
+  paymentCache = null;
 }
 
 // ── Getters ───────────────────────────────────────────────────────────────────
@@ -123,6 +136,7 @@ export async function getSiteSettings(): Promise<SiteSettingsData> {
       seoDescEn: row.seoDescEn ?? SITE_SETTINGS_DEFAULTS.seoDescEn,
       seoDescAr: row.seoDescAr ?? SITE_SETTINGS_DEFAULTS.seoDescAr,
       ogImage: row.ogImage ?? null,
+      themeColors: parseThemeJson((row as Record<string, unknown>).themeJson as string | null),
     };
 
     settingsCache = { data, at: Date.now() };
@@ -179,6 +193,29 @@ export async function getHeroSlides(): Promise<HeroSlideData[]> {
     }));
 
     heroCache = { data, at: Date.now() };
+    return data;
+  } catch {
+    return [];
+  }
+}
+
+export async function getPaymentMethods(): Promise<PaymentMethodData[]> {
+  if (paymentCache && Date.now() - paymentCache.at < TTL) return paymentCache.data;
+
+  try {
+    const rows = await prisma.paymentMethod.findMany({
+      orderBy: { sortOrder: "asc" },
+    });
+
+    const data: PaymentMethodData[] = rows.map((r) => ({
+      id: r.id,
+      name: r.name,
+      image: r.image,
+      enabled: r.enabled,
+      sortOrder: r.sortOrder,
+    }));
+
+    paymentCache = { data, at: Date.now() };
     return data;
   } catch {
     return [];

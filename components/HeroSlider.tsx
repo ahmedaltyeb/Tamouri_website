@@ -11,8 +11,9 @@ interface StaticSlide {
 }
 
 const STATIC_SLIDES: StaticSlide[] = [
-  { id: 1, image: `${BASE_PATH}/assets/slider/slide-1.webp`, alt: "slide 1" },
-  { id: 2, image: `${BASE_PATH}/assets/slider/slide-2.webp`, alt: "slide 2" },
+  // { id: 1, image: `${BASE_PATH}/assets/slider/heroSlider-5.png`, alt: "slide 1" },
+  // { id: 2, image: `${BASE_PATH}/assets/slider/heroSlider-6.png`, alt: "slide 2" },
+  // { id: 3, image: `${BASE_PATH}/assets/slider/heroSlider-5.png`, alt: "slide 3" },
 ];
 
 type AnySlide = HeroSlideData | StaticSlide;

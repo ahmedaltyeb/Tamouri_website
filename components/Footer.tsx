@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
+import PaymentMethods from "@/components/PaymentMethods";
 
 function latinOnly(text: string): string {
   return text.replace(/[؀-ۿݐ-ݿࢠ-ࣿ]+/g, "").replace(/\s+/g, " ").trim();
@@ -191,13 +192,7 @@ export default function Footer() {
 
             <div className="mt-5">
               <p className="text-white/50 text-xs mb-2">{tr("paymentAccepted")}</p>
-              <div className="flex gap-2 flex-wrap">
-                {["Visa", "MC", "Apple Pay"].map((m) => (
-                  <div key={m} className="bg-white/10 border border-white/10 rounded-md px-2.5 py-1.5 text-xs font-bold text-white/70">
-                    {m}
-                  </div>
-                ))}
-              </div>
+              <PaymentMethods variant="dark" />
             </div>
           </div>
         </div>

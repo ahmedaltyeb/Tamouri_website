@@ -26,9 +26,9 @@ export default function FeaturedProducts() {
     <section className="py-14 max-w-7xl mx-auto px-4 sm:px-6">
       <div className="flex items-end justify-between mb-8">
         <div>
-          <p className="text-gold font-semibold text-sm mb-1">{tr("featuredBadge")}</p>
-          <h2 className="section-title">{tr("featuredTitle")}</h2>
-          <p className="section-subtitle mt-1">{tr("featuredSub")}</p>
+          <p className="text-gold font-semibold text-sm mb-1 text-start">{tr("featuredBadge")}</p>
+          <h2 className="section-title text-start">{tr("featuredTitle")}</h2>
+          <p className="section-subtitle mt-1 text-start">{tr("featuredSub")}</p>
         </div>
         <Link href="/shop" className="hidden md:flex items-center gap-1.5 text-brown font-semibold text-sm hover:text-brown-dark transition-colors cursor-pointer group">
           <span>{tr("viewAll")}</span>

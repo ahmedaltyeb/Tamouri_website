@@ -36,6 +36,7 @@ export async function PUT(request: Request) {
     "workingHours", "currency", "websiteUrl",
     "instagramUrl", "twitterUrl", "whatsappUrl",
     "seoTitleEn", "seoTitleAr", "seoDescEn", "seoDescAr", "ogImage",
+    "themeJson",
   ];
 
   const data: Record<string, unknown> = {};

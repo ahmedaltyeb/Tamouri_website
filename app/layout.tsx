@@ -6,7 +6,8 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CustomerAuthProvider } from "@/contexts/CustomerAuthContext";
 import { SiteSettingsProvider } from "@/contexts/SiteSettingsContext";
-import { getSiteSettings, getFooterSections } from "@/lib/site-settings";
+import { getSiteSettings, getFooterSections, getPaymentMethods } from "@/lib/site-settings";
+import { generateThemeCss } from "@/lib/theme";
 import JsonLd from "@/components/JsonLd";
 import LangLinks from "@/components/LangLinks";
 import { getLang } from "@/lib/server-lang";
@@ -114,7 +115,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // This is the SSR source of truth — no cookie read, no flash.
   const lang = await getLang();
   const dir = lang === "ar" ? "rtl" : "ltr";
-  const [settings, footerSections] = await Promise.all([getSiteSettings(), getFooterSections()]);
+  const [settings, footerSections, paymentMethods] = await Promise.all([
+    getSiteSettings(),
+    getFooterSections(),
+    getPaymentMethods(),
+  ]);
+  const themeCss = generateThemeCss(settings.themeColors);
 
   return (
     <html lang={lang} dir={dir}>
@@ -125,6 +131,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
+        {/* Theme CSS variables — overrides :root defaults in globals.css */}
+        <style dangerouslySetInnerHTML={{ __html: themeCss }} />
         <JsonLd data={localBusinessSchema} />
         {/* Canonical + hreflang — skipped for admin routes (x-next-path header absent) */}
         <LangLinks />
@@ -135,7 +143,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           language without reading cookies client-side (eliminates AR→EN flash).
         */}
         <LanguageProvider initialLang={lang}>
-          <SiteSettingsProvider settings={settings} footerSections={footerSections}>
+          <SiteSettingsProvider settings={settings} footerSections={footerSections} paymentMethods={paymentMethods}>
             <CustomerAuthProvider>
               <CartHydration />
               <CartSync />

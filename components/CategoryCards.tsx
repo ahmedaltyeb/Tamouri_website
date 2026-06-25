@@ -26,7 +26,7 @@ export default function CategoryCards() {
           </Link>
         </div>
 
-        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-1 px-1">
+        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 -mx-1 px-1 md:flex-wrap md:justify-center md:overflow-visible">
           {categories.map((cat) => (
             <Link key={cat.id} href={`/shop?category=${cat.slug}`} className="flex-none group cursor-pointer">
               <div className="w-28 md:w-32 flex flex-col items-center gap-2">

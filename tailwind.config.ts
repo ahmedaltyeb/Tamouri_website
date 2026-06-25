@@ -9,18 +9,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        cream: "#FAF8F5",
-        brown: {
-          DEFAULT: "#8B5E3C",
-          dark: "#6B4423",
-          light: "#A87050",
-        },
+        // These map to CSS variables injected by app/layout.tsx from DB theme settings.
+        // The rgb(var / <alpha-value>) format preserves Tailwind opacity utilities
+        // like bg-gold/20, text-brown/50, etc.
+        cream: "rgb(var(--theme-bg) / <alpha-value>)",
+        ink:   "rgb(var(--theme-text) / <alpha-value>)",
         gold: {
-          DEFAULT: "#C49A3C",
-          light: "#D4AE5C",
-          dark: "#A07828",
+          DEFAULT: "rgb(var(--theme-primary) / <alpha-value>)",
+          dark:    "rgb(var(--theme-primary-dark) / <alpha-value>)",
+          light:   "rgb(var(--theme-primary-light) / <alpha-value>)",
         },
-        ink: "#1A1A1A",
+        brown: {
+          DEFAULT: "rgb(var(--theme-secondary) / <alpha-value>)",
+          dark:    "rgb(var(--theme-secondary-dark) / <alpha-value>)",
+          light:   "rgb(var(--theme-secondary-light) / <alpha-value>)",
+        },
       },
       fontFamily: {
         cairo: ["Cairo", "sans-serif"],

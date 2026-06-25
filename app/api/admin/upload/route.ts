@@ -6,7 +6,9 @@ import { randomBytes } from "crypto";
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "products");
+// Allowed sub-directories under /public/uploads/.
+// Callers pass ?dir=hero (or omit for the default "products" behaviour).
+const ALLOWED_DIRS = new Set(["products", "hero", "payments"]);
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
@@ -41,6 +43,12 @@ export async function POST(request: Request) {
   if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  // Resolve sub-directory from ?dir= query param; default to "products"
+  const { searchParams } = new URL(request.url);
+  const dirParam = searchParams.get("dir") ?? "products";
+  const subDir = ALLOWED_DIRS.has(dirParam) ? dirParam : "products";
+  const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", subDir);
 
   // Ensure the upload directory exists (safe on all platforms)
   await mkdir(UPLOAD_DIR, { recursive: true });
@@ -93,7 +101,7 @@ export async function POST(request: Request) {
     try {
       const buffer = Buffer.from(await file.arrayBuffer());
       await writeFile(filePath, buffer);
-      urls.push(`/uploads/products/${filename}`);
+      urls.push(`/uploads/${subDir}/${filename}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Write error";
       errors.push(`"${file.name}": ${msg}`);

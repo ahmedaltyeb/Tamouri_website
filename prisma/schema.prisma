@@ -52,6 +52,7 @@ model StoreSettings {
   seoDescEn    String?
   seoDescAr    String?
   ogImage      String?
+  themeJson    String?  // JSON: { primary, secondary, accent, success, background, text }
   updatedAt    DateTime @updatedAt
 }
 
@@ -73,6 +74,57 @@ model HeroSlide {
   updatedAt  DateTime @updatedAt
 
   @@index([active, order])
+}
+
+// ─── CMS: Sections (unified headless CMS engine) ─────────────────────────────
+//
+// Each "section" represents one piece of CMS content.
+// type values: hero | products | footer | payment_methods | banner | custom
+// data is a JSON string — schema varies per type.
+
+model CmsSection {
+  id        String   @id @default(cuid())
+  type      String   // hero | products | footer | payment_methods | banner | custom
+  title     String?  // human-readable label for admin UI
+  data      String   // JSON blob — flexible per type
+  enabled   Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type, enabled])
+  @@index([enabled, sortOrder])
+}
+
+// ─── Analytics Events ─────────────────────────────────────────────────────────
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  event     String   // page_view | product_view | add_to_cart | remove_from_cart | checkout_start | purchase_completed
+  userId    String?
+  sessionId String?
+  productId String?
+  metadata  String   @default("{}") // JSON blob
+  createdAt DateTime @default(now())
+
+  @@index([event, createdAt])
+  @@index([productId, event])
+  @@index([sessionId])
+  @@index([createdAt])
+}
+
+// ─── CMS: Payment Methods ────────────────────────────────────────────────────
+
+model PaymentMethod {
+  id        String   @id @default(cuid())
+  name      String
+  image     String   // URL or /uploads path
+  enabled   Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([enabled, sortOrder])
 }
 
 // ─── CMS: Footer Sections ─────────────────────────────────────────────────────

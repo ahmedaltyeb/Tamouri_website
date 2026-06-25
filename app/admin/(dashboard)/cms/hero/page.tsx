@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface HeroSlide {
   id: string;
@@ -28,6 +28,9 @@ export default function HeroCmsPage() {
   const [form, setForm] = useState(EMPTY_SLIDE);
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function loadSlides() {
     const res = await fetch("/api/admin/cms/hero");
@@ -58,6 +61,26 @@ export default function HeroCmsPage() {
     });
     setEditing(s);
     setAdding(false);
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError("");
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/admin/upload?dir=hero", { method: "POST", body: fd });
+      const data = await res.json() as { urls?: string[]; error?: string };
+      if (!res.ok || !data.urls?.[0]) throw new Error(data.error ?? "Upload failed");
+      setForm((f) => ({ ...f, image: data.urls![0] }));
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   }
 
   async function handleSave() {
@@ -139,16 +162,65 @@ export default function HeroCmsPage() {
           </h2>
           <div className="space-y-4">
             <div>
-              <label className={lbl}>Image URL *</label>
+              <label className={lbl}>Slide Image *</label>
+
+              {/* Hidden file input */}
               <input
-                type="text"
-                value={form.image}
-                onChange={(e) => setForm({ ...form, image: e.target.value })}
-                className={inp}
-                placeholder="https://... or /assets/slider/slide-1.webp"
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                onChange={handleImageUpload}
               />
+
+              {/* Upload from PC */}
+              <div className="flex items-center gap-3 mb-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-amber-700 hover:bg-amber-800 disabled:opacity-60 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer flex-none"
+                >
+                  {uploading ? (
+                    <>
+                      <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                      </svg>
+                      Uploading…
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                      </svg>
+                      Upload from PC
+                    </>
+                  )}
+                </button>
+                <span className="text-xs text-stone-400">JPG, PNG or WebP · Max 5 MB</span>
+              </div>
+
+              {uploadError && (
+                <p className="text-xs text-red-500 mb-2">{uploadError}</p>
+              )}
+
+              {/* URL fallback */}
+              <div>
+                <label className="text-[11px] text-stone-400 mb-1 block">Or paste an image URL</label>
+                <input
+                  type="text"
+                  value={form.image}
+                  onChange={(e) => setForm({ ...form, image: e.target.value })}
+                  className={inp}
+                  placeholder="https://… or /uploads/hero/file.png"
+                />
+              </div>
+
+              {/* Preview */}
               {form.image && (
-                <img src={form.image} alt="" className="mt-2 h-24 w-full object-cover rounded-lg border border-stone-100" />
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={form.image} alt="" className="mt-2 h-28 w-full object-cover rounded-lg border border-stone-100" />
               )}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

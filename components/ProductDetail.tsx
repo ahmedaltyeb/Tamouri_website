@@ -3,8 +3,10 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
+import PaymentMethods from "@/components/PaymentMethods";
 import { useCartStore } from "@/store/cartStore";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useProductView, useTrackAddToCart } from "@/hooks/useAnalytics";
 import type { Product } from "@/lib/products";
 import { parseMLText } from "@/lib/products";
 
@@ -39,6 +41,10 @@ export default function ProductDetail({ product, related }: Props) {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const { tr, lang } = useLanguage();
+  const trackAddToCart = useTrackAddToCart();
+
+  // Track product view once on mount
+  useProductView(product.id, { category: product.categorySlug });
 
   const name = parseMLText(product.name)[lang];
   const description = parseMLText(product.description)[lang];
@@ -71,6 +77,7 @@ export default function ProductDetail({ product, related }: Props) {
   const handleAddToCart = () => {
     if (outOfStock) return;
     for (let i = 0; i < qty; i++) addToCart(product as Product);
+    trackAddToCart(product.id, { quantity: qty, price: product.price });
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
@@ -279,6 +286,12 @@ export default function ProductDetail({ product, related }: Props) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
             </button>
+          </div>
+
+          {/* Payment methods */}
+          <div className="mt-5 pt-5 border-t border-stone-100">
+            <p className="text-xs text-stone-400 mb-2">{tr("paymentAccepted")}</p>
+            <PaymentMethods />
           </div>
 
           {/* Trust badges */}

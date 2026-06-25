@@ -6,6 +6,8 @@ import Image from "next/image";
 import TopBar from "@/components/TopBar";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PaymentMethods from "@/components/PaymentMethods";
+import { useCheckoutStart } from "@/hooks/useAnalytics";
 import { useCartStore } from "@/store/cartStore";
 import { useCustomerAuth } from "@/contexts/CustomerAuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -92,6 +94,9 @@ function CheckoutForm() {
   const router = useRouter();
   const params = useSearchParams();
   const coupon = params.get("coupon") ?? "";
+
+  // Track checkout start once per mount
+  useCheckoutStart();
 
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
@@ -402,6 +407,13 @@ function CheckoutForm() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                   </svg>
                   {tr("securePayment")}
+                </div>
+
+                <div className="mt-5 pt-4 border-t border-stone-100">
+                  <p className="text-xs text-stone-400 mb-2 text-center">
+                    {lang === "ar" ? "وسائل الدفع المقبولة" : "Accepted payment methods"}
+                  </p>
+                  <PaymentMethods className="justify-center" />
                 </div>
               </div>
             </div>
