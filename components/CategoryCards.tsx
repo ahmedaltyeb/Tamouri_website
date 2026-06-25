@@ -11,9 +11,14 @@ interface ApiCategory {
   nameEn: string | null;
   nameAr: string | null;
   image: string | null;
+  featured: boolean;
 }
 
-// Fallback images for categories that haven't been given a DB image yet.
+interface HomepageResponse {
+  categories: ApiCategory[];
+  total: number | null; // null means all were returned (featured mode)
+}
+
 const FALLBACK_IMAGES: Record<string, string> = {
   "dates":            "https://i.ibb.co/WvwTpK27/dates.jpg",
   "arabic-coffee":    "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=300&q=80",
@@ -40,11 +45,17 @@ function SkeletonRow() {
 export default function CategoryCards() {
   const { lang, tr } = useLanguage();
   const [categories, setCategories] = useState<ApiCategory[] | null>(null);
+  const [hasMore, setHasMore]       = useState(false);
 
   useEffect(() => {
-    fetch("/api/categories")
+    fetch("/api/categories?homepage=true")
       .then(r => r.json())
-      .then((data: ApiCategory[]) => setCategories(data))
+      .then((data: HomepageResponse) => {
+        setCategories(data.categories);
+        // Show "View All" when total is known (fallback mode) and exceeds what's shown,
+        // or when in featured mode and there are active categories beyond what's shown.
+        setHasMore(data.total !== null && data.total > data.categories.length);
+      })
       .catch(() => setCategories([]));
   }, []);
 
@@ -54,11 +65,6 @@ export default function CategoryCards() {
     <section className="py-10 bg-white border-y border-stone-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <SectionHeader title={tr("shopByCategory")} className="mb-4" />
-        <div className="flex justify-center mb-6">
-          <Link href="/shop" className="text-sm text-gold font-semibold hover:text-gold-dark transition-colors cursor-pointer">
-            {tr("viewAll")}
-          </Link>
-        </div>
 
         {categories === null ? (
           <SkeletonRow />
@@ -88,6 +94,21 @@ export default function CategoryCards() {
                 </Link>
               );
             })}
+          </div>
+        )}
+
+        {/* "View All" only when there are more categories than shown */}
+        {hasMore && (
+          <div className="mt-6 text-center">
+            <Link
+              href="/shop"
+              className="inline-flex items-center gap-2 px-6 py-2.5 border-2 border-brown text-brown rounded-xl font-semibold text-sm hover:bg-brown hover:text-white transition-colors cursor-pointer"
+            >
+              {tr("viewAll")}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
           </div>
         )}
       </div>

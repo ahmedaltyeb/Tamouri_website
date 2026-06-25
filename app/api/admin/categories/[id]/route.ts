@@ -30,6 +30,7 @@ export async function PUT(request: Request, { params }: Ctx) {
   if ("image"     in body) data.image     = body.image     ? String(body.image)     : null;
   if ("sortOrder" in body) data.sortOrder = typeof body.sortOrder === "number" ? body.sortOrder : 0;
   if ("active"    in body) data.active    = Boolean(body.active);
+  if ("featured"  in body) data.featured  = Boolean(body.featured);
   if ("name"      in body) data.name      = String(body.name ?? "").trim() || undefined;
   if ("slug"      in body) data.slug      = String(body.slug ?? "").trim() || undefined;
 

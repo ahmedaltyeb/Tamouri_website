@@ -51,6 +51,7 @@ export async function POST(request: Request) {
       image:     body.image     ? String(body.image)     : null,
       sortOrder: typeof body.sortOrder === "number" ? body.sortOrder : 0,
       active:    body.active !== false,
+      featured:  Boolean(body.featured),
     },
   });
 

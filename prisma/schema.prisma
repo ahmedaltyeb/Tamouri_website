@@ -20,6 +20,7 @@ model Category {
   image         String?   // URL or /uploads path
   sortOrder     Int       @default(0)
   active        Boolean   @default(true)
+  featured      Boolean   @default(false)
   url           String?
   totalProducts Int       @default(0)
   createdAt     DateTime  @default(now())

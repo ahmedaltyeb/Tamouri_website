@@ -10,6 +10,7 @@ interface Category {
   image: string | null;
   sortOrder: number;
   active: boolean;
+  featured: boolean;
   _count?: { products: number };
 }
 
@@ -22,10 +23,12 @@ function CategoryRow({
   cat,
   onSave,
   onToggle,
+  onToggleFeatured,
 }: {
   cat: Category;
   onSave: (id: string, data: Partial<Category>) => Promise<void>;
   onToggle: (id: string, active: boolean) => Promise<void>;
+  onToggleFeatured: (id: string, featured: boolean) => Promise<void>;
 }) {
   const [open, setOpen]       = useState(false);
   const [saving, setSaving]   = useState(false);
@@ -104,6 +107,23 @@ function CategoryRow({
 
         {/* Controls */}
         <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Featured badge + toggle */}
+          <button
+            type="button"
+            onClick={() => onToggleFeatured(cat.id, !cat.featured)}
+            title={cat.featured ? "Remove from homepage" : "Feature on homepage"}
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer ${
+              cat.featured
+                ? "bg-amber-100 text-amber-700 border border-amber-300"
+                : "bg-stone-100 text-stone-400 border border-stone-200 hover:border-amber-300 hover:text-amber-600"
+            }`}
+          >
+            <svg className="w-3 h-3" fill={cat.featured ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+            </svg>
+            {cat.featured ? "Featured" : "Feature"}
+          </button>
+
           {/* Active toggle */}
           <button
             type="button"
@@ -239,6 +259,15 @@ export default function CategoriesPage() {
     setCategories(cs => cs.map(c => c.id === id ? { ...c, active } : c));
   }
 
+  async function handleToggleFeatured(id: string, featured: boolean) {
+    await fetch(`/api/admin/categories/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ featured }),
+    });
+    setCategories(cs => cs.map(c => c.id === id ? { ...c, featured } : c));
+  }
+
   async function handleSeed() {
     setSeeding(true);
     setSeedMsg("");
@@ -283,10 +312,11 @@ export default function CategoriesPage() {
       )}
 
       {/* Stats bar */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         {[
-          { label: "Total", value: categories.length },
-          { label: "Active", value: categories.filter(c => c.active).length },
+          { label: "Total",    value: categories.length },
+          { label: "Active",   value: categories.filter(c => c.active).length },
+          { label: "Featured", value: categories.filter(c => c.featured).length },
           { label: "No Image", value: missing },
         ].map(s => (
           <div key={s.label} className="bg-white border border-stone-200 rounded-xl px-4 py-3 text-center">
@@ -295,6 +325,16 @@ export default function CategoriesPage() {
           </div>
         ))}
       </div>
+
+      {/* Featured hint */}
+      {categories.filter(c => c.featured).length === 0 && categories.length > 0 && (
+        <div className="flex items-start gap-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+          <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          No featured categories — the homepage will show the first 6 active categories as a fallback. Click the ★ button on a category to feature it on the homepage.
+        </div>
+      )}
 
       {/* List */}
       {loading ? (
@@ -311,6 +351,7 @@ export default function CategoriesPage() {
               cat={cat}
               onSave={handleSave}
               onToggle={handleToggle}
+              onToggleFeatured={handleToggleFeatured}
             />
           ))}
           {categories.length === 0 && (
