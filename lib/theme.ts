@@ -1,5 +1,7 @@
 // ── Types ─────────────────────────────────────────────────────────────────────
 
+export type FontFamily = "cairo" | "tajawal" | "noto-naskh" | "ibm-plex";
+
 export interface ThemeColors {
   primary: string;
   secondary: string;
@@ -7,6 +9,46 @@ export interface ThemeColors {
   success: string;
   background: string;
   text: string;
+  fontFamily: FontFamily;
+}
+
+// ── Font registry ─────────────────────────────────────────────────────────────
+
+export const FONT_OPTIONS: Record<FontFamily, {
+  label: string;
+  labelAr: string;
+  googleParam: string;  // "family=…" segment for Google Fonts URL
+  cssStack: string;     // complete font-family CSS value
+}> = {
+  cairo: {
+    label: "Cairo",
+    labelAr: "القاهرة",
+    googleParam: "Cairo:wght@300;400;500;600;700;800;900",
+    cssStack: "'Cairo', sans-serif",
+  },
+  tajawal: {
+    label: "Tajawal",
+    labelAr: "تجوال",
+    googleParam: "Tajawal:wght@200;300;400;500;700;800;900",
+    cssStack: "'Tajawal', sans-serif",
+  },
+  "noto-naskh": {
+    label: "Noto Naskh Arabic",
+    labelAr: "نوتو نسخ عربي",
+    googleParam: "Noto+Naskh+Arabic:wght@400;500;600;700",
+    cssStack: "'Noto Naskh Arabic', serif",
+  },
+  "ibm-plex": {
+    label: "IBM Plex Arabic",
+    labelAr: "IBM بلكس عربي",
+    googleParam: "IBM+Plex+Arabic:wght@300;400;500;600;700",
+    cssStack: "'IBM Plex Arabic', sans-serif",
+  },
+};
+
+export function buildGoogleFontsUrl(font: FontFamily = "cairo"): string {
+  const param = FONT_OPTIONS[font]?.googleParam ?? FONT_OPTIONS.cairo.googleParam;
+  return `https://fonts.googleapis.com/css2?family=${param}&display=swap`;
 }
 
 // ── Default theme: Luxury Gold (current brand) ────────────────────────────────
@@ -18,6 +60,7 @@ export const DEFAULT_THEME: ThemeColors = {
   success:    "#22C55E",
   background: "#FAF8F5",
   text:       "#1A1A1A",
+  fontFamily: "cairo",
 };
 
 // ── Preset themes ─────────────────────────────────────────────────────────────
@@ -33,6 +76,7 @@ export const THEME_PRESETS: Record<string, { label: string; labelAr: string; col
       success:    "#22C55E",
       background: "#FAF8F5",
       text:       "#1A1A1A",
+      fontFamily: "cairo",
     },
   },
   coffeeBrown: {
@@ -45,6 +89,7 @@ export const THEME_PRESETS: Record<string, { label: string; labelAr: string; col
       success:    "#22C55E",
       background: "#FAF7F5",
       text:       "#1A1A1A",
+      fontFamily: "cairo",
     },
   },
   royalPurple: {
@@ -57,6 +102,7 @@ export const THEME_PRESETS: Record<string, { label: string; labelAr: string; col
       success:    "#22C55E",
       background: "#F9F8FF",
       text:       "#1A1A1A",
+      fontFamily: "tajawal",
     },
   },
   emeraldGreen: {
@@ -69,6 +115,7 @@ export const THEME_PRESETS: Record<string, { label: string; labelAr: string; col
       success:    "#22C55E",
       background: "#F5FAF8",
       text:       "#1A1A1A",
+      fontFamily: "cairo",
     },
   },
   oceanBlue: {
@@ -81,6 +128,7 @@ export const THEME_PRESETS: Record<string, { label: string; labelAr: string; col
       success:    "#22C55E",
       background: "#F5F9FF",
       text:       "#1A1A1A",
+      fontFamily: "ibm-plex",
     },
   },
 };
@@ -129,6 +177,7 @@ export function hexToRgbChannels(hex: string): string {
 
 export function generateThemeCss(theme: Partial<ThemeColors>): string {
   const t: ThemeColors = { ...DEFAULT_THEME, ...theme };
+  const font = FONT_OPTIONS[t.fontFamily] ?? FONT_OPTIONS.cairo;
 
   return [
     ":root {",
@@ -142,6 +191,7 @@ export function generateThemeCss(theme: Partial<ThemeColors>): string {
     `  --theme-success: ${hexToRgbChannels(t.success)};`,
     `  --theme-bg: ${hexToRgbChannels(t.background)};`,
     `  --theme-text: ${hexToRgbChannels(t.text)};`,
+    `  --theme-font: ${font.cssStack};`,
     "}",
   ].join("\n");
 }

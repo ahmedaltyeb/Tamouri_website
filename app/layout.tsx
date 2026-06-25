@@ -7,7 +7,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { CustomerAuthProvider } from "@/contexts/CustomerAuthContext";
 import { SiteSettingsProvider } from "@/contexts/SiteSettingsContext";
 import { getSiteSettings, getFooterSections, getPaymentMethods } from "@/lib/site-settings";
-import { generateThemeCss } from "@/lib/theme";
+import { generateThemeCss, buildGoogleFontsUrl } from "@/lib/theme";
 import JsonLd from "@/components/JsonLd";
 import LangLinks from "@/components/LangLinks";
 import { getLang } from "@/lib/server-lang";
@@ -121,23 +121,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     getPaymentMethods(),
   ]);
   const themeCss = generateThemeCss(settings.themeColors);
+  const fontUrl = buildGoogleFontsUrl(settings.themeColors.fontFamily ?? "cairo");
 
   return (
     <html lang={lang} dir={dir}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
-          rel="stylesheet"
-        />
+        <link href={fontUrl} rel="stylesheet" />
         {/* Theme CSS variables — overrides :root defaults in globals.css */}
         <style dangerouslySetInnerHTML={{ __html: themeCss }} />
         <JsonLd data={localBusinessSchema} />
         {/* Canonical + hreflang — skipped for admin routes (x-next-path header absent) */}
         <LangLinks />
       </head>
-      <body className="font-cairo bg-cream text-ink antialiased">
+      <body className="bg-cream text-ink antialiased">
         {/*
           Pass initialLang from server so LanguageProvider starts in the correct
           language without reading cookies client-side (eliminates AR→EN flash).
