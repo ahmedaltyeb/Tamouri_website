@@ -1,94 +1,23 @@
+// Server-only — never import this file in "use client" components.
+// Client-safe types and static defaults live in lib/site-settings-types.ts.
+import "server-only";
+
 import { prisma } from "@/lib/prisma";
-import { type ThemeColors, DEFAULT_THEME, parseThemeJson } from "@/lib/theme";
+import { parseThemeJson } from "@/lib/theme";
+import {
+  SITE_SETTINGS_DEFAULTS,
+  parseFooterLinks,
+  type SiteSettingsData,
+  type FooterSectionData,
+  type FooterLinkData,
+  type HeroSlideData,
+  type PaymentMethodData,
+} from "@/lib/site-settings-types";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-
-export interface SiteSettingsData {
-  id: string;
-  nameEn: string;
-  nameAr: string;
-  taglineEn: string;
-  taglineAr: string;
-  logo: string | null;
-  favicon: string | null;
-  phone: string;
-  whatsapp: string;
-  email: string;
-  addressEn: string;
-  addressAr: string;
-  workingHours: string;
-  instagramUrl: string | null;
-  twitterUrl: string | null;
-  whatsappUrl: string | null;
-  seoTitleEn: string;
-  seoTitleAr: string;
-  seoDescEn: string;
-  seoDescAr: string;
-  ogImage: string | null;
-  themeColors: ThemeColors;
-}
-
-export interface FooterLinkData {
-  labelEn: string;
-  labelAr: string;
-  url: string;
-}
-
-export interface FooterSectionData {
-  id: string;
-  order: number;
-  titleEn: string;
-  titleAr: string;
-  links: FooterLinkData[];
-}
-
-export interface PaymentMethodData {
-  id: string;
-  name: string;
-  image: string;
-  enabled: boolean;
-  sortOrder: number;
-}
-
-export interface HeroSlideData {
-  id: string;
-  order: number;
-  image: string;
-  titleEn: string | null;
-  titleAr: string | null;
-  subtitleEn: string | null;
-  subtitleAr: string | null;
-  ctaLabelEn: string | null;
-  ctaLabelAr: string | null;
-  ctaUrl: string | null;
-}
-
-// ── Defaults (used as fallback when DB has no data) ───────────────────────────
-
-export const SITE_SETTINGS_DEFAULTS: SiteSettingsData = {
-  id: "",
-  nameEn: "Marbea Al Gharbeya",
-  nameAr: "مربع الغربية",
-  taglineEn: "Dates & Coffee",
-  taglineAr: "للتمور والقهوة",
-  logo: null,
-  favicon: null,
-  phone: "+971 50 000 0000",
-  whatsapp: "+971529307250",
-  email: "info@tamouri.ae",
-  addressEn: "Abu Dhabi, UAE",
-  addressAr: "أبوظبي، الإمارات",
-  workingHours: "Daily 8:00 AM – 11:00 PM",
-  instagramUrl: null,
-  twitterUrl: null,
-  whatsappUrl: null,
-  seoTitleEn: "Marbea Al Gharbeya Dates | Premium UAE Dates & Coffee",
-  seoTitleAr: "مربع الغربية للتمور | تمور وقهوة عربية فاخرة",
-  seoDescEn: "Premium UAE dates, Arabic coffee, saffron & tea — delivered across the UAE.",
-  seoDescAr: "تمور إماراتية فاخرة، قهوة عربية، زعفران وشاي — توصيل سريع في الإمارات.",
-  ogImage: null,
-  themeColors: DEFAULT_THEME,
-};
+// Re-export types and defaults so callers that already import from this file
+// keep working without changes.
+export type { SiteSettingsData, FooterSectionData, FooterLinkData, HeroSlideData, PaymentMethodData };
+export { SITE_SETTINGS_DEFAULTS, parseFooterLinks };
 
 // ── In-memory cache (resets on server restart — acceptable for CMS data) ──────
 
@@ -217,16 +146,6 @@ export async function getPaymentMethods(): Promise<PaymentMethodData[]> {
 
     paymentCache = { data, at: Date.now() };
     return data;
-  } catch {
-    return [];
-  }
-}
-
-export function parseFooterLinks(raw: string): FooterLinkData[] {
-  try {
-    const parsed = JSON.parse(raw) as FooterLinkData[];
-    if (Array.isArray(parsed)) return parsed;
-    return [];
   } catch {
     return [];
   }

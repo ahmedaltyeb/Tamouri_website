@@ -1,7 +1,8 @@
 "use client";
 import { createContext, useContext } from "react";
-import type { SiteSettingsData, FooterSectionData, PaymentMethodData } from "@/lib/site-settings";
-import { SITE_SETTINGS_DEFAULTS } from "@/lib/site-settings";
+// Import from the Prisma-free types file — never from lib/site-settings (server-only).
+import type { SiteSettingsData, FooterSectionData, PaymentMethodData } from "@/lib/site-settings-types";
+import { SITE_SETTINGS_DEFAULTS } from "@/lib/site-settings-types";
 
 interface CMSContextValue {
   settings: SiteSettingsData;

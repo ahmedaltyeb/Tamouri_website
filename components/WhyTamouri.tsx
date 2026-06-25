@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
+import SectionHeader from "@/components/SectionHeader";
 
 export default function WhyTamouri() {
   const { tr } = useLanguage();
@@ -41,11 +42,12 @@ export default function WhyTamouri() {
   return (
     <section className="py-16 bg-gradient-to-b from-white to-cream">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="mb-12">
-          <p className="text-gold font-semibold text-sm mb-2 text-start">{tr("whyBadge")}</p>
-          <h2 className="section-title text-start">{tr("whyTitle")}</h2>
-          <p className="section-subtitle mt-2 max-w-lg text-start">{tr("whySub")}</p>
-        </div>
+        <SectionHeader
+          badge={tr("whyBadge")}
+          title={tr("whyTitle")}
+          subtitle={tr("whySub")}
+          className="mb-12"
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {features.map((feature, idx) => (

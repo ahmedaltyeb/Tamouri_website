@@ -1,5 +1,6 @@
 "use client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import SectionHeader from "@/components/SectionHeader";
 
 const testimonials = [
   {
@@ -49,11 +50,12 @@ export default function Testimonials() {
   return (
     <section className="py-16 bg-cream">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="mb-12">
-          <p className="text-gold font-semibold text-sm mb-2 text-start">{tr("testBadge")}</p>
-          <h2 className="section-title text-start">{tr("testTitle")}</h2>
-          <p className="section-subtitle mt-2 text-start">{tr("testSub")}</p>
-        </div>
+        <SectionHeader
+          badge={tr("testBadge")}
+          title={tr("testTitle")}
+          subtitle={tr("testSub")}
+          className="mb-12"
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((t, idx) => (

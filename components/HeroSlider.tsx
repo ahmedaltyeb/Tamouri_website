@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import BASE_PATH from "@/lib/basePath";
-import type { HeroSlideData } from "@/lib/site-settings";
+import type { HeroSlideData } from "@/lib/site-settings-types";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface StaticSlide {

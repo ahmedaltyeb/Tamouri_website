@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { categories } from "@/lib/products";
 import { useLanguage } from "@/contexts/LanguageContext";
+import SectionHeader from "@/components/SectionHeader";
 
 const categoryImages: Record<string, string> = {
   "dates":            "https://i.ibb.co/WvwTpK27/dates.jpg",
@@ -19,8 +20,8 @@ export default function CategoryCards() {
   return (
     <section className="py-10 bg-white border-y border-stone-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="section-title text-xl md:text-2xl">{tr("shopByCategory")}</h2>
+        <SectionHeader title={tr("shopByCategory")} className="mb-4" />
+        <div className="flex justify-center mb-6">
           <Link href="/shop" className="text-sm text-gold font-semibold hover:text-gold-dark transition-colors cursor-pointer">
             {tr("viewAll")}
           </Link>
