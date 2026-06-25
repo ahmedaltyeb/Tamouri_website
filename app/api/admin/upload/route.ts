@@ -1,23 +1,19 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { put } from "@vercel/blob";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { randomBytes } from "crypto";
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-// Allowed sub-directories under /public/uploads/.
-// Callers pass ?dir=hero (or omit for the default "products" behaviour).
 const ALLOWED_DIRS = new Set(["products", "hero", "payments"]);
-
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-
 const EXT_MAP: Record<string, string> = {
   "image/jpeg": ".jpg",
-  "image/png": ".png",
+  "image/png":  ".png",
   "image/webp": ".webp",
 };
-
 const MAX_BYTES = 5 * 1024 * 1024; // 5 MB
 const MAX_FILES = 20;
 
@@ -32,26 +28,27 @@ async function requireAdmin() {
 
 function safeFilename(mimeType: string): string {
   const ext = EXT_MAP[mimeType] ?? ".jpg";
-  const ts = Date.now();
+  const ts  = Date.now();
   const rand = randomBytes(5).toString("hex");
   return `${ts}-${rand}${ext}`;
 }
 
 // ── POST /api/admin/upload ────────────────────────────────────────────────────
+//
+// Storage strategy:
+//   • On Vercel (BLOB_READ_WRITE_TOKEN is set): upload to Vercel Blob CDN.
+//     Returns a permanent https://...vercel-storage.com/... URL.
+//   • In local dev (no token): write to public/uploads/{dir}/.
+//     Returns a /uploads/{dir}/filename path served by Next.js.
 
 export async function POST(request: Request) {
   if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Resolve sub-directory from ?dir= query param; default to "products"
   const { searchParams } = new URL(request.url);
   const dirParam = searchParams.get("dir") ?? "products";
-  const subDir = ALLOWED_DIRS.has(dirParam) ? dirParam : "products";
-  const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", subDir);
-
-  // Ensure the upload directory exists (safe on all platforms)
-  await mkdir(UPLOAD_DIR, { recursive: true });
+  const subDir   = ALLOWED_DIRS.has(dirParam) ? dirParam : "products";
 
   let formData: FormData;
   try {
@@ -60,7 +57,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to parse upload request" }, { status: 400 });
   }
 
-  // Accept both field names: "files" (multiple) and "file" (single)
   const rawFiles = [
     ...formData.getAll("files"),
     ...formData.getAll("file"),
@@ -69,7 +65,6 @@ export async function POST(request: Request) {
   if (rawFiles.length === 0) {
     return NextResponse.json({ error: "No files provided" }, { status: 400 });
   }
-
   if (rawFiles.length > MAX_FILES) {
     return NextResponse.json(
       { error: `Maximum ${MAX_FILES} images per upload batch` },
@@ -77,38 +72,46 @@ export async function POST(request: Request) {
     );
   }
 
-  const urls: string[] = [];
+  const useBlob = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+
+  const urls:   string[] = [];
   const errors: string[] = [];
 
   for (const file of rawFiles) {
-    // ── Validate MIME type ──
     if (!ALLOWED_TYPES.has(file.type)) {
       errors.push(`"${file.name}": only JPG, PNG, and WebP are allowed`);
       continue;
     }
-
-    // ── Validate size ──
     if (file.size > MAX_BYTES) {
       const mb = (file.size / 1024 / 1024).toFixed(1);
       errors.push(`"${file.name}": ${mb} MB exceeds the 5 MB limit`);
       continue;
     }
 
-    // ── Write file ──
     const filename = safeFilename(file.type);
-    const filePath = path.join(UPLOAD_DIR, filename);
 
     try {
-      const buffer = Buffer.from(await file.arrayBuffer());
-      await writeFile(filePath, buffer);
-      urls.push(`/uploads/${subDir}/${filename}`);
+      if (useBlob) {
+        // ── Vercel Blob (production) ────────────────────────────────────────
+        const blob = await put(`uploads/${subDir}/${filename}`, file, {
+          access: "public",
+          contentType: file.type,
+        });
+        urls.push(blob.url);
+      } else {
+        // ── Local filesystem (dev only) ────────────────────────────────────
+        const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", subDir);
+        await mkdir(UPLOAD_DIR, { recursive: true });
+        const buffer = Buffer.from(await file.arrayBuffer());
+        await writeFile(path.join(UPLOAD_DIR, filename), buffer);
+        urls.push(`/uploads/${subDir}/${filename}`);
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Write error";
       errors.push(`"${file.name}": ${msg}`);
     }
   }
 
-  // All files failed
   if (urls.length === 0) {
     return NextResponse.json(
       { error: errors[0] ?? "No valid files were uploaded", errors },
