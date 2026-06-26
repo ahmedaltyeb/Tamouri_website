@@ -68,6 +68,13 @@ const t = {
     whyCTASub: "استكشف أكثر من 500 منتج منتقى بعناية",
     shopNow: "تسوق الآن",
 
+    // Split Collections
+    splitBadge: "تسوق حسب المجموعة",
+    splitTitle: "اكتشف مجموعاتنا المختارة",
+    splitSub: "أجود التمور والقهوة العربية وصناديق الهدايا — منتجات فاخرة لكل مناسبة",
+    splitShopNow: "تسوق الآن",
+    splitExplore: "تصفح المتجر",
+
     // Testimonials
     testBadge: "آراء عملائنا",
     testTitle: "ماذا يقول عملاؤنا",
@@ -366,6 +373,13 @@ const t = {
     whyCTATitle: "Ready for an Authentic Emirati Hospitality Experience?",
     whyCTASub: "Explore 500+ carefully curated products",
     shopNow: "Shop Now",
+
+    // Split Collections
+    splitBadge: "Shop by Collection",
+    splitTitle: "Discover Our Curated Collections",
+    splitSub: "Premium dates, Arabic coffee, and luxury gift sets — handpicked for every occasion",
+    splitShopNow: "Shop Now",
+    splitExplore: "Browse Shop",
 
     // Testimonials
     testBadge: "Customer Reviews",

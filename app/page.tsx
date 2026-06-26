@@ -23,6 +23,7 @@ import CategoryCards from "@/components/CategoryCards";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import HeroSlider from "@/components/HeroSlider";
 import WhyTamouri from "@/components/WhyTamouri";
+import SplitCollections from "@/components/SplitCollections";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
 
@@ -45,6 +46,7 @@ export default async function HomePage() {
       <Hero />
       <CategoryCards section={sections["shop_categories"] ?? null} />
       <FeaturedProducts section={sections["featured_products"] ?? null} />
+      <SplitCollections section={sections["split_collections"] ?? null} />
       <HeroSlider />
       <WhyTamouri section={sections["why_us"] ?? null} />
       <Testimonials section={sections["testimonials"] ?? null} />

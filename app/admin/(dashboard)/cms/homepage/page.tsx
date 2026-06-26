@@ -44,6 +44,12 @@ const SECTIONS: { key: string; labelEn: string; labelAr: string; defaults: Omit<
     labelAr: "أحدث المنتجات",
     defaults: { badgeEn: "New Arrivals", badgeAr: "وصل حديثاً", titleEn: "Latest Arrivals", titleAr: "أحدث الوافدين", subtitleEn: "Fresh products added to our collection", subtitleAr: "منتجات جديدة أضفناها لمجموعتنا" },
   },
+  {
+    key: "split_collections",
+    labelEn: "Split Collections (Featured section)",
+    labelAr: "المجموعات المميزة",
+    defaults: { badgeEn: "Shop by Collection", badgeAr: "تسوق حسب المجموعة", titleEn: "Discover Our Curated Collections", titleAr: "اكتشف مجموعاتنا المختارة", subtitleEn: "Premium dates, Arabic coffee, and luxury gift sets — handpicked for every occasion", subtitleAr: "أجود التمور والقهوة العربية وصناديق الهدايا — منتجات فاخرة لكل مناسبة" },
+  },
 ];
 
 type FormsMap = Record<string, SectionData>;
