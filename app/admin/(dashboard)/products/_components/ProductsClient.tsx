@@ -5,6 +5,31 @@ import { useRouter } from "next/navigation";
 import ImportModal from "./ImportModal";
 import ExportModal from "./ExportModal";
 
+// ── Arabic-translation helpers ────────────────────────────────────────────────
+function useApplyTranslations() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
+
+  const apply = async () => {
+    if (!confirm("Apply Arabic translations to all products now?\n\nThis will overwrite existing Arabic names with the built-in translations. Continue?")) return;
+    setLoading(true);
+    setMsg(null);
+    try {
+      const r = await fetch("/api/admin/products/apply-translations", { method: "POST" });
+      const j = await r.json();
+      setMsg({ text: j.message ?? (r.ok ? "Done" : "Error"), ok: r.ok });
+      if (r.ok) router.refresh();
+    } catch {
+      setMsg({ text: "Network error", ok: false });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { loading, msg, apply };
+}
+
 export type Product = {
   id: string;
   sku: string | null;
@@ -33,6 +58,7 @@ type BulkAction = "delete" | "changeStatus" | "updateStock" | "markFeatured" | "
 export default function ProductsClient({ products, categories }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const { loading: applyLoading, msg: applyMsg, apply: applyTranslations } = useApplyTranslations();
 
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [showImport, setShowImport] = useState(false);
@@ -213,6 +239,39 @@ export default function ProductsClient({ products, categories }: Props) {
                   <span className="text-blue-600 font-bold">CSV</span> CSV Template
                 </a>
               </div>
+            </div>
+
+            {/* Translation sheet download */}
+            <a
+              href="/api/admin/products/translation-sheet"
+              download
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-blue-700 border border-blue-200 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors cursor-pointer"
+              title="Download Excel sheet pre-filled with Arabic names for review / editing"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+              </svg>
+              AR Sheet
+            </a>
+
+            {/* Apply Arabic translations (one click) */}
+            <div className="flex flex-col items-end gap-1">
+              <button
+                onClick={applyTranslations}
+                disabled={applyLoading}
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-violet-700 border border-violet-200 bg-violet-50 rounded-lg hover:bg-violet-100 disabled:opacity-50 transition-colors cursor-pointer"
+                title="Apply built-in Arabic translations to all products in one click"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                </svg>
+                {applyLoading ? "Applying…" : "Apply Arabic"}
+              </button>
+              {applyMsg && (
+                <span className={`text-xs ${applyMsg.ok ? "text-emerald-600" : "text-red-500"}`}>
+                  {applyMsg.text}
+                </span>
+              )}
             </div>
 
             {/* Export */}
