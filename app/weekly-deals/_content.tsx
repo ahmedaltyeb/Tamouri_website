@@ -51,7 +51,13 @@ function SkeletonCard() {
   );
 }
 
-export default function WeeklyDealsContent() {
+interface Props {
+  heroImage?: string | null;
+  heroImageAltEn?: string | null;
+  heroImageAltAr?: string | null;
+}
+
+export default function WeeklyDealsContent({ heroImage, heroImageAltEn, heroImageAltAr }: Props) {
   const { lang } = useLanguage();
   const { products, loading } = useProducts();
   const { settings } = useSiteSettings();
@@ -82,8 +88,8 @@ export default function WeeklyDealsContent() {
         <div className="pointer-events-none absolute top-0 end-0 w-72 h-72 rounded-full border border-white/10 translate-x-1/3 -translate-y-1/3" />
         <div className="pointer-events-none absolute bottom-0 start-0 w-48 h-48 rounded-full border border-white/10 -translate-x-1/3 translate-y-1/3" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-28">
-          <div className="max-w-2xl">
+        <div className={`relative max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-28 ${heroImage ? "flex flex-col md:flex-row items-center gap-10 md:gap-16" : ""}`}>
+          <div className={heroImage ? "flex-1 min-w-0" : "max-w-2xl"}>
             {/* Urgency badge */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/15 border border-white/30 text-white text-xs font-bold mb-6 uppercase tracking-wide">
               <span className="relative flex h-2 w-2">
@@ -134,6 +140,18 @@ export default function WeeklyDealsContent() {
               </Link>
             </div>
           </div>
+
+          {/* Hero image column — only rendered when a hero image is set */}
+          {heroImage && (
+            <div className="flex-shrink-0 w-full md:w-[45%] flex items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={heroImage}
+                alt={lang === "ar" ? (heroImageAltAr ?? "") : (heroImageAltEn ?? "")}
+                className="w-full max-h-80 md:max-h-96 object-contain rounded-2xl"
+              />
+            </div>
+          )}
         </div>
       </section>
 

@@ -65,7 +65,13 @@ function SkeletonCard() {
   );
 }
 
-export default function GiftBoxesContent() {
+interface Props {
+  heroImage?: string | null;
+  heroImageAltEn?: string | null;
+  heroImageAltAr?: string | null;
+}
+
+export default function GiftBoxesContent({ heroImage, heroImageAltEn, heroImageAltAr }: Props) {
   const { lang, tr } = useLanguage();
   const { products, loading } = useProducts();
   const { settings } = useSiteSettings();
@@ -89,8 +95,8 @@ export default function GiftBoxesContent() {
         <div className="pointer-events-none absolute -top-10 -end-10 w-56 h-56 rounded-full border border-gold/10" />
         <div className="pointer-events-none absolute bottom-0 start-0 w-64 h-64 rounded-full bg-gradient-to-tr from-gold/5 to-transparent" />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-28">
-          <div className="max-w-2xl">
+        <div className={`relative max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-28 ${heroImage ? "flex flex-col md:flex-row items-center gap-10 md:gap-16" : ""}`}>
+          <div className={heroImage ? "flex-1 min-w-0" : "max-w-2xl"}>
             {/* Badge */}
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gold/15 border border-gold/30 text-gold text-xs font-semibold mb-6">
               <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
@@ -126,6 +132,18 @@ export default function GiftBoxesContent() {
               </a>
             </div>
           </div>
+
+          {/* Hero image column — only rendered when a hero image is set */}
+          {heroImage && (
+            <div className="flex-shrink-0 w-full md:w-[45%] flex items-center justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={heroImage}
+                alt={lang === "ar" ? (heroImageAltAr ?? "") : (heroImageAltEn ?? "")}
+                className="w-full max-h-80 md:max-h-96 object-contain rounded-2xl"
+              />
+            </div>
+          )}
         </div>
       </section>
 

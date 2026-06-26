@@ -103,8 +103,11 @@ model Page {
   contentAr String   @db.Text
   seoTitleEn    String?
   seoTitleAr    String?
-  seoDescEn     String?
-  seoDescAr     String?
+  seoDescEn      String?
+  seoDescAr      String?
+  heroImage      String?
+  heroImageAltEn String?
+  heroImageAltAr String?
   published Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

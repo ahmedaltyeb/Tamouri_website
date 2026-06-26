@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Page {
   id: string;
@@ -12,13 +12,18 @@ interface Page {
   seoTitleAr: string | null;
   seoDescEn: string | null;
   seoDescAr: string | null;
+  heroImage: string | null;
+  heroImageAltEn: string | null;
+  heroImageAltAr: string | null;
   published: boolean;
   updatedAt: string;
 }
 
 const EMPTY: Omit<Page, "id" | "updatedAt"> = {
   slug: "", titleEn: "", titleAr: "", contentEn: "", contentAr: "",
-  seoTitleEn: "", seoTitleAr: "", seoDescEn: "", seoDescAr: "", published: true,
+  seoTitleEn: "", seoTitleAr: "", seoDescEn: "", seoDescAr: "",
+  heroImage: null, heroImageAltEn: "", heroImageAltAr: "",
+  published: true,
 };
 
 type FormState = typeof EMPTY;
@@ -27,21 +32,23 @@ const inp = "w-full px-3 py-2 border border-stone-200 rounded-lg text-sm outline
 const lbl = "block text-xs font-semibold text-stone-600 mb-1";
 
 export default function PagesPage() {
-  const [items, setItems]     = useState<Page[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState<Page | null>(null);
-  const [form, setForm]       = useState<FormState>({ ...EMPTY });
+  const [items, setItems]       = useState<Page[]>([]);
+  const [loading, setLoading]   = useState(true);
+  const [editing, setEditing]   = useState<Page | null>(null);
+  const [form, setForm]         = useState<FormState>({ ...EMPTY });
   const [showForm, setShowForm] = useState(false);
-  const [saving, setSaving]   = useState(false);
-  const [msg, setMsg]         = useState("");
-  const [tab, setTab]         = useState<"content" | "seo">("content");
+  const [saving, setSaving]     = useState(false);
+  const [msg, setMsg]           = useState("");
+  const [tab, setTab]           = useState<"content" | "seo" | "hero">("content");
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   async function load(autoSeed = false) {
     setLoading(true);
     const r = await fetch("/api/admin/cms/pages");
     const data: Page[] = await r.json();
     if (autoSeed && data.length === 0) {
-      // Seed starter pages on first visit
       await fetch("/api/admin/cms/pages/seed", { method: "POST" });
       const r2 = await fetch("/api/admin/cms/pages");
       setItems(await r2.json());
@@ -69,13 +76,36 @@ export default function PagesPage() {
       contentEn: p.contentEn, contentAr: p.contentAr,
       seoTitleEn: p.seoTitleEn ?? "", seoTitleAr: p.seoTitleAr ?? "",
       seoDescEn:  p.seoDescEn  ?? "", seoDescAr:  p.seoDescAr  ?? "",
+      heroImage: p.heroImage ?? null,
+      heroImageAltEn: p.heroImageAltEn ?? "",
+      heroImageAltAr: p.heroImageAltAr ?? "",
       published: p.published,
     });
     setMsg(""); setShowForm(true); setTab("content");
   }
 
-  const set = (k: keyof FormState, v: string | boolean) =>
+  const set = (k: keyof FormState, v: string | boolean | null) =>
     setForm((f) => ({ ...f, [k]: v }));
+
+  async function handleHeroImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError("");
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/admin/upload?dir=pages", { method: "POST", body: fd });
+      const data = await res.json() as { urls?: string[]; error?: string };
+      if (!res.ok || !data.urls?.[0]) throw new Error(data.error ?? "Upload failed");
+      set("heroImage", data.urls[0]);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }
 
   async function save() {
     setSaving(true); setMsg("");
@@ -85,6 +115,9 @@ export default function PagesPage() {
       seoTitleAr: form.seoTitleAr || null,
       seoDescEn:  form.seoDescEn  || null,
       seoDescAr:  form.seoDescAr  || null,
+      heroImage:     form.heroImage     || null,
+      heroImageAltEn: form.heroImageAltEn || null,
+      heroImageAltAr: form.heroImageAltAr || null,
     };
     const url = editing ? `/api/admin/cms/pages/${editing.id}` : "/api/admin/cms/pages";
     const r = await fetch(url, {
@@ -140,14 +173,12 @@ export default function PagesPage() {
           <div className="flex items-center justify-between">
             <h2 className="font-bold text-stone-800">{editing ? `Edit: ${editing.titleEn}` : "New Page"}</h2>
             <div className="flex gap-2">
-              <button onClick={() => setTab("content")}
-                className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${tab === "content" ? "bg-amber-700 text-white" : "text-stone-600 hover:bg-stone-100"}`}>
-                Content
-              </button>
-              <button onClick={() => setTab("seo")}
-                className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ${tab === "seo" ? "bg-amber-700 text-white" : "text-stone-600 hover:bg-stone-100"}`}>
-                SEO
-              </button>
+              {(["content", "seo", "hero"] as const).map((t) => (
+                <button key={t} onClick={() => setTab(t)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-semibold capitalize transition-colors ${tab === t ? "bg-amber-700 text-white" : "text-stone-600 hover:bg-stone-100"}`}>
+                  {t === "hero" ? "Hero Image" : t}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -220,6 +251,95 @@ export default function PagesPage() {
             </div>
           )}
 
+          {tab === "hero" && (
+            <div className="space-y-5">
+              <p className="text-xs text-stone-500">
+                Optional hero banner image for <strong>Gift Boxes</strong> and <strong>Weekly Deals</strong> pages (matched by slug).
+                When set, the image appears alongside the hero text. Leave empty to keep the default text-only layout.
+              </p>
+
+              {/* Upload area */}
+              <div className="border-2 border-dashed border-stone-200 rounded-xl p-5 space-y-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={handleHeroImageUpload}
+                />
+
+                {form.heroImage ? (
+                  <div className="space-y-3">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={form.heroImage}
+                      alt="Hero preview"
+                      className="h-40 w-full object-cover rounded-xl border border-stone-100"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploading}
+                        className="flex items-center gap-1.5 px-4 py-2 bg-amber-700 hover:bg-amber-800 disabled:opacity-50 text-white rounded-lg text-sm font-semibold transition-colors cursor-pointer"
+                      >
+                        {uploading ? (
+                          <><div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Uploading…</>
+                        ) : (
+                          <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg> Replace Image</>
+                        )}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => set("heroImage", null)}
+                        className="px-4 py-2 border border-red-200 text-red-600 hover:bg-red-50 rounded-lg text-sm font-semibold transition-colors cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="w-full flex flex-col items-center gap-2 py-8 text-stone-400 hover:text-amber-700 hover:border-amber-300 transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    {uploading ? (
+                      <><div className="w-6 h-6 border-2 border-amber-700 border-t-transparent rounded-full animate-spin" /><span className="text-sm font-medium">Uploading…</span></>
+                    ) : (
+                      <>
+                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        <span className="text-sm font-semibold">Upload Hero Image</span>
+                        <span className="text-xs">JPG, PNG, WebP · max 5 MB</span>
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
+              </div>
+
+              {/* Alt text */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className={lbl}>Image Alt Text (English)</label>
+                  <input className={inp} value={form.heroImageAltEn ?? ""}
+                    onChange={(e) => set("heroImageAltEn", e.target.value)}
+                    placeholder="Luxury gift boxes on display" />
+                </div>
+                <div>
+                  <label className={lbl}>نص بديل للصورة (عربي)</label>
+                  <input className={inp} dir="rtl" value={form.heroImageAltAr ?? ""}
+                    onChange={(e) => set("heroImageAltAr", e.target.value)}
+                    placeholder="صناديق هدايا فاخرة معروضة" />
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-3 pt-2">
             <button onClick={save} disabled={saving}
               className="px-6 py-2.5 bg-amber-700 hover:bg-amber-800 disabled:opacity-50 text-white font-bold rounded-xl text-sm transition-colors">
@@ -246,6 +366,7 @@ export default function PagesPage() {
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-stone-500 uppercase tracking-wide">Title</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-stone-500 uppercase tracking-wide hidden md:table-cell">Slug</th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-stone-500 uppercase tracking-wide hidden sm:table-cell">Hero</th>
                 <th className="px-4 py-3 text-center text-xs font-semibold text-stone-500 uppercase tracking-wide">Status</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-stone-500 uppercase tracking-wide hidden md:table-cell">Updated</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-stone-500 uppercase tracking-wide">Actions</th>
@@ -261,9 +382,17 @@ export default function PagesPage() {
                   <td className="px-4 py-3 hidden md:table-cell">
                     <code className="bg-stone-100 px-2 py-0.5 rounded text-stone-600 text-xs">/pages/{p.slug}</code>
                   </td>
+                  <td className="px-4 py-3 text-center hidden sm:table-cell">
+                    {p.heroImage ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={p.heroImage} alt="" className="w-14 h-9 object-cover rounded-lg border border-stone-100 inline-block" />
+                    ) : (
+                      <span className="text-stone-300 text-xs">—</span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-center">
                     <button onClick={() => togglePublished(p)}
-                      className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${p.published ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-stone-100 text-stone-500 hover:bg-stone-200"}`}>
+                      className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-colors cursor-pointer ${p.published ? "bg-green-100 text-green-700 hover:bg-green-200" : "bg-stone-100 text-stone-500 hover:bg-stone-200"}`}>
                       {p.published ? "Published" : "Draft"}
                     </button>
                   </td>
@@ -277,11 +406,11 @@ export default function PagesPage() {
                         View
                       </a>
                       <button onClick={() => openEdit(p)}
-                        className="px-3 py-1 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors">
+                        className="px-3 py-1 text-xs font-semibold text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors cursor-pointer">
                         Edit
                       </button>
                       <button onClick={() => remove(p.id)}
-                        className="px-3 py-1 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors">
+                        className="px-3 py-1 text-xs font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors cursor-pointer">
                         Delete
                       </button>
                     </div>

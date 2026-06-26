@@ -7,7 +7,7 @@ import { randomBytes } from "crypto";
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-const ALLOWED_DIRS = new Set(["products", "hero", "payments"]);
+const ALLOWED_DIRS = new Set(["products", "hero", "payments", "pages"]);
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const EXT_MAP: Record<string, string> = {
   "image/jpeg": ".jpg",

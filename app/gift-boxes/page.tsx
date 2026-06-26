@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { prisma } from "@/lib/prisma";
 import GiftBoxesContent from "./_content";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Premium Gift Boxes — UAE Dates, Arabic Coffee & Luxury Gift Sets | مربع الغربية",
@@ -15,6 +18,17 @@ export const metadata: Metadata = {
   },
 };
 
-export default function GiftBoxesPage() {
-  return <GiftBoxesContent />;
+export default async function GiftBoxesPage() {
+  const page = await prisma.page.findUnique({
+    where: { slug: "gift-boxes" },
+    select: { heroImage: true, heroImageAltEn: true, heroImageAltAr: true },
+  }).catch(() => null);
+
+  return (
+    <GiftBoxesContent
+      heroImage={page?.heroImage ?? null}
+      heroImageAltEn={page?.heroImageAltEn ?? null}
+      heroImageAltAr={page?.heroImageAltAr ?? null}
+    />
+  );
 }
