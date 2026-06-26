@@ -32,6 +32,86 @@ model Category {
   @@index([active, sortOrder])
 }
 
+// ─── CMS: Testimonials ───────────────────────────────────────────────────────
+
+model Testimonial {
+  id         String   @id @default(cuid())
+  nameEn     String
+  nameAr     String
+  locationEn String?
+  locationAr String?
+  reviewEn   String
+  reviewAr   String
+  productEn  String?
+  productAr  String?
+  rating     Int      @default(5)
+  avatar     String?  // initials or image URL
+  color      String   @default("bg-amber-100 text-amber-700")
+  active     Boolean  @default(true)
+  featured   Boolean  @default(false)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([active, sortOrder])
+}
+
+// ─── CMS: Feature Cards (Why Us section) ─────────────────────────────────────
+
+model FeatureCard {
+  id            String   @id @default(cuid())
+  icon          String   @default("box")
+  titleEn       String
+  titleAr       String
+  descriptionEn String
+  descriptionAr String
+  color         String   @default("bg-blue-50 text-blue-600 border-blue-100")
+  active        Boolean  @default(true)
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([active, sortOrder])
+}
+
+// ─── CMS: Homepage Section Headers ───────────────────────────────────────────
+
+model HomepageSection {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  badgeEn    String?
+  badgeAr    String?
+  titleEn    String?
+  titleAr    String?
+  subtitleEn String?
+  subtitleAr String?
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([key])
+}
+
+// ─── CMS: Static Pages ───────────────────────────────────────────────────────
+
+model Page {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  titleEn   String
+  titleAr   String
+  contentEn String   @db.Text
+  contentAr String   @db.Text
+  seoTitleEn    String?
+  seoTitleAr    String?
+  seoDescEn     String?
+  seoDescAr     String?
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug, published])
+}
+
 // ─── Store Settings ───────────────────────────────────────────────────────────
 
 model StoreSettings {

@@ -42,7 +42,18 @@ function SkeletonRow() {
   );
 }
 
-export default function CategoryCards() {
+interface HomepageSectionData {
+  titleEn?: string | null;
+  titleAr?: string | null;
+  badgeEn?: string | null;
+  badgeAr?: string | null;
+  subtitleEn?: string | null;
+  subtitleAr?: string | null;
+}
+
+interface Props { section?: HomepageSectionData | null; }
+
+export default function CategoryCards({ section }: Props) {
   const { lang, tr } = useLanguage();
   const [categories, setCategories] = useState<ApiCategory[] | null>(null);
   const [hasMore, setHasMore]       = useState(false);
@@ -64,7 +75,10 @@ export default function CategoryCards() {
   return (
     <section className="py-10 bg-white border-y border-stone-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <SectionHeader title={tr("shopByCategory")} className="mb-4" />
+        <SectionHeader
+          title={(lang === "ar" ? section?.titleAr : section?.titleEn) ?? tr("shopByCategory")}
+          className="mb-4"
+        />
 
         {categories === null ? (
           <SkeletonRow />

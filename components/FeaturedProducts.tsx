@@ -18,17 +18,34 @@ function SkeletonCard() {
   );
 }
 
-export default function FeaturedProducts() {
-  const { tr } = useLanguage();
+interface HomepageSectionData {
+  badgeEn?: string | null;
+  badgeAr?: string | null;
+  titleEn?: string | null;
+  titleAr?: string | null;
+  subtitleEn?: string | null;
+  subtitleAr?: string | null;
+}
+
+interface Props {
+  section?: HomepageSectionData | null;
+}
+
+export default function FeaturedProducts({ section }: Props) {
+  const { lang, tr } = useLanguage();
   const { products, loading } = useProducts();
   const featured = products.slice(0, 8);
+
+  const badge    = (lang === "ar" ? section?.badgeAr    : section?.badgeEn)    ?? tr("featuredBadge");
+  const title    = (lang === "ar" ? section?.titleAr    : section?.titleEn)    ?? tr("featuredTitle");
+  const subtitle = (lang === "ar" ? section?.subtitleAr : section?.subtitleEn) ?? tr("featuredSub");
 
   return (
     <section className="py-14 max-w-7xl mx-auto px-4 sm:px-6">
       <SectionHeader
-        badge={tr("featuredBadge")}
-        title={tr("featuredTitle")}
-        subtitle={tr("featuredSub")}
+        badge={badge}
+        title={title}
+        subtitle={subtitle}
         className="mb-8"
       />
 

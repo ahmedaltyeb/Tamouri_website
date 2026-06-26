@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   },
 };
 
+import { prisma } from "@/lib/prisma";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import CategoryCards from "@/components/CategoryCards";
@@ -25,17 +26,28 @@ import WhyTamouri from "@/components/WhyTamouri";
 import Testimonials from "@/components/Testimonials";
 import Footer from "@/components/Footer";
 
-export default function HomePage() {
+async function getHomepageSections() {
+  try {
+    const rows = await prisma.homepageSection.findMany({ where: { active: true } });
+    return Object.fromEntries(rows.map((s) => [s.key, s]));
+  } catch {
+    return {} as Record<string, never>;
+  }
+}
+
+export default async function HomePage() {
+  const sections = await getHomepageSections();
+
   return (
     <main className="min-h-screen">
       <TopBar />
       <Header />
       <Hero />
-      <CategoryCards />
-      <FeaturedProducts />
+      <CategoryCards section={sections["shop_categories"] ?? null} />
+      <FeaturedProducts section={sections["featured_products"] ?? null} />
       <HeroSlider />
-      <WhyTamouri />
-      <Testimonials />
+      <WhyTamouri section={sections["why_us"] ?? null} />
+      <Testimonials section={sections["testimonials"] ?? null} />
       <Footer />
     </main>
   );
