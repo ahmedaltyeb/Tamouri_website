@@ -136,8 +136,8 @@ const TRANSLATIONS: Record<string, { nameEn: string; nameAr: string; categoryAr?
   // ── Saffron ────────────────────────────────────────────────────────────────
   "cmqpmmkr30002v0ic13xqbxff": { nameEn: "Authentic Iranian Saffron", nameAr: "زعفران إيراني أصيل", categoryAr: "الزعفران" },
 
-  // ── Hospitality ────────────────────────────────────────────────────────────
-  "cmqpmml8s0004v0icptansrf0": { nameEn: "Golden Dallah and Finjan Coffee Set", nameAr: "طقم دلة وفناجين ذهبي", categoryAr: "مستلزمات الضيافة" },
+  // ── Hospitality (separate from Tools entry above) ──────────────────────────
+  // Note: cmqpmml8s0004v0icptansrf0 is already listed under Coffee And Tea Tools above
 
   // ── Sweets ─────────────────────────────────────────────────────────────────
   "cmqqjx5oc0063v0j0lk2x3xhk": { nameEn: "Butter Cookies – A Luxury Treat", nameAr: "بسكويت الزبدة - متعة فاخرة", categoryAr: "الحلويات" },
@@ -160,9 +160,9 @@ export async function POST() {
       }
       await prisma.product.update({
         where: { id },
-        data: {
-          name: { en: t.nameEn, ar: t.nameAr },
-        },
+        // Prisma Json field — cast to any to allow arbitrary object
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: { name: { en: t.nameEn, ar: t.nameAr } as any },
       });
       results.updated++;
     } catch (e) {
