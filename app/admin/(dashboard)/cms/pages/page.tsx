@@ -36,14 +36,29 @@ export default function PagesPage() {
   const [msg, setMsg]         = useState("");
   const [tab, setTab]         = useState<"content" | "seo">("content");
 
-  async function load() {
+  async function load(autoSeed = false) {
     setLoading(true);
     const r = await fetch("/api/admin/cms/pages");
-    setItems(await r.json());
+    const data: Page[] = await r.json();
+    if (autoSeed && data.length === 0) {
+      // Seed starter pages on first visit
+      await fetch("/api/admin/cms/pages/seed", { method: "POST" });
+      const r2 = await fetch("/api/admin/cms/pages");
+      setItems(await r2.json());
+    } else {
+      setItems(data);
+    }
     setLoading(false);
   }
 
-  useEffect(() => { load(); }, []);
+  async function seed() {
+    setSaving(true);
+    await fetch("/api/admin/cms/pages/seed", { method: "POST" });
+    setSaving(false);
+    load();
+  }
+
+  useEffect(() => { load(true); }, []);
 
   function openNew() { setEditing(null); setForm({ ...EMPTY }); setMsg(""); setShowForm(true); setTab("content"); }
 
@@ -108,10 +123,16 @@ export default function PagesPage() {
           <h1 className="text-xl font-bold text-stone-800">Pages CMS</h1>
           <p className="text-sm text-stone-500 mt-0.5">Create and manage content pages accessible at <code className="bg-stone-100 px-1 rounded">/pages/[slug]</code></p>
         </div>
-        <button onClick={openNew}
-          className="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-xl text-sm font-semibold transition-colors">
-          + New Page
-        </button>
+        <div className="flex gap-2">
+          <button onClick={seed} disabled={saving}
+            className="px-4 py-2 border border-stone-200 hover:bg-stone-50 text-stone-600 rounded-xl text-sm font-semibold transition-colors disabled:opacity-50">
+            {saving ? "Seeding…" : "Seed Starter Pages"}
+          </button>
+          <button onClick={openNew}
+            className="px-4 py-2 bg-amber-700 hover:bg-amber-800 text-white rounded-xl text-sm font-semibold transition-colors">
+            + New Page
+          </button>
+        </div>
       </div>
 
       {showForm && (
