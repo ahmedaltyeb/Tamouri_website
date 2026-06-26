@@ -17,8 +17,8 @@ export default function Footer() {
     { labelKey: "shop",        href: "/shop" },
     { labelKey: "dates",       href: "/shop?category=dates" },
     { labelKey: "arabicCoffee",href: "/shop?category=arabic-coffee" },
-    { labelKey: "giftBoxes",   href: "/pages/gift-boxes" },
-    { labelKey: "weeklyDeals", href: "/pages/weekly-deals" },
+    { labelKey: "giftBoxes",   href: "/gift-boxes" },
+    { labelKey: "weeklyDeals", href: "/weekly-deals" },
   ] as const;
 
   const serviceLinks = [
