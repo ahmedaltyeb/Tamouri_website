@@ -73,6 +73,15 @@ export async function POST(request: Request) {
   }
 
   const useBlob = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  const onVercel = Boolean(process.env.VERCEL);
+
+  // On Vercel the filesystem is read-only — Blob storage is required.
+  if (onVercel && !useBlob) {
+    return NextResponse.json(
+      { error: "Storage not configured: BLOB_READ_WRITE_TOKEN is missing. Add it in Vercel → Settings → Environment Variables, then redeploy." },
+      { status: 500 }
+    );
+  }
 
   const urls:   string[] = [];
   const errors: string[] = [];
