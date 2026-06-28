@@ -391,6 +391,27 @@ enum OrderStatus {
   CANCELLED
 }
 
+// ─── CMS: Menu Items ─────────────────────────────────────────────────────────
+
+model MenuItem {
+  id           String   @id @default(cuid())
+  titleEn      String
+  titleAr      String
+  type         String   // "url" | "category" | "page" | "external"
+  url          String?  // for type url/external
+  targetId     String?  // categorySlug for type=category, pageSlug for type=page
+  icon         String?  // icon name key
+  image        String?  // optional thumbnail image URL
+  badge        String?  // e.g. "New" | "Hot" | "Sale"
+  sortOrder    Int      @default(0)
+  active       Boolean  @default(true)
+  openInNewTab Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([active, sortOrder])
+}
+
 // ─── Cart (persisted for logged-in users) ────────────────────────────────────
 
 model CartItem {

@@ -131,11 +131,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link href={fontUrl} rel="stylesheet" />
         {/* Theme CSS variables — overrides :root defaults in globals.css */}
         <style dangerouslySetInnerHTML={{ __html: themeCss }} />
-        <JsonLd data={localBusinessSchema} />
-        {/* Canonical + hreflang — skipped for admin routes (x-next-path header absent) */}
-        <LangLinks />
       </head>
       <body className="bg-cream text-ink antialiased">
+        {/*
+          JsonLd and LangLinks are intentionally placed here, not in <head>.
+          React 19 automatically hoists <script> and <link> elements to <head>
+          regardless of where they appear in the tree. Placing async server
+          components (LangLinks calls headers()) inside <head> causes streaming
+          to emit their output after </head>, misaligning the hydration tree.
+        */}
+        <JsonLd data={localBusinessSchema} />
+        <LangLinks />
         {/*
           Pass initialLang from server so LanguageProvider starts in the correct
           language without reading cookies client-side (eliminates AR→EN flash).

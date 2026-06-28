@@ -1,12 +1,15 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { categories } from "@/lib/products";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useCustomerAuth } from "@/contexts/CustomerAuthContext";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
+
+// Lazy-load the drawer so it doesn't increase the initial JS bundle
+const MenuDrawer = lazy(() => import("@/components/MenuDrawer"));
 
 /** Strip Arabic unicode from a field that should contain Latin text. */
 function latinOnly(text: string): string {
@@ -274,64 +277,12 @@ export default function Header() {
           </form>
         </div>
 
-        {/* Mobile menu */}
-        {menuOpen && (
-          <div className="md:hidden border-t border-stone-100 py-3 animate-slide-up">
-            {/* Home + Store as first items */}
-            <div className="flex gap-2 mb-2 pb-2 border-b border-stone-100">
-              <Link
-                href="/"
-                onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-stone-700 hover:text-brown hover:bg-stone-50 rounded-lg transition-colors cursor-pointer"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 22V12h6v10"/>
-                </svg>
-                {tr("home")}
-              </Link>
-              <Link
-                href="/shop"
-                onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-1.5 px-3 py-2 text-sm font-semibold text-stone-700 hover:text-brown hover:bg-stone-50 rounded-lg transition-colors cursor-pointer"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
-                {tr("shop")}
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-2 gap-1">
-              {categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/shop?category=${cat.slug}`}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2.5 text-sm text-stone-700 hover:text-brown hover:bg-stone-50 rounded-lg transition-colors cursor-pointer"
-                >
-                  {tr(cat.nameKey)}
-                </Link>
-              ))}
-            </div>
-
-            <div className="mt-2 pt-2 border-t border-stone-100 flex items-center justify-between">
-              <div className="flex gap-1">
-                <Link href="/track-order" onClick={() => setMenuOpen(false)} className="px-3 py-2 text-sm text-stone-600 hover:text-brown cursor-pointer">
-                  {tr("trackOrder")}
-                </Link>
-                <Link href="/contact" onClick={() => setMenuOpen(false)} className="px-3 py-2 text-sm text-stone-600 hover:text-brown cursor-pointer">
-                  {tr("contactUs")}
-                </Link>
-              </div>
-              <div className="flex items-center divide-x divide-stone-200 border border-stone-200 rounded overflow-hidden text-xs font-semibold mx-3">
-                <button onClick={() => setLang("ar")} className={`px-3 py-1.5 cursor-pointer transition-colors ${lang === "ar" ? "bg-brown text-white" : "text-stone-500"}`}>AR</button>
-                <button onClick={() => setLang("en")} className={`px-3 py-1.5 cursor-pointer transition-colors ${lang === "en" ? "bg-brown text-white" : "text-stone-500"}`}>EN</button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Slide-out menu drawer — rendered outside the sticky header so it overlays the full page */}
+      <Suspense fallback={null}>
+        <MenuDrawer open={menuOpen} onClose={() => setMenuOpen(false)} />
+      </Suspense>
     </header>
   );
 }

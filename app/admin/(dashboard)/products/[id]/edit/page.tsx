@@ -39,9 +39,11 @@ export default async function EditProductPage({
           description,
           price: product.price,
           originalPrice: product.originalPrice ?? undefined,
-          category: product.category,
-          categorySlug: product.categorySlug,
-          image: product.image,
+          // Legacy seed products may have null category/slug in DB (pre-category system).
+          // Guard here to prevent SSR crash inside ProductForm's useState initialiser.
+          category: product.category ?? "",
+          categorySlug: product.categorySlug ?? "",
+          image: product.image ?? "",
           badge: product.badge ?? undefined,
           rating: product.rating,
           reviews: product.reviews,

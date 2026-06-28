@@ -36,7 +36,7 @@ export default function CartSync() {
   useEffect(() => {
     if (user && prevUserId.current !== user.id) {
       prevUserId.current = user.id;
-      mergeOnLogin();
+      void mergeOnLogin();
     } else if (!user) {
       prevUserId.current = null;
     }
@@ -70,6 +70,8 @@ export default function CartSync() {
       const mergedItems = Array.from(merged.values());
       _hydrate(mergedItems, localWishlist);
       await syncToServer(mergedItems);
+    } catch {
+      // Network error at startup or offline — best-effort, do not surface to user
     } finally {
       isMerging.current = false;
     }
