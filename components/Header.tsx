@@ -50,6 +50,7 @@ export default function Header() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
+    <>
     <header className="sticky top-0 z-50 bg-white shadow-sm" dir={dir}>
 
       {/* ── Row 1: utility bar ── */}
@@ -279,10 +280,12 @@ export default function Header() {
 
       </div>
 
-      {/* Slide-out menu drawer — rendered outside the sticky header so it overlays the full page */}
-      <Suspense fallback={null}>
-        <MenuDrawer open={menuOpen} onClose={() => setMenuOpen(false)} />
-      </Suspense>
     </header>
+
+    {/* Rendered OUTSIDE <header> to escape its z-index stacking context */}
+    <Suspense fallback={null}>
+      <MenuDrawer open={menuOpen} onClose={() => setMenuOpen(false)} />
+    </Suspense>
+    </>
   );
 }
