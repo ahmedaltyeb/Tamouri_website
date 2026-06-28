@@ -31,7 +31,7 @@ export interface ImportResult {
 type RawRow = Record<string, string | number | boolean | undefined>;
 
 function normalizeKey(key: string): string {
-  return key.toLowerCase().replace(/[\s_\-]/g, "");
+  return key.toLowerCase().replace(/[\s_()\-]/g, "");
 }
 
 function normalizeRow(row: RawRow): RawRow {
@@ -87,8 +87,8 @@ function validateRow(
   const priceStr = str(r["price"]);
   const category = str(r["category"]);
   const categorySlug = str(r["categoryslug"] ?? r["categoryslu"] ?? r["cat"]);
-  const imageVal = str(r["image"]);
-  const imagesVal = str(r["images"]);
+  const imageVal = str(r["image"] ?? r["primaryimage"] ?? r["imageurl"]);
+  const imagesVal = str(r["images"] ?? r["allimages"] ?? r["imageurl"]);
   const originalPriceStr = str(r["originalprice"] ?? r["saleprice"]);
   const stockStr = str(r["stock"]);
   const ratingStr = str(r["rating"]);
