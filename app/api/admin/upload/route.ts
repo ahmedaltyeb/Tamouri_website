@@ -36,10 +36,11 @@ function safeFilename(mimeType: string): string {
 // ── POST /api/admin/upload ────────────────────────────────────────────────────
 //
 // Storage strategy:
-//   • On Vercel (BLOB_READ_WRITE_TOKEN is set): upload to Vercel Blob CDN.
+//   • BLOB_READ_WRITE_TOKEN is set (Vercel production): upload to Vercel Blob CDN.
 //     Returns a permanent https://...vercel-storage.com/... URL.
-//   • In local dev (no token): write to public/uploads/{dir}/.
+//   • No token (local dev): write to public/uploads/{dir}/.
 //     Returns a /uploads/{dir}/filename path served by Next.js.
+// [rebuild trigger: blob store connected]
 
 export async function POST(request: Request) {
   if (!(await requireAdmin())) {
