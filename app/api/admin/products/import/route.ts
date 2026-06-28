@@ -60,6 +60,7 @@ interface ValidatedData {
   originalPrice: number | null;
   category: string;
   categorySlug: string;
+  categoryId: string | null;
   image: string;
   images: string[];
   badge: string | null;
@@ -71,7 +72,8 @@ interface ValidatedData {
 
 function validateRow(
   raw: RawRow,
-  rowIndex: number
+  rowIndex: number,
+  categoryMap: Map<string, string>
 ): { valid: true; data: ValidatedData } | { valid: false; errors: RowError[] } {
   const errors: RowError[] = [];
   const r = normalizeRow(raw);
@@ -148,6 +150,7 @@ function validateRow(
   const primaryImage = imagesArr[0] ?? "";
 
   const slug = categorySlug || category.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+  const categoryId = categoryMap.get(slug) ?? categoryMap.get(category.toLowerCase()) ?? null;
 
   return {
     valid: true,
@@ -159,6 +162,7 @@ function validateRow(
       originalPrice,
       category,
       categorySlug: slug,
+      categoryId,
       image: primaryImage,
       images: imagesArr,
       badge: badgeVal || null,
@@ -211,6 +215,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Maximum 5,000 rows per import" }, { status: 400 });
   }
 
+  // Build slug→id and name→id maps for all categories so imports can resolve categoryId
+  const allCategories = await prisma.category.findMany({ select: { id: true, slug: true, name: true } });
+  const categoryMap = new Map<string, string>();
+  for (const cat of allCategories) {
+    if (cat.slug) categoryMap.set(cat.slug.toLowerCase(), cat.id);
+    if (cat.name) categoryMap.set(cat.name.toLowerCase(), cat.id);
+  }
+
   const result: ImportResult = {
     total: rows.length,
     valid: 0,
@@ -224,7 +236,7 @@ export async function POST(request: Request) {
   const validRows: ValidatedData[] = [];
 
   rows.forEach((row, i) => {
-    const res = validateRow(row, i + 2);
+    const res = validateRow(row, i + 2, categoryMap);
     if (res.valid) {
       result.valid++;
       validRows.push(res.data);
