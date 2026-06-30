@@ -5,6 +5,7 @@ import { validateCoupon } from "@/lib/coupons";
 import { checkoutRateLimit, getIp } from "@/lib/rate-limit";
 import { getStripe, stripeEnabled } from "@/lib/stripe";
 import { parseMLText } from "@/lib/products";
+import { sendOrderNotification } from "@/lib/whatsapp";
 import type Stripe from "stripe";
 
 type CheckoutBody = {
@@ -224,6 +225,18 @@ export async function POST(request: Request) {
 
   // ── COD mode (no Stripe keys) ────────────────────────────────────────────────
   if (!stripeEnabled()) {
+    void sendOrderNotification({
+      orderId: order.id,
+      customerName: resolvedName,
+      customerPhone: resolvedPhone,
+      items: items.map((i) => {
+        const p = productMap.get(i.id)!;
+        return { name: parseMLText(p.name as string).en || String(p.name), quantity: i.quantity, price: p.price };
+      }),
+      total,
+      shippingAddress,
+      paymentMethod: "cod",
+    });
     return NextResponse.json({ orderId: order.id }, { status: 201 });
   }
 

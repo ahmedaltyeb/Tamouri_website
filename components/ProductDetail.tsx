@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import PaymentMethods from "@/components/PaymentMethods";
+import ReviewsSection from "@/components/ReviewsSection";
 import { useCartStore } from "@/store/cartStore";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useProductView, useTrackAddToCart } from "@/hooks/useAnalytics";
@@ -331,9 +332,16 @@ export default function ProductDetail({ product, related }: Props) {
         </div>
       </div>
 
+      {/* Reviews */}
+      <ReviewsSection
+        productId={product.id}
+        initialRating={product.rating}
+        initialCount={product.reviews}
+      />
+
       {/* Related products */}
       {related.length > 0 && (
-        <div>
+        <div className="pt-10">
           <h2 className="text-xl font-bold text-ink mb-6">{tr("relatedProducts")}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {related.map((p) => (

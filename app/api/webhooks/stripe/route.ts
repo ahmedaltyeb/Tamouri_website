@@ -4,6 +4,7 @@ import { getStripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { sendOrderConfirmation } from "@/lib/email";
 import { parseMLText } from "@/lib/products";
+import { sendOrderNotification } from "@/lib/whatsapp";
 
 // Must be dynamic — we read the raw request body for signature verification
 export const dynamic = "force-dynamic";
@@ -43,7 +44,7 @@ export async function POST(request: Request) {
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
-        user: { select: { email: true, name: true } },
+        user: { select: { email: true, name: true, phone: true } },
         items: {
           include: { product: { select: { name: true } } },
         },
@@ -83,7 +84,21 @@ export async function POST(request: Request) {
     ]);
 
     if (isPaid) {
-      // Fire-and-forget — never blocks the webhook response
+      const notifItems = order.items.map((i) => ({
+        name: parseMLText(i.product.name).en,
+        quantity: i.quantity,
+        price: i.price,
+      }));
+      // Both notifications are fire-and-forget — never block the webhook response
+      void sendOrderNotification({
+        orderId: order.id,
+        customerName: order.user.name,
+        customerPhone: order.user.phone ?? "",
+        items: notifItems,
+        total: order.total,
+        shippingAddress: order.shippingAddress,
+        paymentMethod: "stripe",
+      });
       void sendOrderConfirmation({
         to: order.user.email,
         customerName: order.user.name,
