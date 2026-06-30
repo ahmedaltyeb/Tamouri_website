@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCustomerSession } from "@/lib/customer-auth";
+import { validateCoupon } from "@/lib/coupons";
+import { checkoutRateLimit, getIp } from "@/lib/rate-limit";
+import { getStripe, stripeEnabled } from "@/lib/stripe";
+import { parseMLText } from "@/lib/products";
+import type Stripe from "stripe";
 
 type CheckoutBody = {
   // Guest fields (required when not logged in)
@@ -12,14 +17,7 @@ type CheckoutBody = {
   address?: string;
   notes?: string;
   items: Array<{ id: string; quantity: number }>;
-  // Coupon discount (validated server-side against VALID_COUPONS)
   coupon?: string;
-};
-
-const VALID_COUPONS: Record<string, number> = {
-  TAMOURI10: 10,
-  WELCOME5: 5,
-  UAE15: 15,
 };
 
 function err(msg: string, status = 400) {
@@ -36,6 +34,10 @@ export async function POST(request: Request) {
 
   const { items, notes, coupon } = body;
   if (!items?.length) return err("Cart is empty", 422);
+
+  // Rate limit: 10 checkout attempts per IP per hour
+  const rl = await checkoutRateLimit(getIp(request));
+  if (!rl.allowed) return err("Too many requests — please try again later", 429);
 
   // ── Resolve customer ─────────────────────────────────────────────────────────
   const session = await getCustomerSession();
@@ -123,45 +125,174 @@ export async function POST(request: Request) {
   let subtotal = items.reduce((sum, i) => sum + productMap.get(i.id)!.price * i.quantity, 0);
   const shipping = subtotal > 200 ? 0 : 15;
 
-  // Apply coupon if valid
-  let discountPct = 0;
-  if (coupon) {
-    discountPct = VALID_COUPONS[coupon.trim().toUpperCase()] ?? 0;
+  // Apply coupon if valid — always re-validated server-side (never trust client)
+  const couponResult = coupon ? await validateCoupon(coupon) : null;
+
+  let discountAmount = 0;
+  if (couponResult?.valid) {
+    if (couponResult.minOrderAmount !== null && subtotal < couponResult.minOrderAmount) {
+      return err(
+        `Minimum order of ${couponResult.minOrderAmount} AED required for this coupon`,
+        422,
+      );
+    }
+    if (couponResult.type === "fixed") {
+      discountAmount = Math.min(couponResult.discount, subtotal); // cannot exceed subtotal
+    } else {
+      discountAmount = Math.round(subtotal * (couponResult.discount / 100) * 100) / 100;
+    }
   }
-  const discountAmount = Math.round(subtotal * (discountPct / 100) * 100) / 100;
+
   const total = Math.round((subtotal - discountAmount + shipping) * 100) / 100;
 
   // ── Create order in transaction ──────────────────────────────────────────────
-  const order = await prisma.$transaction(async (tx) => {
-    const created = await tx.order.create({
-      data: {
-        userId,
-        status: "PENDING",
-        total,
-        shippingAddress,
-        notes: notes?.trim() || null,
-        items: {
-          create: items.map((i) => ({
-            productId: i.id,
-            quantity: i.quantity,
-            price: productMap.get(i.id)!.price,
-          })),
+  let order: Awaited<ReturnType<typeof prisma.order.create>>;
+  try {
+    order = await prisma.$transaction(async (tx) => {
+      // ── 1. Decrement stock with optimistic locking ────────────────────────
+      // updateMany WHERE stock >= quantity: if count === 0, another request
+      // bought the last unit after our validation check above. Throw so Prisma
+      // rolls back the entire transaction (no order created, no stock touched).
+      for (const item of items) {
+        const result = await tx.product.updateMany({
+          where: { id: item.id, stock: { gte: item.quantity } },
+          data: { stock: { decrement: item.quantity } },
+        });
+
+        if (result.count === 0) {
+          const raw = productMap.get(item.id)!.name;
+          let displayName: string;
+          try {
+            displayName = (JSON.parse(raw as string) as { en?: string }).en ?? String(raw);
+          } catch {
+            displayName = String(raw);
+          }
+          throw new Error(`"${displayName}" just sold out — please remove it from your cart`);
+        }
+      }
+
+      // ── 2. Mark inStock = false for products that just reached 0 ─────────
+      await tx.product.updateMany({
+        where: { id: { in: productIds }, stock: { lte: 0 } },
+        data: { inStock: false },
+      });
+
+      // ── 3. Create the order ───────────────────────────────────────────────
+      const created = await tx.order.create({
+        data: {
+          userId,
+          status: "PENDING",
+          total,
+          shippingAddress,
+          notes: notes?.trim() || null,
+          items: {
+            create: items.map((i) => ({
+              productId: i.id,
+              quantity: i.quantity,
+              price: productMap.get(i.id)!.price,
+            })),
+          },
         },
+        include: { items: true },
+      });
+
+      await tx.orderStatusHistory.create({
+        data: { orderId: created.id, status: "PENDING", note: "Order placed" },
+      });
+
+      // Increment coupon usage counter atomically inside the transaction
+      if (couponResult?.couponId) {
+        await tx.coupon.update({
+          where: { id: couponResult.couponId },
+          data: { usedCount: { increment: 1 } },
+        });
+      }
+
+      // Clear DB cart for logged-in user
+      if (session) {
+        await tx.cartItem.deleteMany({ where: { userId } });
+      }
+
+      return created;
+    });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Order could not be completed";
+    // Stock-out errors are user-facing (422); everything else is a server fault
+    const isStockError = message.includes("just sold out");
+    return NextResponse.json({ error: message }, { status: isStockError ? 422 : 500 });
+  }
+
+  // ── COD mode (no Stripe keys) ────────────────────────────────────────────────
+  if (!stripeEnabled()) {
+    return NextResponse.json({ orderId: order.id }, { status: 201 });
+  }
+
+  // ── Stripe Checkout Session ──────────────────────────────────────────────────
+  const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+  const stripe = getStripe();
+
+  // Build line items from DB products (server-side prices only)
+  const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] =
+    items.map((item) => {
+      const product = productMap.get(item.id)!;
+      const name = parseMLText(product.name as string);
+      return {
+        price_data: {
+          currency: "aed",
+          unit_amount: Math.round(product.price * 100), // fils (AED × 100)
+          product_data: { name: name.en || name.ar || String(product.name) },
+        },
+        quantity: item.quantity,
+      };
+    });
+
+  // Shipping as a line item
+  if (shipping > 0) {
+    lineItems.push({
+      price_data: {
+        currency: "aed",
+        unit_amount: Math.round(shipping * 100),
+        product_data: { name: "Shipping" },
       },
-      include: { items: true },
+      quantity: 1,
     });
+  }
 
-    await tx.orderStatusHistory.create({
-      data: { orderId: created.id, status: "PENDING", note: "Order placed" },
+  // Discount: create a one-time Stripe coupon so the hosted page shows the breakdown
+  let stripeCouponId: string | undefined;
+  if (discountAmount > 0) {
+    const sc = await stripe.coupons.create({
+      amount_off: Math.round(discountAmount * 100),
+      currency: "aed",
+      duration: "once",
+      name: coupon ? `Coupon: ${coupon.toUpperCase()}` : "Discount",
     });
+    stripeCouponId = sc.id;
+  }
 
-    // Clear DB cart for logged-in user
-    if (session) {
-      await tx.cartItem.deleteMany({ where: { userId } });
-    }
-
-    return created;
+  const checkoutSession = await stripe.checkout.sessions.create({
+    mode: "payment",
+    currency: "aed",
+    line_items: lineItems,
+    ...(stripeCouponId ? { discounts: [{ coupon: stripeCouponId }] } : {}),
+    customer_email: resolvedEmail,
+    metadata: { orderId: order.id },
+    success_url: `${BASE}/order-success?id=${order.id}&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${BASE}/checkout?cancelled=1`,
+    payment_intent_data: {
+      // Store orderId so webhooks can find the order even without metadata
+      metadata: { orderId: order.id },
+    },
   });
 
-  return NextResponse.json({ orderId: order.id }, { status: 201 });
+  // Persist the Stripe session ID on the order
+  await prisma.order.update({
+    where: { id: order.id },
+    data: { stripeSessionId: checkoutSession.id },
+  });
+
+  return NextResponse.json(
+    { orderId: order.id, sessionUrl: checkoutSession.url },
+    { status: 201 },
+  );
 }

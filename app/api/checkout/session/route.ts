@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { stripe } from "@/lib/stripe";
+import { getStripe } from "@/lib/stripe";
 import { parseMLText } from "@/lib/products";
 
 export async function POST(request: Request) {
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
   // If a session was already created for this order, retrieve and return it
   if (order.stripeSessionId) {
-    const existing = await stripe.checkout.sessions.retrieve(
+    const existing = await getStripe().checkout.sessions.retrieve(
       order.stripeSessionId
     );
     if (existing.url) {
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
 
   const origin = new URL(request.url).origin;
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "payment",
     line_items: order.items.map((item) => ({

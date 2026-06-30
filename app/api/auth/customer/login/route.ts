@@ -5,7 +5,7 @@ import { setCustomerCookie } from "@/lib/customer-auth";
 import { loginRateLimit, getIp } from "@/lib/rate-limit";
 
 export async function POST(request: Request) {
-  const rl = loginRateLimit(getIp(request));
+  const rl = await loginRateLimit(getIp(request));
   if (!rl.allowed) {
     return NextResponse.json({ error: "tooManyAttempts" }, { status: 429 });
   }

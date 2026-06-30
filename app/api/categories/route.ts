@@ -16,6 +16,9 @@ const SELECT = {
 
 const ORDER = [{ sortOrder: "asc" as const }, { name: "asc" as const }];
 
+// CDN caches for 60 s; browsers get 30 s to keep category lists fresh.
+const CACHE = { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30" };
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const homepage = searchParams.get("homepage") === "true";
@@ -29,7 +32,7 @@ export async function GET(request: Request) {
     });
 
     if (featured.length > 0) {
-      return NextResponse.json({ categories: featured, total: null });
+      return NextResponse.json({ categories: featured, total: null }, { headers: CACHE });
     }
 
     const fallback = await prisma.category.findMany({
@@ -40,7 +43,7 @@ export async function GET(request: Request) {
     });
     const total = await prisma.category.count({ where: { active: true } });
 
-    return NextResponse.json({ categories: fallback, total });
+    return NextResponse.json({ categories: fallback, total }, { headers: CACHE });
   }
 
   // Shop page / default: all active categories.
@@ -50,5 +53,5 @@ export async function GET(request: Request) {
     select: SELECT,
   });
 
-  return NextResponse.json(categories);
+  return NextResponse.json(categories, { headers: CACHE });
 }

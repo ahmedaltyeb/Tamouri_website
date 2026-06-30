@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import type { Product } from "@/lib/products";
 import GiftBoxesContent from "./_content";
 
-export const dynamic = "force-dynamic";
+// Revalidate every 5 minutes — CMS hero image and product list are both ISR-cached.
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Premium Gift Boxes — UAE Dates, Arabic Coffee & Luxury Gift Sets | مربع الغربية",
@@ -18,17 +20,33 @@ export const metadata: Metadata = {
   },
 };
 
+async function getProducts(): Promise<Product[]> {
+  try {
+    const rows = await prisma.product.findMany({
+      where: { OR: [{ categoryId: { not: null } }, { categorySlug: { not: "" } }] },
+      orderBy: { createdAt: "asc" },
+    });
+    return rows as unknown as Product[];
+  } catch {
+    return [];
+  }
+}
+
 export default async function GiftBoxesPage() {
-  const page = await prisma.page.findUnique({
-    where: { slug: "gift-boxes" },
-    select: { heroImage: true, heroImageAltEn: true, heroImageAltAr: true },
-  }).catch(() => null);
+  const [page, initialProducts] = await Promise.all([
+    prisma.page.findUnique({
+      where: { slug: "gift-boxes" },
+      select: { heroImage: true, heroImageAltEn: true, heroImageAltAr: true },
+    }).catch(() => null),
+    getProducts(),
+  ]);
 
   return (
     <GiftBoxesContent
       heroImage={page?.heroImage ?? null}
       heroImageAltEn={page?.heroImageAltEn ?? null}
       heroImageAltAr={page?.heroImageAltAr ?? null}
+      initialProducts={initialProducts}
     />
   );
 }

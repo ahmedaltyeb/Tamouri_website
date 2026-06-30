@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 
-// Render at request time so crawlers always get fresh URLs
-export const dynamic = "force-dynamic";
+// Regenerate once per hour — product catalogue changes rarely.
+// Crawlers tolerate up to 24 h of staleness for sitemaps.
+export const revalidate = 3600;
 
 const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? "https://tamouri.onrender.com";
 

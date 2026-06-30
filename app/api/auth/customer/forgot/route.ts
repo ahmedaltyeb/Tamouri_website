@@ -7,7 +7,7 @@ const BASE = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 const EXPIRY_MS = 60 * 60 * 1000; // 1 hour
 
 export async function POST(request: Request) {
-  const rl = forgotRateLimit(getIp(request));
+  const rl = await forgotRateLimit(getIp(request));
   if (!rl.allowed) {
     return NextResponse.json({ error: "tooManyAttempts" }, { status: 429 });
   }

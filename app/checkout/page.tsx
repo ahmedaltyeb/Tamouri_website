@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import TopBar from "@/components/TopBar";
@@ -92,8 +92,6 @@ function CheckoutForm() {
   const { items, getTotalPrice, _hydrated, clearCart } = useCartStore();
   const { tr, lang, dir } = useLanguage();
   const router = useRouter();
-  const params = useSearchParams();
-  const coupon = params.get("coupon") ?? "";
 
   // Track checkout start once per mount
   useCheckoutStart();
@@ -107,6 +105,13 @@ function CheckoutForm() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+
+  // ── Coupon state ────────────────────────────────────────────────────────────
+  const [couponInput, setCouponInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [couponDiscount, setCouponDiscount] = useState(0); // percentage
+  const [couponError, setCouponError] = useState("");
+  const [couponApplying, setCouponApplying] = useState(false);
 
   // Fetch saved addresses for logged-in user
   useEffect(() => {
@@ -142,7 +147,44 @@ function CheckoutForm() {
 
   const subtotal = getTotalPrice();
   const shipping = subtotal > 200 ? 0 : 15;
-  const grandTotal = subtotal + shipping;
+  const discountAmount = appliedCoupon
+    ? Math.round(subtotal * (couponDiscount / 100) * 100) / 100
+    : 0;
+  const grandTotal = Math.round((subtotal - discountAmount + shipping) * 100) / 100;
+
+  async function handleApplyCoupon() {
+    const code = couponInput.trim().toUpperCase();
+    if (!code) return;
+    setCouponError("");
+    setCouponApplying(true);
+    try {
+      const res = await fetch("/api/checkout/validate-coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ coupon: code }),
+      });
+      const data = await res.json() as { valid: boolean; discount: number };
+      if (data.valid) {
+        setAppliedCoupon(code);
+        setCouponDiscount(data.discount);
+        setCouponInput("");
+        setCouponError("");
+      } else {
+        setCouponError(lang === "ar" ? "كود الخصم غير صالح" : "Invalid coupon code");
+      }
+    } catch {
+      setCouponError(lang === "ar" ? "حدث خطأ، حاول مجدداً" : "Something went wrong, try again");
+    } finally {
+      setCouponApplying(false);
+    }
+  }
+
+  function handleRemoveCoupon() {
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setCouponInput("");
+    setCouponError("");
+  }
 
   function validateForm(): boolean {
     const e: Record<string, string> = {};
@@ -170,7 +212,7 @@ function CheckoutForm() {
         name: form.name.trim(),
         phone: form.phone.trim(),
         notes: form.notes.trim() || undefined,
-        coupon: coupon || undefined,
+        coupon: appliedCoupon || undefined,
         items: items.map((i) => ({ id: i.id, quantity: i.quantity })),
       };
 
@@ -191,14 +233,28 @@ function CheckoutForm() {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json() as { orderId?: string; error?: string; errors?: string[] };
+      const data = await res.json() as {
+        orderId?: string;
+        sessionUrl?: string;
+        error?: string;
+        errors?: string[];
+      };
 
       if (!res.ok) {
         setErrors({ general: data.errors?.join(", ") ?? data.error ?? "Something went wrong" });
         return;
       }
 
-      // Clear local cart then navigate to success
+      if (data.sessionUrl) {
+        // Stripe Checkout — redirect to Stripe's hosted payment page.
+        // Do NOT clear the cart here: the CartClearer component on the
+        // success page handles it. If the customer cancels, they return
+        // to checkout with their cart intact.
+        window.location.href = data.sessionUrl;
+        return;
+      }
+
+      // COD mode (no Stripe keys) — go straight to success page
       clearCart();
       router.push(`/order-success?id=${data.orderId}`);
     } finally {
@@ -373,22 +429,74 @@ function CheckoutForm() {
                   })}
                 </div>
 
+                {/* ── Coupon input ── */}
+                <div className="mb-5">
+                  {appliedCoupon ? (
+                    <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-3 py-2.5">
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-green-600 flex-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span className="text-sm font-bold text-green-700 tracking-wide">{appliedCoupon}</span>
+                        <span className="text-xs text-green-600">−{couponDiscount}%</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRemoveCoupon}
+                        className="text-xs text-stone-400 hover:text-red-500 transition-colors cursor-pointer"
+                      >
+                        {lang === "ar" ? "إزالة" : "Remove"}
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={couponInput}
+                          onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError(""); }}
+                          onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleApplyCoupon())}
+                          placeholder={lang === "ar" ? "كود الخصم" : "Coupon code"}
+                          className={`flex-1 bg-stone-50 border ${couponError ? "border-red-300" : "border-stone-200"} rounded-xl px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brown/20 focus:border-brown transition-all uppercase tracking-wide`}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleApplyCoupon}
+                          disabled={!couponInput.trim() || couponApplying}
+                          className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 disabled:opacity-40 disabled:cursor-not-allowed text-stone-700 text-sm font-semibold rounded-xl transition-colors cursor-pointer whitespace-nowrap"
+                        >
+                          {couponApplying
+                            ? (lang === "ar" ? "..." : "...")
+                            : (lang === "ar" ? "تطبيق" : "Apply")}
+                        </button>
+                      </div>
+                      {couponError && (
+                        <p className="text-xs text-red-500 mt-1.5">{couponError}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* ── Price breakdown ── */}
                 <div className="border-t border-stone-100 pt-4 space-y-2 mb-6">
                   <div className="flex justify-between text-sm text-stone-500">
                     <span>{tr("subtotal")}</span>
                     <span>{subtotal.toFixed(2)} {tr("aed")}</span>
                   </div>
+                  {discountAmount > 0 && (
+                    <div className="flex justify-between text-sm text-green-600">
+                      <span>
+                        {lang === "ar" ? `خصم (${couponDiscount}%)` : `Discount (${couponDiscount}%)`}
+                      </span>
+                      <span>−{discountAmount.toFixed(2)} {tr("aed")}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm text-stone-500">
                     <span>{tr("shipping")}</span>
                     <span className={shipping === 0 ? "text-green-600 font-semibold" : ""}>
                       {shipping === 0 ? tr("freeShipping") : `${shipping} ${tr("aed")}`}
                     </span>
                   </div>
-                  {coupon && (
-                    <div className="flex justify-between text-sm text-green-600">
-                      <span>{lang === "ar" ? "كوبون" : "Coupon"}: {coupon}</span>
-                    </div>
-                  )}
                   <div className="flex justify-between font-black text-base text-ink pt-2 border-t border-stone-100">
                     <span>{tr("total")}</span>
                     <span className="text-brown">{grandTotal.toFixed(2)} {tr("aed")}</span>

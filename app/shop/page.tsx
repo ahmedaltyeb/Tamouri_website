@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { prisma } from "@/lib/prisma";
+import type { Product } from "@/lib/products";
+import TopBar from "@/components/TopBar";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import ShopContent from "@/components/ShopContent";
 
 export const metadata: Metadata = {
   title: "تسوق الآن — تمور وقهوة وزعفران وهدايا فاخرة",
@@ -16,18 +22,38 @@ export const metadata: Metadata = {
   },
 };
 
-import TopBar from "@/components/TopBar";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import ShopContent from "@/components/ShopContent";
+// ISR: revalidate products every 60 s — same interval as /api/products.
+// Products are prefetched server-side so ShopContent renders without a
+// loading skeleton on first visit.
+export const revalidate = 60;
 
-export default function ShopPage() {
+async function getProducts(): Promise<Product[]> {
+  try {
+    const rows = await prisma.product.findMany({
+      where: {
+        OR: [
+          { categoryId: { not: null } },
+          { categorySlug: { not: "" } },
+        ],
+      },
+      orderBy: { createdAt: "asc" },
+    });
+    return rows as unknown as Product[];
+  } catch {
+    return [];
+  }
+}
+
+export default async function ShopPage() {
+  const initialProducts = await getProducts();
+
   return (
     <main className="min-h-screen">
       <TopBar />
       <Header />
+      {/* Suspense is required because ShopContent calls useSearchParams() */}
       <Suspense>
-        <ShopContent />
+        <ShopContent initialProducts={initialProducts} />
       </Suspense>
       <Footer />
     </main>

@@ -7,6 +7,7 @@ import SectionHeader from "@/components/SectionHeader";
 import ProductCard from "@/components/ProductCard";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useProducts } from "@/hooks/useProducts";
+import type { Product } from "@/lib/products";
 import { useSiteSettings } from "@/contexts/SiteSettingsContext";
 
 // ── Static bilingual content ──────────────────────────────────────────────────
@@ -71,9 +72,9 @@ interface Props {
   heroImageAltAr?: string | null;
 }
 
-export default function GiftBoxesContent({ heroImage, heroImageAltEn, heroImageAltAr }: Props) {
+export default function GiftBoxesContent({ heroImage, heroImageAltEn, heroImageAltAr, initialProducts }: Props & { initialProducts?: Product[] }) {
   const { lang, tr } = useLanguage();
-  const { products, loading } = useProducts();
+  const { products, loading } = useProducts(initialProducts);
   const { settings } = useSiteSettings();
   const dir = lang === "ar" ? "rtl" : "ltr";
 

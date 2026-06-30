@@ -32,6 +32,23 @@ export const metadata: Metadata = {
   creator: "Marbea Al Gharbeya Dates",
   publisher: "Marbea Al Gharbeya Dates",
   alternates: { canonical: BASE },
+
+  // ── Favicons & PWA icons ────────────────────────────────────────────────────
+  icons: {
+    icon: [
+      { url: "/favicon.ico",  sizes: "any" },
+      { url: "/favicon.svg",  type: "image/svg+xml" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      { rel: "icon", url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { rel: "icon", url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
+
+  // ── Open Graph ──────────────────────────────────────────────────────────────
   openGraph: {
     type: "website",
     locale: "en_AE",
@@ -42,20 +59,30 @@ export const metadata: Metadata = {
       "Premium UAE dates, Arabic coffee, saffron & tea — delivered across the UAE within 24 hours.",
     images: [
       {
-        url: "/og-default.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Marbea Al Gharbeya — Premium UAE Dates & Arabic Coffee",
+        alt: "مربع الغربية — Marbea Al Gharbeya | Premium UAE Dates & Arabic Coffee",
       },
     ],
   },
+
+  // ── Twitter / X card ────────────────────────────────────────────────────────
   twitter: {
     card: "summary_large_image",
     title: "Marbea Al Gharbeya Dates | Premium UAE Dates & Coffee",
     description:
       "Premium UAE dates, Arabic coffee, saffron & tea — free delivery across UAE on orders over 200 AED.",
-    images: ["/og-default.jpg"],
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "مربع الغربية — Premium UAE Dates & Arabic Coffee",
+      },
+    ],
   },
+
   robots: {
     index: true,
     follow: true,

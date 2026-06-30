@@ -7,6 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import { categories, parseMLText } from "@/lib/products";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useProducts } from "@/hooks/useProducts";
+import type { Product } from "@/lib/products";
 
 // ── CMS-ready shop config ─────────────────────────────────────────────────────
 // Extracted here so future CMS integration only needs to change this object.
@@ -135,12 +136,12 @@ function Pagination({ currentPage, totalPages, onPage }: PaginationProps) {
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function ShopContent() {
+export default function ShopContent({ initialProducts }: { initialProducts?: Product[] }) {
   const { tr, lang, dir } = useLanguage();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { products, loading } = useProducts();
+  const { products, loading } = useProducts(initialProducts);
 
   const [activeCategory, setActiveCategory] = useState(
     searchParams.get("category") ?? "all"

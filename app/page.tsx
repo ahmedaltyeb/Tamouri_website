@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import TopBar from "@/components/TopBar";
+import Header from "@/components/Header";
+import Hero from "@/components/Hero";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "مربع الغربية للتمور — تمور فاخرة وقهوة عربية وزعفران",
@@ -16,16 +20,17 @@ export const metadata: Metadata = {
   },
 };
 
+// ISR: revalidate CMS section data every 60 seconds.
+// Hero renders immediately; below-fold sections stream in after DB resolves.
+export const revalidate = 60;
+
 import { prisma } from "@/lib/prisma";
-import Header from "@/components/Header";
-import Hero from "@/components/Hero";
 import CategoryCards from "@/components/CategoryCards";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import HeroSlider from "@/components/HeroSlider";
 import WhyTamouri from "@/components/WhyTamouri";
 import SplitCollections from "@/components/SplitCollections";
 import Testimonials from "@/components/Testimonials";
-import Footer from "@/components/Footer";
 
 async function getHomepageSections() {
   try {
@@ -36,20 +41,66 @@ async function getHomepageSections() {
   }
 }
 
-export default async function HomePage() {
+// Async server component that owns the DB fetch — wrapped in Suspense below.
+// Separating it lets Hero paint on the first HTML flush before the DB responds.
+async function BelowFold() {
   const sections = await getHomepageSections();
-
   return (
-    <main className="min-h-screen">
-      <TopBar />
-      <Header />
-      <Hero />
+    <>
       <CategoryCards section={sections["shop_categories"] ?? null} />
       <FeaturedProducts section={sections["featured_products"] ?? null} />
       <SplitCollections section={sections["split_collections"] ?? null} />
       <HeroSlider />
       <WhyTamouri section={sections["why_us"] ?? null} />
       <Testimonials section={sections["testimonials"] ?? null} />
+    </>
+  );
+}
+
+// Skeleton shown while BelowFold is streaming — keeps layout stable.
+function BelowFoldSkeleton() {
+  return (
+    <div className="animate-pulse space-y-8 py-8">
+      {/* Category cards row */}
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="h-6 bg-stone-100 rounded w-40 mx-auto mb-6" />
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="aspect-square rounded-2xl bg-stone-100" />
+          ))}
+        </div>
+      </div>
+      {/* Featured products row */}
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="h-6 bg-stone-100 rounded w-48 mx-auto mb-6" />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="rounded-2xl bg-stone-100 overflow-hidden">
+              <div className="aspect-square bg-stone-50" />
+              <div className="p-3 space-y-2">
+                <div className="h-3 bg-stone-200 rounded w-2/3" />
+                <div className="h-4 bg-stone-200 rounded" />
+                <div className="h-8 bg-stone-200 rounded mt-2" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <main className="min-h-screen">
+      <TopBar />
+      <Header />
+      {/* Hero paints on first HTML flush — no DB required */}
+      <Hero />
+      {/* Everything below the fold streams in after getHomepageSections() resolves */}
+      <Suspense fallback={<BelowFoldSkeleton />}>
+        <BelowFold />
+      </Suspense>
       <Footer />
     </main>
   );

@@ -23,6 +23,7 @@ export default function ProductCard({ product, priority = false }: Props) {
   const toggleWishlist = useCartStore((s) => s.toggleWishlist);
   const wishlist = useCartStore((s) => s.wishlist);
   const [added, setAdded] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const { tr, lang } = useLanguage();
 
   const name = parseMLText(product.name)[lang];
@@ -56,16 +57,16 @@ export default function ProductCard({ product, priority = false }: Props) {
       <div className="bg-white rounded-2xl border border-stone-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer flex flex-col">
 
         {/* ── Image area ── */}
-        <div className="relative bg-white aspect-square overflow-hidden">
+        <div className={`relative aspect-square overflow-hidden transition-colors duration-300 ${imgLoaded ? "bg-white" : "bg-stone-100 animate-pulse"}`}>
           <Image
             src={imgSrc}
             alt={name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-contain p-3 group-hover:scale-105 transition-transform duration-500"
+            className={`object-contain p-3 group-hover:scale-105 transition-all duration-500 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
             priority={priority}
-            // BUG FIX #2: fall back to placeholder on load error
-            onError={() => setImgSrc(PLACEHOLDER)}
+            onLoad={() => setImgLoaded(true)}
+            onError={() => { setImgSrc(PLACEHOLDER); setImgLoaded(true); }}
           />
 
           {/* Badges */}

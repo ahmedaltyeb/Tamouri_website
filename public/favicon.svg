@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" shape-rendering="geometricPrecision">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#7A5030"/>
+      <stop offset="55%"  stop-color="#8B5E3C"/>
+      <stop offset="100%" stop-color="#C49A3C"/>
+    </linearGradient>
+    <linearGradient id="palm" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#FAE89A"/>
+      <stop offset="100%" stop-color="#D4AE5C"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#F5D98A"/>
+      <stop offset="100%" stop-color="#C49A3C"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded-square background -->
+  <rect width="512" height="512" rx="110" ry="110" fill="url(#bg)"/>
+
+  <!-- Inner gold border ring -->
+  <rect x="18" y="18" width="476" height="476" rx="96" ry="96"
+        fill="none" stroke="url(#ring)" stroke-width="10" opacity="0.45"/>
+
+  <!-- ═══ Date Palm Silhouette ═══ -->
+  <!-- Trunk: slightly tapered, leans very slightly right for elegance -->
+  <path d="M237 480 L275 480 L268 248 L244 248 Z" fill="url(#palm)"/>
+
+  <!-- Crown base bulge -->
+  <ellipse cx="256" cy="248" rx="28" ry="16" fill="url(#palm)" opacity="0.9"/>
+
+  <!-- Frond 1 — straight up -->
+  <path d="M256 248 C252 210 248 180 244 132
+           C248 150 254 175 256 248Z" fill="url(#palm)"/>
+  <path d="M256 248 C260 210 264 180 268 132
+           C264 150 258 175 256 248Z" fill="url(#palm)" opacity="0.85"/>
+
+  <!-- Frond 2 — upper left -->
+  <path d="M248 242 C230 208 210 185 172 152
+           C196 172 220 198 248 242Z" fill="url(#palm)"/>
+  <!-- Frond 2 — upper right -->
+  <path d="M264 242 C282 208 302 185 340 152
+           C316 172 292 198 264 242Z" fill="url(#palm)"/>
+
+  <!-- Frond 3 — mid left -->
+  <path d="M244 250 C218 228 194 216 148 208
+           C174 214 208 228 244 250Z" fill="url(#palm)"/>
+  <!-- Frond 3 — mid right -->
+  <path d="M268 250 C294 228 318 216 364 208
+           C338 214 304 228 268 250Z" fill="url(#palm)"/>
+
+  <!-- Frond 4 — lower left (drooping) -->
+  <path d="M244 256 C214 254 186 264 148 288
+           C176 270 214 260 244 256Z" fill="url(#palm)" opacity="0.8"/>
+  <!-- Frond 4 — lower right (drooping) -->
+  <path d="M268 256 C298 254 326 264 364 288
+           C336 270 298 260 268 256Z" fill="url(#palm)" opacity="0.8"/>
+
+  <!-- Date clusters — small golden oval bunches hanging at frond junctions -->
+  <ellipse cx="188" cy="215" rx="14" ry="10" fill="#C49A3C" opacity="0.9"/>
+  <ellipse cx="184" cy="228" rx="11" ry="7"  fill="#A07828" opacity="0.8"/>
+
+  <ellipse cx="324" cy="215" rx="14" ry="10" fill="#C49A3C" opacity="0.9"/>
+  <ellipse cx="328" cy="228" rx="11" ry="7"  fill="#A07828" opacity="0.8"/>
+
+  <ellipse cx="216" cy="170" rx="12" ry="8" fill="#C49A3C" opacity="0.85"/>
+  <ellipse cx="296" cy="170" rx="12" ry="8" fill="#C49A3C" opacity="0.85"/>
+
+  <!-- Ground line / base arc for grounding the composition -->
+  <path d="M180 480 Q256 468 332 480" fill="none"
+        stroke="url(#ring)" stroke-width="8" stroke-linecap="round" opacity="0.5"/>
+</svg>

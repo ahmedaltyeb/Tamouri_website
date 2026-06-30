@@ -391,6 +391,25 @@ enum OrderStatus {
   CANCELLED
 }
 
+// ─── Coupons ─────────────────────────────────────────────────────────────────
+
+model Coupon {
+  id             String    @id @default(cuid())
+  code           String    @unique  // always stored UPPERCASED
+  type           String    @default("percentage") // "percentage" | "fixed"
+  discount       Float     // percentage value (10 = 10%) or fixed AED amount
+  minOrderAmount Float?    // minimum cart subtotal required; null = no minimum
+  maxUses        Int?      // null = unlimited
+  usedCount      Int       @default(0)
+  active         Boolean   @default(true)
+  expiresAt      DateTime? // null = never expires
+  description    String?   // internal admin note
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([code, active])
+}
+
 // ─── CMS: Menu Items ─────────────────────────────────────────────────────────
 
 model MenuItem {
